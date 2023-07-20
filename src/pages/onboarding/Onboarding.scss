@@ -1,0 +1,163 @@
+/** @format */
+
+@use '../../stylesheet/textStyle';
+@use '../../stylesheet/colorPalette';
+@use '../../stylesheet/variables';
+
+.onboarding-container {
+	width: min(100vw, 700px);
+	margin-top: 36px;
+	padding: 0px 20px;
+	min-height: 100vh;
+	box-sizing: border-box;
+}
+
+.onboarding-top-bar {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	box-sizing: border-box;
+	margin-bottom: 32px;
+
+	.onboarding-top-bar-back-button {
+		cursor: pointer;
+	}
+
+	.onboarding-top-bar-step {
+		width: 80%;
+		height: 10px;
+		background-color: colorPalette.$grey200;
+		border-radius: 10px;
+
+		.onboarding-top-bar-step {
+			background-color: colorPalette.$emeraldBase;
+		}
+
+		.step-1 {
+			width: 20%;
+		}
+
+		.step-2 {
+			width: 40%;
+		}
+
+		.step-3 {
+			width: 60%;
+		}
+
+		.step-4 {
+			width: 80%;
+		}
+
+		.step-5 {
+			width: 100%;
+		}
+	}
+}
+
+.onboarding-card-container {
+	min-height: 80vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	.onboarding-card {
+		text-align: start;
+		width: min(100%, 100%, 530px);
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+
+		.onboarding-card-title {
+			@include textStyle.Lora600(36px, 44px);
+			text-align: start;
+			width: 100%;
+		}
+	}
+
+	.input-container {
+		.input-label {
+			@include textStyle.SansPro600(16px, 24px);
+			color: colorPalette.$grey600;
+		}
+
+		.input-field-container {
+			display: flex;
+			gap: 12px;
+
+			@media screen and (max-width: variables.$phone-width) {
+				flex-direction: column;
+			}
+		}
+	}
+
+	.button-container {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		width: 100%;
+	}
+
+	.normal-text {
+		@include textStyle.SansPro400(16px, 24px);
+		color: colorPalette.$globalBody;
+	}
+
+	.bold-lora-text {
+		@include textStyle.Lora600(16px, 24px);
+		color: colorPalette.$globalBody;
+	}
+
+	.nature-event-container {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+
+		.container-row {
+			display: flex;
+			flex-direction: row;
+			gap: 8px;
+		}
+	}
+}
+
+.onboarding-check-card,
+.social-card {
+	flex: 1;
+	border-radius: 8px;
+	border: 1px solid rgba(208, 213, 221, 1);
+	padding: 20px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+
+	.onboarding-check-card-title,
+	.social-card-title {
+		@include textStyle.SansPro600(16px, 24px);
+		color: colorPalette.$grey700;
+		text-transform: uppercase;
+	}
+
+	.onboarding-check-card-description,
+	.social-card-description {
+		@include textStyle.SansPro500(14px, 20px);
+		color: colorPalette.$grey500;
+	}
+}
+
+.social-card {
+	align-items: flex-start;
+	.card-content {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+}
+
+.event-checked {
+	border: 1px solid colorPalette.$grey700;
+	background-color: white;
+}

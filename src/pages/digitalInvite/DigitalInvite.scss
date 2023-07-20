@@ -1,0 +1,101 @@
+/** @format */
+
+@use '../../stylesheet/container' as container;
+
+.digital-invite-container {
+	@include container.pageContainerStyle();
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.setting-card-container {
+	max-width: 720px;
+
+	@media screen and (max-width: 600px) {
+		width: 100%;
+	}
+}
+
+.itineraryContent_activity {
+	padding: 16px 5px;
+	display: flex;
+	flex-direction: column;
+
+	.activityContent {
+		overflow-y: auto;
+	}
+
+	.no_activity,
+	.yes_activity {
+		display: flex;
+
+		.date {
+			flex: 2;
+		}
+
+		.activity_detail {
+			flex: 5;
+			padding-left: 30px;
+			padding-bottom: 20px;
+			border-left: 2px solid rgba(241, 191, 190, 1);
+			cursor: pointer;
+
+			&::before {
+				content: '';
+				display: block;
+				width: 15px;
+				height: 15px;
+				border-radius: 50%;
+				background-color: rgba(241, 191, 190, 1);
+				transform: translateX(-38.4px);
+			}
+
+			.activity_title {
+				color: rgba(0, 0, 0, 1);
+				transform: translateY(-15px);
+			}
+
+			.activity_description {
+				color: rgba(102, 112, 133, 1);
+				transform: translateY(-15px);
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: pre-wrap;
+			}
+		}
+
+		.addActivity_button {
+			flex: 5;
+			cursor: pointer;
+			padding-left: 30px;
+			border-left: 2px solid rgba(241, 191, 190, 1);
+
+			&::before {
+				content: '';
+				display: block;
+				width: 14px;
+				height: 14px;
+				border-radius: 50%;
+				background-color: rgba(241, 191, 190, 1);
+				transform: translateX(-38px);
+			}
+			.border {
+				height: 60px;
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 5px;
+				color: rgba(152, 162, 179, 1);
+				transform: translateY(-15px);
+			}
+		}
+
+		&:last-child {
+			.activity_detail {
+				border-left: 2px solid rgba(241, 191, 190, 0);
+			}
+		}
+	}
+}

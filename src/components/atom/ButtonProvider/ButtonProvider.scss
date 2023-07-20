@@ -1,0 +1,33 @@
+/** @format */
+@use '../../../stylesheet/colorPalette';
+@use '../../../stylesheet/textStyle';
+
+.button-style {
+	text-align: center;
+	border: 1px solid colorPalette.$grey300;
+	border-radius: 0px;
+	@include textStyle.SansPro500(14px, 18px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	gap: 6px;
+	cursor: pointer;
+	letter-spacing: 0.05em;
+	white-space: nowrap;
+}
+
+.primary-button {
+	color: colorPalette.$white;
+	background-color: colorPalette.$diorGrey;
+}
+
+.default-button {
+	background-color: colorPalette.$white;
+	color: colorPalette.$diorGrey;
+}
+
+.delete-button {
+	background-color: #d83232;
+	color: colorPalette.$white;
+}

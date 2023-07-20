@@ -1,0 +1,21 @@
+/** @format */
+
+.dashboard-card-container {
+	border: 1px solid rgba(228, 231, 236, 1);
+	padding: 16px;
+	border-radius: 8px;
+	background: linear-gradient(0deg, #ffffff, #ffffff), linear-gradient(0deg, #e4e7ec, #e4e7ec);
+}
+
+.setting-card {
+	width: min(100%, 720px);
+
+	@media screen and (max-width: 600px) {
+		width: 100%;
+	}
+}
+
+.settingCard-content {
+	width: min(100%, 600px);
+	padding-bottom: 12px;
+}

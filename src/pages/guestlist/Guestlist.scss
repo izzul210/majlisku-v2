@@ -1,0 +1,45 @@
+/** @format */
+@use '../../stylesheet/container' as container;
+
+.guestlist-container {
+	@include container.pageContainerStyle();
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.guestlist-table {
+	border: 1px solid var(--gray-200, #eaecf0);
+	background: var(--white, #fff);
+	box-sizing: border-box;
+	/* Shadow/sm */
+	box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1);
+}
+
+.filter-button {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	border-radius: 16px;
+	background: var(
+		--emerald-t-int-90,
+		linear-gradient(0deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%),
+		#2d6a4f
+	);
+	padding: 4px 12px;
+}
+
+.upload-button {
+	color: gray;
+	text-align: center;
+	justify-content: center;
+	border: 1px dashed gray;
+	border-radius: 5px;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	gap: 6px;
+	background: #f9fafb;
+	text-transform: unset;
+}

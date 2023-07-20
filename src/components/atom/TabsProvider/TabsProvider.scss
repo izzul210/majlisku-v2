@@ -1,0 +1,20 @@
+/** @format */
+
+button {
+	outline: none;
+	border: none;
+	&:focus {
+		outline: none !important;
+		border: none !important;
+	}
+	&:focus-visible {
+		outline: none;
+		border: none;
+	}
+}
+
+//change scroll-x bar height
+::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+}

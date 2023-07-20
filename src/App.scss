@@ -1,0 +1,50 @@
+/** @format */
+
+#root {
+	margin: 0 auto;
+	text-align: center;
+}
+
+input,
+textarea {
+	background-color: #fff; /* Set the background color to white */
+}
+
+/* Additional styles for dark mode */
+@media (prefers-color-scheme: dark) {
+}
+
+.App {
+	display: flex;
+	width: 100%;
+	box-sizing: border-box;
+	// padding-top: 20px;
+	background: linear-gradient(180deg, #fdf6f6 100.16%, #f7f7f7 100.9%);
+}
+
+.app-container {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #f1f1f138;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: rgba(199, 198, 198, 0.817);
+	border-radius: 200px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(97, 97, 97, 0.471);
+}
