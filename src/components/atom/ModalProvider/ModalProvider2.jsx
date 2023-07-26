@@ -4,9 +4,11 @@ import React from 'react';
 //MUI Import
 import Slide from '@mui/material/Slide';
 import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from '@mui/material';
 //Component import
 import CardLoadingState from '../loading/CardLoadingState';
+import TextProvider from '../TextProvider/TextProvider';
 //Styling import
 import './ModalProvider.scss';
 
@@ -41,25 +43,32 @@ function ModalProvider({
 			aria-labelledby='dialog-title'
 			aria-describedby='dialog-description'
 			PaperProps={{
-				style: {
-					borderRadius: 8,
+				sx: {
+					display: 'flex',
+					flexDirection: 'column',
+					borderRadius: '8px',
+					width: '100%',
 				},
-				width: 600,
 				p: 4,
 			}}
 			{...props}>
 			<CardLoadingState loadingState={loading} />
 			<Box>
-				<div className='modal-top uppercase'>
-					{title}
-					<div
-						className='cursor-pointer ml-8'
-						onClick={() => {
-							handleClose();
-						}}>
-						<CloseButton />
+				<DialogTitle
+					id='dialog-title'
+					sx={{ padding: 0, position: 'sticky', top: 0, backgroundColor: 'white' }}>
+					<div className='modal-top uppercase'>
+						<TextProvider className='text-base'>{title}</TextProvider>
+
+						<div
+							className='cursor-pointer ml-8'
+							onClick={() => {
+								handleClose();
+							}}>
+							<CloseButton />
+						</div>
 					</div>
-				</div>
+				</DialogTitle>
 				<div className='modal-content'>{children}</div>
 			</Box>
 		</Dialog>

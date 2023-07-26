@@ -17,7 +17,7 @@ import ModalProvider2 from '../atom/ModalProvider/ModalProvider2';
 import TextProvider from '../atom/TextProvider/TextProvider';
 import ButtonProvider from '../atom/ButtonProvider/ButtonProvider';
 import NotificationBox from './NotificationBox';
-import ToolTipProvider from '../atom/tooltip/ToolTipProvider';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 //Auth import
 import { useLogout } from '../../hooks/useAuth';
 //Context import
@@ -72,6 +72,25 @@ const checkForActiveTabText = (path, activeTab) => {
 		return 'sidebar-navigate-text-active';
 	} else return 'sidebar-navigate-text';
 };
+
+function ElevationScroll(props) {
+	const { children, window } = props;
+	// Note that you normally won't need to set the window ref as useScrollTrigger
+	// will default to window.
+	// This is only being set here because the demo is in an iframe.
+	const trigger = useScrollTrigger({
+		disableHysteresis: true,
+		threshold: 0,
+		target: window ? window() : undefined,
+	});
+
+	const elevatedChildren = React.cloneElement(children, {
+		style: {
+			boxShadow: trigger ? '0px 0px 20px rgba(0, 0, 0, 0.2)' : 'none',
+		},
+	});
+	return elevatedChildren;
+}
 
 const WebSideBar = ({ activeTab = '', handleLogout }) => {
 	const { userInfo, userPhotoURL } = useUserContext();
@@ -408,7 +427,7 @@ const TipsModal = ({ isOpen, handleClose }) => {
 	);
 };
 
-function Sidebar() {
+function Sidebar(props) {
 	const [activeTab, setActiveTab] = useState('');
 	const [subTab, setSubTab] = useState('');
 	const [tabOff, setTabOff] = useState(false);
@@ -485,22 +504,25 @@ function Sidebar() {
 	if (checkPageWithTab()) {
 		return (
 			<>
-				<AppBar
-					position='fixed'
-					sx={{
-						display: { xs: 'block', sm: 'block' },
-						width: '100vw',
-						padding: '12px 18px',
-						backgroundColor: backgroundColorBarStyle,
-						boxShadow: 'none',
-						transform: 'translateY(-1%)',
-					}}>
-					<PhoneAppBar
-						handleDrawerToggle={handleDrawerToggle}
-						activeTab={activeTab}
-						subTab={subTab}
-					/>
-				</AppBar>
+				<ElevationScroll {...props}>
+					<AppBar
+						position='fixed'
+						sx={{
+							display: { xs: 'block', sm: 'block' },
+							width: '100vw',
+							padding: '12px 18px',
+							backgroundColor: backgroundColorBarStyle,
+							boxShadow: 'none',
+							transform: 'translateY(-1%)',
+						}}>
+						<PhoneAppBar
+							handleDrawerToggle={handleDrawerToggle}
+							activeTab={activeTab}
+							subTab={subTab}
+						/>
+					</AppBar>
+				</ElevationScroll>
+
 				<Box
 					component='nav'
 					sx={{

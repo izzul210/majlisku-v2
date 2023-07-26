@@ -34,15 +34,17 @@ const StyledTab = styled((props) => (
 	<div className='flex items-center'>
 		<Tab disableRipple {...props} />
 		{props.openinvitetotal ? (
-			<div className='text-black text-sm bg-red-300 w-6 h-6 flex items-center justify-center rounded-full'>
+			<div
+				style={{ fontFamily: 'Source Sans 3, sans-serif' }}
+				className='text-black text-sm bg-red-300 w-6 h-6 flex items-center justify-center rounded-full'>
 				{props.openinvitetotal}
 			</div>
 		) : null}
 	</div>
 ))(({ theme }) => ({
 	textTransform: 'none',
-	fontWeight: theme.typography.fontWeightMedium,
-	fontSize: theme.typography.pxToRem(15),
+	fontWeight: 600,
+	fontSize: theme.typography.pxToRem(16),
 	color: NeutralGrey400,
 	'&.Mui-selected': {
 		color: GrayScaleWarmBlack,

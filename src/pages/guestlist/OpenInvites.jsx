@@ -421,7 +421,7 @@ const FilterGuestModalContent = ({ guestRsvp, setGuestRsvp, handleCancel }) => {
 
 const ShareOpenInviteModal = ({ isOpen, handleClose }) => {
 	const { userData } = useUserContext();
-
+	const phoneSize = useMediaQuery('(max-width:600px)');
 	const inviteLink = `https://invite.majlisku.app/${userData?.inviteId}`;
 
 	function copyToClipboard() {
@@ -448,11 +448,12 @@ const ShareOpenInviteModal = ({ isOpen, handleClose }) => {
 				<div>
 					<TextProvider className='uppercase font-semibold'>Image Preview</TextProvider>
 					<div
-						className='w-full h-48 flex items-center justify-center mt-2 rounded-lg'
+						className='w-auto h-48 flex items-center justify-center mt-2 rounded-lg'
 						style={{
 							backgroundImage: `url(${userData?.eventDetails?.rsvp_header_image})`,
 							backgroundSize: 'cover',
 							backgroundPosition: 'center',
+							maxWidth: '300px',
 						}}
 					/>
 				</div>
@@ -472,30 +473,51 @@ const ShareOpenInviteModal = ({ isOpen, handleClose }) => {
 						2. Import RSVP'd guests into My Guestlist
 					</TextProvider>
 				</div>
-				<div className='flex gap-2 flex-col'>
-					<div className='flex gap-2'>
-						<ButtonProvider>
-							<RSVPIcon />
-							<TextProvider className={buttonTextStyles}>Edit E-Invite</TextProvider>
+				{phoneSize ? (
+					<div className='flex gap-2 flex-col'>
+						<div className='flex gap-2'>
+							<ButtonProvider>
+								<RSVPIcon />
+								<TextProvider className={buttonTextStyles}>Edit E-Invite</TextProvider>
+							</ButtonProvider>
+							<ButtonProvider>
+								<PreviewIcon />
+								<TextProvider className={buttonTextStyles}>Preview</TextProvider>
+							</ButtonProvider>
+						</div>
+						<ButtonProvider
+							onClick={() => copyToClipboard()}
+							type='primary'
+							className='uppercase text-xs sm:text-sm'>
+							Copy Link
 						</ButtonProvider>
-						<ButtonProvider>
-							<PreviewIcon />
-							<TextProvider className={buttonTextStyles}>Preview</TextProvider>
-						</ButtonProvider>
+						<a href={`whatsapp://send?text=${inviteLink}`} data-action='share/whatsapp/share'>
+							<ButtonProvider>
+								<WhatsappIcon />
+								<TextProvider className={buttonTextStyles}>Share Via Whatsapp</TextProvider>
+							</ButtonProvider>
+						</a>
 					</div>
-					<ButtonProvider
-						onClick={() => copyToClipboard()}
-						type='primary'
-						className='uppercase text-xs sm:text-sm'>
-						Copy Link
-					</ButtonProvider>
-					<a href={`whatsapp://send?text=${inviteLink}`} data-action='share/whatsapp/share'>
-						<ButtonProvider>
-							<WhatsappIcon />
-							<TextProvider className={buttonTextStyles}>Share Via Whatsapp</TextProvider>
-						</ButtonProvider>
-					</a>
-				</div>
+				) : (
+					<div className='flex gap-2 flex-col'>
+						<div className='flex gap-2'>
+							<ButtonProvider>
+								<RSVPIcon />
+								<TextProvider className={buttonTextStyles}>Edit E-Invite</TextProvider>
+							</ButtonProvider>
+							<ButtonProvider>
+								<PreviewIcon />
+								<TextProvider className={buttonTextStyles}>Preview</TextProvider>
+							</ButtonProvider>
+							<ButtonProvider
+								onClick={() => copyToClipboard()}
+								type='primary'
+								className='uppercase text-xs sm:text-sm'>
+								Copy Link
+							</ButtonProvider>
+						</div>
+					</div>
+				)}
 			</div>
 		</ModalProvider2>
 	);

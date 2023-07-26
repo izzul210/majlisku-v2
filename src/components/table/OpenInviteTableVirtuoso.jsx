@@ -329,9 +329,7 @@ function rowContent(
 					fontFamily: 'Poppins',
 					textTransform: 'uppercase',
 					color: '#475467',
-					cursor: 'pointer',
 				}}
-				onClick={() => openGuestModal(row)}
 				align='left'>
 				<div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
 					<ButtonProvider onClick={() => openImportModal(row)} width='50px' padding='8px'>

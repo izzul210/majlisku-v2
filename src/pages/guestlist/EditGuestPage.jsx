@@ -25,7 +25,7 @@ function EditGuestPage() {
 	};
 
 	return (
-		<div className='bg-white h-screen'>
+		<div className='bg-white min-h-screen'>
 			<WholePageLoadingState loadingState={isPending} noOpacity={true} heightVh='100%' />
 			<div className='p-4 pt-12 flex gap-5 items-center border-b border-gray-200'>
 				<div onClick={() => navigate(-1)} className='cursor-pointer'>

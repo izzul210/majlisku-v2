@@ -4,9 +4,11 @@ import React from 'react';
 //MUI Import
 import Slide from '@mui/material/Slide';
 import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from '@mui/material';
 //Component import
 import ButtonProvider from '../ButtonProvider/ButtonProvider';
+import TextProvider from '../TextProvider/TextProvider';
 //Styling import
 import './ModalProvider.scss';
 
@@ -42,39 +44,48 @@ function ModalProvider({
 			aria-labelledby='dialog-title'
 			aria-describedby='dialog-description'
 			PaperProps={{
-				width: 600,
-				p: 4,
-				style: {
-					borderRadius: 8,
+				sx: {
+					display: 'flex',
+					flexDirection: 'column',
+					borderRadius: '8px',
+					width: '100%',
 				},
+				p: 4,
 			}}
 			{...props}>
 			<Box>
-				<div className='modal-top uppercase'>
-					{title}
-					<div
-						className='cursor-pointer'
-						onClick={() => {
-							handleClose();
-						}}>
-						<CloseButton />
+				<DialogTitle
+					id='dialog-title'
+					sx={{ padding: 0, position: 'sticky', top: 0, backgroundColor: 'white' }}>
+					<div className='modal-top uppercase'>
+						<TextProvider className='text-base'>{title}</TextProvider>
+
+						<div
+							className='cursor-pointer ml-8'
+							onClick={() => {
+								handleClose();
+							}}>
+							<CloseButton />
+						</div>
 					</div>
-				</div>
+				</DialogTitle>
 				<div className='modal-content'>{children}</div>
 				<Box
 					sx={{
 						display: 'flex',
 						justifyContent: 'flex-end',
-						pt: 2,
 						gap: '8px',
 						padding: '8px',
 						borderTop: '1px solid rgba(228, 231, 236, 1)',
-						textTransform: 'uppercase',
 					}}>
-					<ButtonProvider onClick={handleClose}>Cancel</ButtonProvider>
-					<ButtonProvider onClick={handleMain} type='primary'>
-						{mainButtonTitle}
-					</ButtonProvider>
+					<div className='flex  gap-2'>
+						<ButtonProvider onClick={handleClose} className='uppercase' width='100px'>
+							Cancel
+						</ButtonProvider>
+						<ButtonProvider onClick={handleMain} type='primary' className='uppercase' width='100px'>
+							{mainButtonTitle}
+						</ButtonProvider>
+					</div>
 				</Box>
 			</Box>
 		</Dialog>

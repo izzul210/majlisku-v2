@@ -38,8 +38,8 @@ const StyledTab = styled((props) => (
 	</div>
 ))(({ theme }) => ({
 	textTransform: 'none',
-	fontWeight: theme.typography.fontWeightMedium,
-	fontSize: theme.typography.pxToRem(15),
+	fontWeight: 600,
+	fontSize: theme.typography.pxToRem(16),
 	color: NeutralGrey400,
 	'&.Mui-selected': {
 		color: GrayScaleWarmBlack,
