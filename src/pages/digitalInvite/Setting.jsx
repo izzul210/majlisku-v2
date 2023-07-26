@@ -27,8 +27,21 @@ import {
 import './DigitalInvite.scss';
 
 function Setting() {
+	const { dispatch } = useDigitalInviteDispatchContext();
+
 	return (
 		<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col items-center pt-24 bg-white sm:bg-transparent'>
+			<div className='flex justify-end w-full  px-4 sm:px-6' style={{ maxWidth: '720px' }}>
+				<div className='flex gap-2'>
+					<ButtonProvider
+						height='22px'
+						onClick={() => {
+							dispatch({ type: 'SET_ACCORDIANS_COLLAPSE' });
+						}}>
+						Collapse all
+					</ButtonProvider>
+				</div>
+			</div>
 			<EventDetails />
 			<DateTime />
 			<LocationMap />
@@ -381,8 +394,6 @@ const Tentative = () => {
 	const { inviteState, state } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
 	const { enable_itinerary, enable_bahasa } = inviteState;
-
-	console.log(state);
 
 	return (
 		<SettingCard stepNum='7' cardTitle={enable_bahasa ? 'Aturcara' : 'Tentative'}>

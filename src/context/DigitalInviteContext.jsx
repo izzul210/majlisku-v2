@@ -24,6 +24,7 @@ const initialState = {
 	submitted: false,
 	wishlist: [],
 	activities: [],
+	accordiansCollapsed: false,
 	design: 'default',
 };
 
@@ -282,6 +283,16 @@ export const digitalInviteReducer = (state, action) => {
 			return {
 				...state,
 				design: action.payload,
+			};
+		case 'SET_ACCORDIANS_COLLAPSE':
+			return {
+				...state,
+				accordiansCollapsed: true,
+			};
+		case 'RESET_ACCORDIANS_COLLAPSE':
+			return {
+				...state,
+				accordiansCollapsed: false,
 			};
 
 		default:

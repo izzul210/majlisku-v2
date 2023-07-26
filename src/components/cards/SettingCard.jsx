@@ -1,6 +1,6 @@
 /** @format */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
@@ -9,6 +9,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { DropDownSettingIcon, CollapseIcon } from '../icons/actionIcons';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import './Cards.scss';
+import {
+	useDigitalInviteContext,
+	useDigitalInviteDispatchContext,
+} from '../../context/DigitalInviteContext';
 
 const ArrowForwardIosSharpIcon = () => <div>Arrow</div>;
 
@@ -65,12 +69,28 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function SettingCard(props) {
 	const { stepNum = '0', cardTitle = 'General', children } = props;
+	const { state } = useDigitalInviteContext();
+	const { dispatch } = useDigitalInviteDispatchContext();
+	const { accordiansCollapsed } = state;
+	const [expanded, setExpanded] = useState(true);
+
 	const phoneSize = useMediaQuery('(max-width:600px)');
+
+	useEffect(() => {
+		if (accordiansCollapsed) {
+			setExpanded(false);
+		}
+	}, [accordiansCollapsed]);
+
+	const handleChange = () => {
+		setExpanded(!expanded);
+		dispatch({ type: 'RESET_ACCORDIANS_COLLAPSE' });
+	};
 
 	return (
 		<div className='setting-card box-border sm:w-auto border-b sm:border-none'>
 			{phoneSize ? (
-				<AccordianPhone defaultExpanded={true}>
+				<AccordianPhone expanded={expanded} defaultExpanded={true} onChange={handleChange}>
 					<AccordionSummary
 						expandIcon={<DropDownSettingIcon />}
 						aria-controls='panel1a-content'
@@ -90,7 +110,7 @@ function SettingCard(props) {
 					</AccordionDetails>
 				</AccordianPhone>
 			) : (
-				<Accordion defaultExpanded={true}>
+				<Accordion expanded={expanded} defaultExpanded={true} onChange={handleChange}>
 					<AccordionSummary
 						expandIcon={<DropDownSettingIcon />}
 						aria-controls='panel1a-content'
