@@ -10,6 +10,7 @@ import { useGuestlistContext, useGuestlistDispatchContext } from '../../context/
 import { useUserContext } from '../../context/UserContext';
 //Components import
 import OpenInviteTable from '../../components/table/OpenInviteTable';
+import OpenInviteTableVirtuoso from '../../components/table/OpenInviteTableVirtuoso';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import { SearchBarWithFilter } from '../../components/atom/SearchBar/SearchBar';
 import { OpenInviteGuestDetailModal, ImportToMyGuestlist } from './GuestDetail';
@@ -208,7 +209,7 @@ const OpenInvites = () => {
 									<img src={EmptyGuestImg} alt='Empty Guest' />
 								</div>
 							) : (
-								<OpenInviteTable
+								<OpenInviteTableVirtuoso
 									dispatch={dispatch}
 									rows={filteredNewGuestlist}
 									openGuestModal={openGuestModal}

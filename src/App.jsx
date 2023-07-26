@@ -29,6 +29,7 @@ const Onboarding_5 = lazy(() => import('./pages/onboarding/Onboarding_5'));
 
 function App() {
 	const { userId, authIsReady } = useUserContext();
+
 	return (
 		<div className='App'>
 			{authIsReady && (

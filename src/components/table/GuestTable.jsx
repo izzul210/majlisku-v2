@@ -399,12 +399,7 @@ export default function EnhancedTable({
 				flexDirection: 'column',
 			}}>
 			<div>
-				<TableContainer
-					sx={
-						phoneSize
-							? { maxHeight: '90vh' }
-							: { maxHeight: '61vh', borderBottom: '1px solid #E8E8E8' }
-					}>
+				<TableContainer>
 					<Table
 						stickyHeader
 						height='auto'

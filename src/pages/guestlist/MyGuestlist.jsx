@@ -32,6 +32,7 @@ import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirma
 import { AddGuestModal } from './AddGuest';
 import { GuestDetailModal } from './GuestDetail';
 import { EditGroupBulkModal } from './GuestModals';
+import GuestTableVirtuoso from '../../components/table/GuestTableVirtuoso';
 //Icons import
 import {
 	AttendingIcon,
@@ -79,7 +80,7 @@ const MyGuestlist = () => {
 
 	let filteredGuestlist;
 
-	let tableStyle = phoneSize ? 'px-0 h-full' : 'px-4 h-5/6';
+	let tableStyle = phoneSize ? 'px-0' : 'px-4 mb-20';
 	let textTitleStyle = phoneSize ? 'text-base text-gray-900' : 'text-lg text-gray-900';
 	let tableBorderRadius = phoneSize ? 'rounded-none' : 'rounded-lg';
 
@@ -267,7 +268,7 @@ const MyGuestlist = () => {
 									</ButtonProvider>
 								</div>
 							) : (
-								<GuestTable
+								<GuestTableVirtuoso
 									rows={filteredGuestlist}
 									openGuestModal={openGuestModal}
 									selected={guestlistSelected}
@@ -276,6 +277,15 @@ const MyGuestlist = () => {
 									openBulkEditModal={openBulkEditModal}
 									confirmGuestBulkDeleteModal={confirmGuestBulkDeleteModal}
 								/>
+								// <GuestTable
+								// 	rows={filteredGuestlist}
+								// 	openGuestModal={openGuestModal}
+								// 	selected={guestlistSelected}
+								// 	setSelected={setGuestlistSelected}
+								// 	handleSelectAllClick={handleSelectAllClick}
+								// 	openBulkEditModal={openBulkEditModal}
+								// 	confirmGuestBulkDeleteModal={confirmGuestBulkDeleteModal}
+								// />
 							)}
 						</>
 					)}
