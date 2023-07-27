@@ -14,7 +14,7 @@ export default function ResponsiveTimePickers({ label, value, setValue }) {
 				label={label}
 				value={moment(value)}
 				onChange={(newValue) => {
-					setValue(moment(newValue).format());
+					setValue(newValue.format('YYYY-MM-DD HH:mm'));
 				}}
 				renderInput={(params) => <TextField {...params} />}
 			/>

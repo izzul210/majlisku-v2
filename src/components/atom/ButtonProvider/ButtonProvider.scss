@@ -4,7 +4,6 @@
 
 .button-style {
 	text-align: center;
-	border: 1px solid colorPalette.$grey300;
 	border-radius: 0px;
 	@include textStyle.SansPro500(14px, 18px);
 	display: flex;

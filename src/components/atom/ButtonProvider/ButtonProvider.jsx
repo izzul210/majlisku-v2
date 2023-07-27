@@ -11,10 +11,13 @@ function ButtonProvider({
 	type = 'default',
 	height = 'auto',
 	disabled = false,
+	noBorder = false,
 	className,
 	...props
 }) {
-	const buttonClassName = `button-style ${type}-button`;
+	const buttonClassName = `button-style ${type}-button ${
+		!noBorder ? 'border border-gray-300' : ''
+	}`;
 
 	if (button) {
 		return (

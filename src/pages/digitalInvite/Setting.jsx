@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 //Components import
 import SettingCard from '../../components/cards/SettingCard';
@@ -15,6 +15,7 @@ import ToggleSwitch from '../../components/atom/switch/ToggleSwitch';
 import InputField from '../../components/atom/InputField/InputField';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 import ModalProvider2 from '../../components/atom/ModalProvider/ModalProvider2';
+import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirmation';
 //Icons import
 import { InfoIcon } from '../../components/icons/generalIcons';
 import { DeleteIcon, PlusIcon } from '../../components/icons/actionIcons';
@@ -23,6 +24,8 @@ import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
 } from '../../context/DigitalInviteContext';
+//Hooks import
+import { useItinerary } from '../../hooks/useItinerary';
 //Styling import
 import './DigitalInvite.scss';
 
@@ -433,6 +436,7 @@ const TentativeContainer = () => {
 	};
 
 	const handleEditActivityOpen = () => {
+		console.log('activityDetail', activityDetail);
 		setOpenEditModal(true);
 	};
 
@@ -504,6 +508,11 @@ const TentativeContainer = () => {
 				handleClose={() => setOpenAddModal(false)}
 				activities={activities}
 			/>
+			<EditentativeModal
+				isOpen={openEditModal}
+				handleClose={() => setOpenEditModal(false)}
+				activityDetail={activityDetail}
+			/>
 		</div>
 	);
 };
@@ -512,11 +521,34 @@ const AddTentativeModal = ({ isOpen, handleClose, activities }) => {
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
 	const [time, setTime] = useState(
-		activities?.length > 0 ? `${activities[activities.length - 1].date}` : '1983-07-21 08:00'
+		activities?.length > 0 ? `${activities[activities.length - 1]?.date}` : '1983-07-21 08:00'
 	);
+	const { addActivity, isPending } = useItinerary();
+
+	useEffect(() => {
+		if (activities?.length > 0) {
+			setTime(`${activities[activities.length - 1]?.date}`);
+		}
+	}, [activities]);
+
+	const handlerSubmitActivity = () => {
+		const activityBody = {
+			title,
+			description,
+			date: time,
+		};
+
+		addActivity(activityBody, () => {
+			handleClose();
+		});
+	};
 
 	return (
-		<ModalProvider2 isOpen={isOpen} handleClose={handleClose} title='Add Activity'>
+		<ModalProvider2
+			loading={isPending}
+			isOpen={isOpen}
+			handleClose={handleClose}
+			title='Add Activity'>
 			<div className='p-4 sm:p-6 flex flex-col gap-4'>
 				<InputFieldProvider
 					title='TITLE'
@@ -550,10 +582,116 @@ const AddTentativeModal = ({ isOpen, handleClose, activities }) => {
 					type='primary'
 					width='84px'
 					height='36px'
-					onClick={handleClose}>
+					onClick={handlerSubmitActivity}>
 					Save
 				</ButtonProvider>
 			</div>
 		</ModalProvider2>
+	);
+};
+
+const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
+	const [title, setTitle] = useState(activityDetail?.title);
+	const [description, setDescription] = useState(activityDetail?.description);
+	const [time, setTime] = useState(activityDetail?.date);
+	const [deleteModal, setDeleteModal] = useState(false);
+	const { editActivity, deleteActivity, isPending } = useItinerary();
+
+	useEffect(() => {
+		//Change the states based on activityDetail
+		setTitle(activityDetail?.title);
+		setDescription(activityDetail?.description);
+		setTime(activityDetail?.date);
+	}, [activityDetail]);
+
+	const handlerEditActivity = () => {
+		const activityBody = {
+			title,
+			description,
+			date: time,
+			id: activityDetail?.id,
+		};
+
+		editActivity(activityBody, () => {
+			handleClose();
+		});
+	};
+
+	const handleDeleteActivity = () => {
+		deleteActivity(activityDetail?.id, () => {
+			setDeleteModal(false);
+			handleClose();
+		});
+	};
+
+	return (
+		<>
+			<ModalProvider2
+				loading={isPending}
+				isOpen={isOpen}
+				handleClose={handleClose}
+				title='Edit Activity'>
+				<div className='p-4 sm:p-6 flex flex-col gap-4'>
+					<InputFieldProvider
+						title='TITLE'
+						placeholder='Wedding Ceremony'
+						error={null}
+						value={title}
+						textSize='text-sm'
+						onChange={(e) => setTitle(e.target.value)}
+					/>
+					<TextAreaProvider
+						title='DESCRIPTION'
+						placeholder='1) Doa Recitation
+2) Salam restu
+3) Bride & Groom lunch'
+						value={description}
+						className='text-start'
+						minHeight='100px'
+						onChange={(e) => setDescription(e.target.value)}
+					/>
+					<div className='flex flex-col gap-1'>
+						<InputTitleText>Time</InputTitleText>
+						<TimePickerSetState label='Start' value={time} setValue={setTime} />
+					</div>
+				</div>
+				<div className='border-t w-full flex justify-between items-center p-4'>
+					<ButtonProvider
+						noBorder
+						className='uppercase font-semibold'
+						width='auto'
+						height='36px'
+						onClick={() => setDeleteModal(true)}>
+						<DeleteIcon /> Remove
+					</ButtonProvider>
+					<div className=' flex justify-end gap-1'>
+						<ButtonProvider className='uppercase' width='84px' height='36px' onClick={handleClose}>
+							Cancel
+						</ButtonProvider>
+						<ButtonProvider
+							className='uppercase'
+							type='primary'
+							width='84px'
+							height='36px'
+							onClick={handlerEditActivity}>
+							Save
+						</ButtonProvider>
+					</div>
+				</div>
+			</ModalProvider2>
+			<ModalConfirmation
+				title={
+					<div className='flex gap-2 items-center'>
+						<DeleteIcon fill='black' />
+						<TextProvider className=' font-semibold mt-1'>REMOVE ACTIVITY</TextProvider>
+					</div>
+				}
+				loading={isPending}
+				isOpen={deleteModal}
+				handleConfirm={handleDeleteActivity}
+				handleClose={() => setDeleteModal(false)}>
+				<TextProvider>Are you sure want to remove this activity?</TextProvider>
+			</ModalConfirmation>
+		</>
 	);
 };
