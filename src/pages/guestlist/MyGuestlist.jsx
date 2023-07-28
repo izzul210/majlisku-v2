@@ -25,7 +25,6 @@ import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider'
 import { ImportIcon, PlusIcon } from '../../components/icons/generalIcons';
 import { ThreeDotsIcon, DownloadPDFIcon } from '../../components/icons/actionIcons';
 import FloatingAdd from '../../components/atom/buttons/FloatingAdd';
-import GuestTable from '../../components/table/GuestTable';
 import InputFieldProvider from '../../components/atom/InputField/InputFieldProvider';
 import ModalProvider2 from '../../components/atom/ModalProvider/ModalProvider2';
 import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirmation';
@@ -277,15 +276,6 @@ const MyGuestlist = () => {
 									openBulkEditModal={openBulkEditModal}
 									confirmGuestBulkDeleteModal={confirmGuestBulkDeleteModal}
 								/>
-								// <GuestTable
-								// 	rows={filteredGuestlist}
-								// 	openGuestModal={openGuestModal}
-								// 	selected={guestlistSelected}
-								// 	setSelected={setGuestlistSelected}
-								// 	handleSelectAllClick={handleSelectAllClick}
-								// 	openBulkEditModal={openBulkEditModal}
-								// 	confirmGuestBulkDeleteModal={confirmGuestBulkDeleteModal}
-								// />
 							)}
 						</>
 					)}

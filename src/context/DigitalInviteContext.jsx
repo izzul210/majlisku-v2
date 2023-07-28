@@ -56,6 +56,8 @@ const rsvpDetails = {
 		qrCodeUrl: null,
 	},
 	multiple_time_slot: [],
+	delivery_address: '',
+	thank_you_text: '',
 	//file
 	rsvp_header_image_file: null,
 	qrCode_image_file: null,
@@ -74,6 +76,8 @@ export const rsvpDetailsReducer = (state, action) => {
 		case 'SET_EVENT_DETAILS':
 			return {
 				...action.payload,
+				delivery_address: '',
+				thank_you_text: '',
 				enable_multiple_slot: false,
 				rsvp_header_image_file: null,
 				qrCode_image_file: null,
@@ -196,6 +200,21 @@ export const rsvpDetailsReducer = (state, action) => {
 				...state,
 				money_gift_details: action.payload,
 			};
+		case 'SET_MONEY_GIFT_NAME':
+			return {
+				...state,
+				money_gift_details: { ...state.money_gift_details, name: action.payload },
+			};
+		case 'SET_MONEY_GIFT_BANK_NAME':
+			return {
+				...state,
+				money_gift_details: { ...state.money_gift_details, bankName: action.payload },
+			};
+		case 'SET_MONEY_GIFT_ACC_NUMBER':
+			return {
+				...state,
+				money_gift_details: { ...state.money_gift_details, accNum: action.payload },
+			};
 		case 'SET_RSVP_HEADER_IMAGE_FILE':
 			return {
 				...state,
@@ -205,6 +224,16 @@ export const rsvpDetailsReducer = (state, action) => {
 			return {
 				...state,
 				qrCode_image_file: action.payload,
+			};
+		case 'SET_DELIVERY_ADDRESS':
+			return {
+				...state,
+				delivery_address: action.payload,
+			};
+		case 'SET_THANK_YOU_GIFT_TEXT':
+			return {
+				...state,
+				thank_you_text: action.payload,
 			};
 		case 'ENABLE_BAHASA':
 			return {

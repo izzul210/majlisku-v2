@@ -16,6 +16,7 @@ import InputField from '../../components/atom/InputField/InputField';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 import ModalProvider2 from '../../components/atom/ModalProvider/ModalProvider2';
 import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirmation';
+import ImageUpload from '../../components/atom/ImageUpload/ImageUpload';
 //Icons import
 import { InfoIcon } from '../../components/icons/generalIcons';
 import { DeleteIcon, PlusIcon } from '../../components/icons/actionIcons';
@@ -51,6 +52,8 @@ function Setting() {
 			<GuestPax />
 			<ContactInformation />
 			<Tentative />
+			<GiftRegistry />
+			<MoneyGift />
 		</div>
 	);
 }
@@ -70,9 +73,12 @@ const SubDescriptionText = ({ children }) => (
 );
 
 const InputTitleText = ({ children }) => (
-	<TextProvider className='uppercase font-semibold text-sm mb-2'>{children}</TextProvider>
+	<TextProvider className='uppercase font-semibold text-sm mb-0'>{children}</TextProvider>
 );
 
+{
+	/******* Event Details ******/
+}
 const EventDetails = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
@@ -127,6 +133,9 @@ Sila rsvp sebelum 27 may'
 	);
 };
 
+{
+	/******* Date & Time ******/
+}
 const DateTime = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
@@ -198,6 +207,9 @@ const DateTime = () => {
 	);
 };
 
+{
+	/******* Location & Map ******/
+}
 const LocationMap = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
@@ -256,6 +268,9 @@ const LocationMap = () => {
 	);
 };
 
+{
+	/******* Guest & Pax ******/
+}
 const GuestPax = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
@@ -302,6 +317,9 @@ const GuestPax = () => {
 	);
 };
 
+{
+	/******* Contact Information ******/
+}
 const ContactInformation = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
@@ -350,6 +368,9 @@ const ContactInformation = () => {
 	);
 };
 
+{
+	/******* Contact Information ******/
+}
 const ContactInfo = ({ index, removeFunc, value, dispatchInvite }) => {
 	const handleNameOnChange = (index) => {
 		return (event) =>
@@ -393,8 +414,11 @@ const ContactInfo = ({ index, removeFunc, value, dispatchInvite }) => {
 	);
 };
 
+{
+	/******* Tentative ******/
+}
 const Tentative = () => {
-	const { inviteState, state } = useDigitalInviteContext();
+	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
 	const { enable_itinerary, enable_bahasa } = inviteState;
 
@@ -436,7 +460,6 @@ const TentativeContainer = () => {
 	};
 
 	const handleEditActivityOpen = () => {
-		console.log('activityDetail', activityDetail);
 		setOpenEditModal(true);
 	};
 
@@ -491,7 +514,7 @@ const TentativeContainer = () => {
 							</div>
 						);
 					})}
-					<div className='flex justify-center'>
+					<div className='flex justify-start'>
 						<ButtonProvider
 							className='mt-3'
 							width='205px'
@@ -693,5 +716,128 @@ const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
 				<TextProvider>Are you sure want to remove this activity?</TextProvider>
 			</ModalConfirmation>
 		</>
+	);
+};
+
+{
+	/******* Gift Registry ******/
+}
+const GiftRegistry = () => {
+	const { inviteState } = useDigitalInviteContext();
+	const { dispatchInvite } = useDigitalInviteDispatchContext();
+	const { enable_gift_registry, delivery_address, thank_you_text, enable_bahasa } = inviteState;
+
+	const handleOnChangeAddress = (e) => {
+		dispatchInvite({
+			type: 'SET_DELIVERY_ADDRESS',
+			payload: e.target.value,
+		});
+	};
+	const handleOnChangeText = (e) => {
+		dispatchInvite({
+			type: 'SET_THANK_YOU_GIFT_TEXT',
+			payload: e.target.value,
+		});
+	};
+
+	return (
+		<SettingCard stepNum='8' cardTitle={enable_bahasa ? 'Registri Hadiah' : 'Gift Registry'}>
+			<div className='py-4 px-6 text-start flex flex-col gap-6'>
+				<div className='flex justify-between'>
+					<div className='flex flex-col gap-2'>
+						<SubTitleText>Enable Gift Registry</SubTitleText>
+						<SubDescriptionText>Guest can bring as many plus ones as they want</SubDescriptionText>
+					</div>
+					<ToggleSwitch
+						value={enable_gift_registry}
+						dispatch={dispatchInvite}
+						type='ENABLE_GIFT_REGISTRY'
+					/>
+				</div>
+				<div className='flex flex-col gap-3' style={{ opacity: enable_gift_registry ? 1 : 0.5 }}>
+					<TextAreaProvider
+						disabled={!enable_gift_registry}
+						title='DELIVERY ADDRESS'
+						placeholder='23, Jalan Raja Chulan, 50200 Kuala Lumpur, Malaysia'
+						value={delivery_address}
+						className='text-left'
+						minHeight='100px'
+						onChange={handleOnChangeAddress}
+					/>
+					<TextAreaProvider
+						disabled={!enable_gift_registry}
+						title='THANK YOU TEXT'
+						placeholder='Thank you for the lovely gift! The bride and groom will definitely love it. Best regards, [Your name]'
+						value={thank_you_text}
+						className='text-left'
+						minHeight='100px'
+						onChange={handleOnChangeText}
+					/>
+				</div>
+			</div>
+		</SettingCard>
+	);
+};
+
+{
+	/******* Money Gift ******/
+}
+
+const MoneyGift = () => {
+	const { inviteState } = useDigitalInviteContext();
+	const { dispatchInvite } = useDigitalInviteDispatchContext();
+	const { money_gift_details, enable_money_gift, enable_bahasa } = inviteState;
+
+	const handleOnChange = (type) => {
+		return (event) => dispatchInvite({ type, payload: event.target.value });
+	};
+
+	return (
+		<SettingCard stepNum='10' cardTitle={enable_bahasa ? 'Salam Kaut Digital' : 'Money Gift'}>
+			<div className='py-4 px-6 text-start flex flex-col gap-6'>
+				<div className='flex justify-between'>
+					<div className='flex flex-col gap-2'>
+						<SubTitleText>Enable Money Gift</SubTitleText>
+						<SubDescriptionText>Display money gift details in digital invite</SubDescriptionText>
+					</div>
+					<ToggleSwitch
+						value={enable_money_gift}
+						dispatch={dispatchInvite}
+						type='ENABLE_MONEY_GIFT'
+					/>
+				</div>
+				<div className='flex flex-col gap-4' style={{ opacity: enable_money_gift ? 1 : 0.7 }}>
+					<InputFieldProvider
+						disabled={!enable_money_gift}
+						textSize='text-sm'
+						title={enable_bahasa ? 'Nama' : 'Name'}
+						placeholder='Muhamad Izzul Syahmi bin Mohd Rizal'
+						error={null}
+						value={money_gift_details?.name}
+						onChange={handleOnChange('SET_MONEY_GIFT_NAME')}
+					/>
+					<InputFieldProvider
+						disabled={!enable_money_gift}
+						textSize='text-sm'
+						title={enable_bahasa ? 'Nama Bank' : 'Bank'}
+						placeholder='Maybank'
+						error={null}
+						value={money_gift_details?.bankName}
+						onChange={handleOnChange('SET_MONEY_GIFT_BANK_NAME')}
+					/>
+					<InputFieldProvider
+						disabled={!enable_money_gift}
+						textSize='text-sm'
+						title={enable_bahasa ? 'No Akaun' : 'Account Number'}
+						placeholder='1234567880'
+						error={null}
+						value={money_gift_details?.accNum}
+						onChange={handleOnChange('SET_MONEY_GIFT_ACC_NUMBER')}
+					/>
+					<InputTitleText>Qr Code Screenshot</InputTitleText>
+					<ImageUpload defaultImgUrl={money_gift_details?.qrCodeUrl} />
+				</div>
+			</div>
+		</SettingCard>
 	);
 };
