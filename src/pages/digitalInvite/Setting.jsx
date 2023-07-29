@@ -82,7 +82,14 @@ const InputTitleText = ({ children }) => (
 const EventDetails = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { enable_bahasa, event_title_1, event_title_2, description, host_details } = inviteState;
+	const {
+		enable_bahasa,
+		event_title_1,
+		event_title_2,
+		description,
+		host_details,
+		rsvp_header_image,
+	} = inviteState;
 
 	const handleOnChange = (type) => {
 		return (event) => dispatchInvite({ type, payload: event.target.value });
@@ -127,6 +134,14 @@ Sila rsvp sebelum 27 may'
 					className='text-left'
 					minHeight='160px'
 					onChange={handleOnChange('SET_DESCRIPTION')}
+				/>
+				<InputTitleText>{enable_bahasa ? 'Image Header' : 'Gambar'}</InputTitleText>
+				<ImageUpload
+					defaultImgUrl={rsvp_header_image}
+					dispatch={dispatchInvite}
+					type='SET_RSVP_HEADER_IMAGE_FILE'
+					aspectRatio={0.88}
+					key='RSVP_HEADER_IMAGE_FILE'
 				/>
 			</div>
 		</SettingCard>
@@ -835,7 +850,12 @@ const MoneyGift = () => {
 						onChange={handleOnChange('SET_MONEY_GIFT_ACC_NUMBER')}
 					/>
 					<InputTitleText>Qr Code Screenshot</InputTitleText>
-					<ImageUpload defaultImgUrl={money_gift_details?.qrCodeUrl} />
+					<ImageUpload
+						defaultImgUrl={money_gift_details?.qrCodeUrl}
+						dispatch={dispatchInvite}
+						type='SET_QR_CODE_IMAGE_FILE'
+						key='QR_CODE_IMAGE_FILE'
+					/>
 				</div>
 			</div>
 		</SettingCard>

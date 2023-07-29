@@ -489,25 +489,25 @@ export const ImageUploadIcon = ({ width = '20', height = '20', fill = '#1D4648' 
 				id='Vector'
 				d='M15.8333 2.5H4.16667C3.24619 2.5 2.5 3.24619 2.5 4.16667V15.8333C2.5 16.7538 3.24619 17.5 4.16667 17.5H15.8333C16.7538 17.5 17.5 16.7538 17.5 15.8333V4.16667C17.5 3.24619 16.7538 2.5 15.8333 2.5Z'
 				stroke={fill}
-				stroke-width='1.5'
-				stroke-linecap='square'
-				stroke-linejoin='round'
+				strokeWidth='1.5'
+				strokeLinecap='square'
+				strokeLinejoin='round'
 			/>
 			<path
 				id='Vector_2'
 				d='M7.08337 8.33301C7.77373 8.33301 8.33337 7.77336 8.33337 7.08301C8.33337 6.39265 7.77373 5.83301 7.08337 5.83301C6.39302 5.83301 5.83337 6.39265 5.83337 7.08301C5.83337 7.77336 6.39302 8.33301 7.08337 8.33301Z'
 				stroke={fill}
-				stroke-width='1.5'
-				stroke-linecap='square'
-				stroke-linejoin='round'
+				strokeWidth='1.5'
+				strokeLinecap='square'
+				strokeLinejoin='round'
 			/>
 			<path
 				id='Vector_3'
 				d='M17.5 12.4997L13.3333 8.33301L4.16663 17.4997'
 				stroke={fill}
-				stroke-width='1.5'
-				stroke-linecap='square'
-				stroke-linejoin='round'
+				strokeWidth='1.5'
+				strokeLinecap='square'
+				strokeLinejoin='round'
 			/>
 		</g>
 	</svg>

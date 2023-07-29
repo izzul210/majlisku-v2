@@ -45,7 +45,7 @@ function App() {
 								/>
 								<Route path='*' element={<Navigate to='/login' />} />
 								<Route element={<DigitalInviteContextProvider />}>
-									<Route exact path='/digitalinvite' element={<DigitalInvite />} />
+									<Route exact path='/digitalinvite/*' element={<DigitalInvite />} />
 								</Route>
 
 								<Route element={<GuestlistProvider />}>

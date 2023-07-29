@@ -12,7 +12,12 @@ import ButtonProvider from '../ButtonProvider/ButtonProvider';
 import { useDebounceEffect } from './useDebounceEffect';
 import { canvasPreview } from './canvasPreview';
 
-function ImageUpload({ defaultImgUrl = null, dispatch = () => {}, type = 'SET_IMAGE' }) {
+function ImageUpload({
+	defaultImgUrl = null,
+	dispatch = () => {},
+	type = 'SET_IMAGE',
+	aspectRatio = 1,
+}) {
 	const [file, setFile] = useState(null);
 	const [originalImgUrl, setOriginalImgUrl] = useState(defaultImgUrl);
 	const [imageUrl, setImageUrl] = useState(null);
@@ -20,7 +25,7 @@ function ImageUpload({ defaultImgUrl = null, dispatch = () => {}, type = 'SET_IM
 	const [completedCrop, setCompletedCrop] = useState(null);
 	const [croppedImageUrl, setCroppedImageUrl] = useState(null);
 	const previewCanvasRef = useRef(null);
-	const [aspect, setAspect] = useState(1);
+	const [aspect, setAspect] = useState(aspectRatio);
 	const [scale, setScale] = useState(1);
 	const [rotate, setRotate] = useState(0);
 	/////
@@ -39,7 +44,8 @@ function ImageUpload({ defaultImgUrl = null, dispatch = () => {}, type = 'SET_IM
 		setImageUrl(defaultImgUrl);
 		setCroppedImageUrl(defaultImgUrl);
 		setImage(defaultImgUrl);
-	}, [defaultImgUrl]);
+		setAspect(aspectRatio);
+	}, [defaultImgUrl, aspectRatio]);
 
 	function formatBytes(bytes, decimals) {
 		if (bytes == 0) return '0 Bytes';
@@ -80,14 +86,12 @@ function ImageUpload({ defaultImgUrl = null, dispatch = () => {}, type = 'SET_IM
 		}
 
 		// Reset the value of the input element to clear the selected file
-		event.target.value = null;
+		e.target.value = null;
 	};
 
 	const resetImage = () => {
 		setFile(null);
 		setImageUrl(null);
-
-		console.log('originalImgUrl', originalImgUrl);
 
 		if (originalImgUrl) {
 			setCroppedImageUrl(originalImgUrl);
@@ -99,7 +103,7 @@ function ImageUpload({ defaultImgUrl = null, dispatch = () => {}, type = 'SET_IM
 	};
 
 	const initCompleteCrop = (width = 200, height = 200) => {
-		setAspect(1);
+		setAspect(aspectRatio);
 		const newCrop = centerAspectCrop(width, height, 1);
 		setCrop(newCrop);
 
@@ -137,7 +141,7 @@ function ImageUpload({ defaultImgUrl = null, dispatch = () => {}, type = 'SET_IM
 			// console.log('blobUrlRef.current', blobUrlRef.current);
 			setCroppedImageUrl(blobUrlRef.current);
 			setOriginalImgUrl(URL.createObjectURL(file));
-			dispatch(type, blobUrlRef.current);
+			dispatch({ type: type, payload: blob });
 		});
 	}
 

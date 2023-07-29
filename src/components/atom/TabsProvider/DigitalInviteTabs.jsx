@@ -55,18 +55,27 @@ export default function DigitalInviteTabs() {
 	let navigate = useNavigate();
 
 	const phoneSize = useMediaQuery('(max-width:600px)');
-
 	useEffect(() => {
-		console.log('location', location.pathname);
+		if (location.pathname === '/digitalinvite') {
+			setValue('setting');
+		} else if (location.pathname === '/digitalinvite/template') {
+			setValue('template');
+		} else if (location.pathname === '/digitalinvite/content') {
+			setValue('content');
+		} else if (location.pathname === '/digitalinvite/gift') {
+			setValue('gift');
+		} else if (location.pathname === '/digitalinvite/share') {
+			setValue('share');
+		}
 	}, [location]);
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
-		// if (newValue === 'openInvites') {
-		// 	navigate('open');
-		// } else {
-		// 	navigate('');
-		// }
+		if (newValue === 'setting') {
+			navigate('');
+		} else {
+			navigate(newValue);
+		}
 	};
 
 	return (

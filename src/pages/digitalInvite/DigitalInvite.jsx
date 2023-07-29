@@ -6,8 +6,10 @@ import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
 } from '../../context/DigitalInviteContext';
+import { useRsvp } from '../../hooks/useRsvp';
 //Page import
 import Setting from './Setting';
+import Content from './Content';
 //Component import
 import DigitalInviteTabs from '../../components/atom/TabsProvider/DigitalInviteTabs';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
@@ -22,6 +24,13 @@ import { BackIcon, PreviewIcon } from '../../components/icons/actionIcons';
 const DigitalInviteTopBar = () => {
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const { inviteState, state } = useDigitalInviteContext();
+	const { updateUserRsvp, isPending } = useRsvp();
+
+	const handleSavePublish = () => {
+		updateUserRsvp(inviteState, () => {
+			console.log('Done!');
+		});
+	};
 
 	return (
 		<AppBar
@@ -65,11 +74,12 @@ const DigitalInviteTopBar = () => {
 							{!phoneSize && <TextProvider className='uppercase'>Preview</TextProvider>}
 						</ButtonProvider>
 						<ButtonProvider
+							disabled={isPending}
 							padding='12px 20px'
 							type='primary'
-							onClick={() => console.log('inviteState', inviteState)}>
+							onClick={handleSavePublish}>
 							<TextProvider color='text-white' className='uppercase'>
-								Save & Publish
+								{isPending ? 'Saving...' : 'Save & Publish'}
 							</TextProvider>
 						</ButtonProvider>
 					</div>
@@ -89,7 +99,10 @@ function DigitalInvite() {
 	return (
 		<div className='digital-invite-container'>
 			<DigitalInviteTopBar />
-			<Setting />
+			<Routes>
+				<Route exact path='/' element={<Setting />} />
+				<Route exact path='/content' element={<Content />} />
+			</Routes>
 		</div>
 	);
 }
