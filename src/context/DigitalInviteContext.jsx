@@ -32,9 +32,9 @@ const rsvpDetails = {
 	event_title_1: '',
 	event_title_2: '',
 	italic_title: '',
-	greeting_1: '',
-	greeting_2: '',
-	greeting_title: '',
+	greeting_1: 'Dengan segala hormatnya kami mempersilakan',
+	greeting_2: 'ke majlis resepsi untuk meraikan majlis',
+	greeting_title: `Ybhg Tun/ Toh Puan/ Tan Sri/ Puan Sri/ Dato’s Sri/ Datin Sri/ Dato’/ Datin/ Tuan/ Puan`,
 	host_details: '',
 	description: '',
 	event_date: '',
@@ -75,12 +75,8 @@ export const rsvpDetailsReducer = (state, action) => {
 	switch (action.type) {
 		case 'SET_EVENT_DETAILS':
 			return {
+				...rsvpDetails,
 				...action.payload,
-				delivery_address: '',
-				thank_you_text: '',
-				enable_multiple_slot: false,
-				rsvp_header_image_file: null,
-				qrCode_image_file: null,
 			};
 
 		case 'SET_EVENT_TITLE_1':

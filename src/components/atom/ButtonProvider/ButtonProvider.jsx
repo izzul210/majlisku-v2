@@ -6,7 +6,7 @@ import './ButtonProvider.scss';
 function ButtonProvider({
 	children,
 	button = false,
-	padding = '13px 8px',
+	padding = '12px 12px',
 	width = '100%',
 	type = 'default',
 	height = 'auto',

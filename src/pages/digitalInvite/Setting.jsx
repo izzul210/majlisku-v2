@@ -89,6 +89,7 @@ const EventDetails = () => {
 		description,
 		host_details,
 		rsvp_header_image,
+		rsvp_header_image_file,
 	} = inviteState;
 
 	const handleOnChange = (type) => {
@@ -137,7 +138,9 @@ Sila rsvp sebelum 27 may'
 				/>
 				<InputTitleText>{enable_bahasa ? 'Image Header' : 'Gambar'}</InputTitleText>
 				<ImageUpload
-					defaultImgUrl={rsvp_header_image}
+					defaultImgUrl={
+						rsvp_header_image_file ? URL.createObjectURL(rsvp_header_image_file) : rsvp_header_image
+					}
 					dispatch={dispatchInvite}
 					type='SET_RSVP_HEADER_IMAGE_FILE'
 					aspectRatio={0.88}

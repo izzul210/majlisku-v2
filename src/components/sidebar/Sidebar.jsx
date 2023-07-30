@@ -471,6 +471,7 @@ function Sidebar(props) {
 				'edit',
 				'openinvite',
 				'digitalinvite',
+				'invite-preview',
 			].includes(activeTab) && !['add', 'detail', 'edit', 'openinvite'].includes(subTab);
 
 		return isTabValid;

@@ -2,6 +2,7 @@
 
 import React from 'react';
 //Components import
+import EditContentField from '../../../components/atom/InputField/EditContentField';
 import InviteTextProvider from '../../../components/invite/InviteTextProvider';
 import InviteLineLogo from '../../../components/invite/InviteLineLogo';
 import { MajliskuIconV3, GiftIcon, MoneyGift } from '../../../components/icons/inviteIcons';
@@ -48,14 +49,15 @@ const ButtonProvider = ({ type = null, children }) => {
 	);
 };
 
-export const GreetingScreenDefault = ({
+export const EditGreetingScreen = ({
+	dispatchInvite,
 	enable_bahasa = false,
 	host_details = `Simpulan bin Simpulan\n &\n Simpulan binti Simpulan`,
 	guest = null,
 	event_title_2 = 'Pengantin Lelaki bin Simpulan\n&Pengantin Wanita binti Simpulan',
 	greeting_title = `Ybhg Tun/ Toh Puan/ Tan Sri/ Puan Sri/ Dato’s Sri/ Datin Sri/ Dato’/ Datin/ Tuan/ Puan`,
-	greet_content_1 = 'Dengan segala hormatnya kami\n mempersilakan',
-	greet_content_2 = 'ke majlis resepsi untuk meraikan majlis',
+	greeting_1 = 'Dengan segala hormatnya kami\n mempersilakan',
+	greeting_2 = 'ke majlis resepsi untuk meraikan majlis',
 	enable_gift_registry = false,
 	enable_money_gift = false,
 	onClickRSVP = () => {},
@@ -75,17 +77,93 @@ export const GreetingScreenDefault = ({
 				className='w-full flex flex-col gap-4 items-center px-5 sm:p-0'
 				style={{ maxWidth: '400px' }}>
 				<InviteLineLogo height='2px' />
-				<div className='pb-4 border-b-2 w-full border-dotted'>
-					<HostsText>{renderHosts}</HostsText>
+				<div className='pb-2 border-b-2 w-full border-dotted'>
+					<EditContentField
+						fontStyle={{
+							fontSize: '16px',
+							fontFamily: 'EB Garamond',
+							fontWeight: '500',
+							textTransform: 'uppercase',
+						}}
+						placeholder='Simpulan bin Simpulan
+&
+Simpulan binti Simpulan'
+						className='edit-text-center'
+						name='host_details'
+						onChange={(e) => dispatchInvite({ type: 'SET_HOST_DETAILS', payload: e.target.value })}
+						value={host_details}
+						multiline
+						fullWidth
+					/>
 				</div>
-				<div className='flex flex-col gap-4'>
-					<GreetingText>{greet_content_1}</GreetingText>
-					<GreetingTitle>{greeting_title}</GreetingTitle>
-					<GreetingText>{greet_content_2}</GreetingText>
+				<div className='flex flex-col gap-0 w-full'>
+					<EditContentField
+						fontStyle={{
+							fontSize: '16px',
+							fontFamily: 'EB Garamond',
+							fontWeight: '400',
+							textTransform: 'normal',
+						}}
+						placeholder='Dengan segala hormatnya kami mempersilakan'
+						className='edit-text-center'
+						name='greeting_1'
+						onChange={(e) => dispatchInvite({ type: 'SET_GREETING_1', payload: e.target.value })}
+						value={greeting_1}
+						multiline
+						fullWidth
+					/>
+					<EditContentField
+						fontStyle={{
+							fontSize: '16px',
+							fontFamily: 'Playfair Display',
+							fontWeight: '600',
+							textTransform: 'normal',
+						}}
+						placeholder='ke majlis resepsi untuk meraikan majlis'
+						className='edit-text-center'
+						name='greeting_title'
+						onChange={(e) =>
+							dispatchInvite({ type: 'SET_GREETING_TITLE', payload: e.target.value })
+						}
+						value={greeting_title}
+						multiline
+						fullWidth
+					/>
+					<EditContentField
+						fontStyle={{
+							fontSize: '16px',
+							fontFamily: 'EB Garamond',
+							fontWeight: '400',
+							textTransform: 'normal',
+						}}
+						placeholder='ke majlis resepsi untuk meraikan majlis'
+						className='edit-text-center'
+						name='greeting_2'
+						onChange={(e) => dispatchInvite({ type: 'SET_GREETING_2', payload: e.target.value })}
+						value={greeting_2}
+						multiline
+						fullWidth
+					/>
 				</div>
 				<div className='flex w-full items-center flex-col gap-4'>
 					<MajliskuIconV3 />
-					<MainTitle>{renderEventTitle}</MainTitle>
+					<EditContentField
+						fontStyle={{
+							fontSize: '18px',
+							fontFamily: 'EB Garamond',
+							fontWeight: '600',
+							textTransform: 'uppercase',
+						}}
+						placeholder='Izzul Syazwan bin Mohd Rizal
+&
+Nurul Syafiqah binti Othman'
+						className='edit-text-center'
+						name='event_title_2'
+						onChange={(e) => dispatchInvite({ type: 'SET_EVENT_TITLE_2', payload: e.target.value })}
+						value={event_title_2}
+						multiline
+						fullWidth
+					/>
 					<MajliskuIconV3 />
 				</div>
 			</div>

@@ -99,3 +99,13 @@
 		}
 	}
 }
+
+.edit-text-center {
+	textarea,
+	input {
+		letter-spacing: 0.01em;
+		border: none;
+		text-align: center;
+		width: 100%;
+	}
+}

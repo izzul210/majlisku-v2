@@ -1,7 +1,8 @@
 /** @format */
 
 import React from 'react';
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes, Link, Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
@@ -25,6 +26,8 @@ const DigitalInviteTopBar = () => {
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const { inviteState, state } = useDigitalInviteContext();
 	const { updateUserRsvp, isPending } = useRsvp();
+
+	let navigate = useNavigate();
 
 	const handleSavePublish = () => {
 		updateUserRsvp(inviteState, () => {
@@ -69,7 +72,7 @@ const DigitalInviteTopBar = () => {
 					)}
 
 					<div className='flex items-center gap-2'>
-						<ButtonProvider padding='12px 20px'>
+						<ButtonProvider padding='12px 20px' onClick={() => navigate('/invite-preview')}>
 							<PreviewIcon />
 							{!phoneSize && <TextProvider className='uppercase'>Preview</TextProvider>}
 						</ButtonProvider>

@@ -1,0 +1,60 @@
+/** @format */
+
+.itinerary_activity {
+	display: flex;
+	flex-direction: column;
+
+	.activityContent {
+		overflow-y: auto;
+	}
+
+	.no_activity,
+	.yes_activity {
+		display: flex;
+		flex-direction: row-reverse;
+		text-align: start;
+
+		.date {
+			flex: 2;
+			text-align: end;
+		}
+
+		.activity_detail {
+			flex: 5;
+			margin-left: 10px;
+			padding-left: 20px;
+			padding-bottom: 20px;
+			border-left: 2px solid rgba(241, 191, 190, 1);
+			cursor: pointer;
+
+			&::before {
+				content: '';
+				display: block;
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				background-color: #f1bfbe;
+				transform: translateX(-27px);
+			}
+
+			.activity_title {
+				color: rgba(0, 0, 0, 1);
+				transform: translateY(-8px);
+			}
+
+			.activity_description {
+				color: rgba(102, 112, 133, 1);
+				transform: translateY(-8px);
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: pre-wrap;
+			}
+		}
+
+		// &:last-child {
+		// 	.activity_detail {
+		// 		border-left: 2px solid rgba(241, 191, 190, 0);
+		// 	}
+		// }
+	}
+}

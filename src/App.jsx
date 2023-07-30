@@ -20,6 +20,7 @@ const EditGuestPage = lazy(() => import('./pages/guestlist/EditGuestPage'));
 const DigitalInvite = lazy(() => import('./pages/digitalInvite/DigitalInvite'));
 const GuestDetailPage = lazy(() => import('./pages/guestlist/GuestDetailPage'));
 const OpenInviteGuestDetailPage = lazy(() => import('./pages/guestlist/OpenInviteGuestDetailPage'));
+const InvitePreview = lazy(() => import('./pages/digitalInvite/InvitePreview'));
 const Onboarding_1 = lazy(() => import('./pages/onboarding/Onboarding_1'));
 const Onboarding_2 = lazy(() => import('./pages/onboarding/Onboarding_2'));
 const Onboarding_3 = lazy(() => import('./pages/onboarding/Onboarding_3'));
@@ -46,6 +47,7 @@ function App() {
 								<Route path='*' element={<Navigate to='/login' />} />
 								<Route element={<DigitalInviteContextProvider />}>
 									<Route exact path='/digitalinvite/*' element={<DigitalInvite />} />
+									<Route exact path='/invite-preview' element={<InvitePreview />} />
 								</Route>
 
 								<Route element={<GuestlistProvider />}>
