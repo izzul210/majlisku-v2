@@ -21,6 +21,8 @@ const DigitalInvite = lazy(() => import('./pages/digitalInvite/DigitalInvite'));
 const GuestDetailPage = lazy(() => import('./pages/guestlist/GuestDetailPage'));
 const OpenInviteGuestDetailPage = lazy(() => import('./pages/guestlist/OpenInviteGuestDetailPage'));
 const InvitePreview = lazy(() => import('./pages/digitalInvite/InvitePreview'));
+const AddGiftPage = lazy(() => import('./pages/digitalInvite/giftRegistry/AddGiftPage'));
+const EditGiftPage = lazy(() => import('./pages/digitalInvite/giftRegistry/EditGiftPage'));
 const Onboarding_1 = lazy(() => import('./pages/onboarding/Onboarding_1'));
 const Onboarding_2 = lazy(() => import('./pages/onboarding/Onboarding_2'));
 const Onboarding_3 = lazy(() => import('./pages/onboarding/Onboarding_3'));
@@ -48,6 +50,8 @@ function App() {
 								<Route element={<DigitalInviteContextProvider />}>
 									<Route exact path='/digitalinvite/*' element={<DigitalInvite />} />
 									<Route exact path='/invite-preview' element={<InvitePreview />} />
+									<Route exact path='/digitalinvite/gift/add' element={<AddGiftPage />} />
+									<Route exact path='/digitalinvite/gift/edit/:id' element={<EditGiftPage />} />
 								</Route>
 
 								<Route element={<GuestlistProvider />}>

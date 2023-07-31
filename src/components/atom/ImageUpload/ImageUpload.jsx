@@ -17,6 +17,7 @@ function ImageUpload({
 	dispatch = () => {},
 	type = 'SET_IMAGE',
 	aspectRatio = 1,
+	disabled = false,
 }) {
 	const [file, setFile] = useState(null);
 	const [originalImgUrl, setOriginalImgUrl] = useState(defaultImgUrl);
@@ -195,7 +196,9 @@ function ImageUpload({
 						</div>
 					)}
 				</div>
-				<input hidden onChange={handleFileUpload} id='uploadfile' name='file' type='File' />
+				{!disabled ? (
+					<input hidden onChange={handleFileUpload} id='uploadfile' name='file' type='File' />
+				) : null}
 			</Button>
 
 			<ModalProvider2

@@ -440,7 +440,7 @@ function Sidebar(props) {
 	const { logout } = useLogout();
 
 	//Detecting mobile use
-	const phoneSize = useMediaQuery('(max-width:600px)');
+
 	let navigate = useNavigate();
 
 	useEffect(() => {

@@ -231,7 +231,7 @@ export const UserProvider = ({ children }) => {
 		const querySnapshot = await getDocs(collection(projectFirestore, 'users', userId, 'gifts'));
 		querySnapshot.forEach((doc) => {
 			// doc.data() is never undefined for query doc snapshots
-			let gift = doc.data();
+			let gift = { ...doc.data(), id: doc.id };
 			tempGift.push(gift);
 			if (gift.reserved && gift.reserved !== '') {
 				reserved++;

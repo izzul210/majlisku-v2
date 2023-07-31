@@ -17,10 +17,6 @@ import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider'
 import ModalProvider2 from '../../components/atom/ModalProvider/ModalProvider2';
 import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirmation';
 import ImageUpload from '../../components/atom/ImageUpload/ImageUpload';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 //Icons import
 import { InfoIcon } from '../../components/icons/generalIcons';
 import { DeleteIcon, PlusIcon } from '../../components/icons/actionIcons';
@@ -33,34 +29,6 @@ import {
 import { useItinerary } from '../../hooks/useItinerary';
 //Styling import
 import './DigitalInvite.scss';
-
-export function SelectSmall({ setDesign }) {
-	const [age, setAge] = React.useState('');
-
-	const handleChange = (event) => {
-		setAge(event.target.value);
-		setDesign(event.target.value);
-	};
-
-	return (
-		<FormControl sx={{ m: 1, minWidth: 120 }} size='small'>
-			<InputLabel id='demo-select-small-label'>Age</InputLabel>
-			<Select
-				labelId='demo-select-small-label'
-				id='demo-select-small'
-				value={age}
-				label='Age'
-				onChange={handleChange}>
-				<MenuItem value=''>
-					<em>None</em>
-				</MenuItem>
-				<MenuItem value={0}>0</MenuItem>
-				<MenuItem value={1}>1</MenuItem>
-				<MenuItem value={2}>2</MenuItem>
-			</Select>
-		</FormControl>
-	);
-}
 
 function Setting() {
 	const { dispatch } = useDigitalInviteDispatchContext();
@@ -82,7 +50,6 @@ function Setting() {
 					</ButtonProvider>
 				</div>
 			</div>
-			{/* <SelectSmall setDesign={handleSetDesign} /> */}
 			<EventDetails />
 			<DateTime />
 			<LocationMap />
