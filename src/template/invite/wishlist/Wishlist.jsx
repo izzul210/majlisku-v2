@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 //MUI import
 import { Pagination } from '@mui/material';
 import InviteAccordian from '../../../components/invite/InviteAccordian';
+import InviteDetailContainer from '../../../components/invite/InviteDetailContainer';
 import InviteTextProvider from '../../../components/invite/InviteTextProvider';
 import { QuoteIcon } from '../../../components/icons/inviteIcons';
 import './Wishlist.scss';
@@ -77,6 +78,16 @@ export function WishAccordian({ wishlist = [], enable_bahasa }) {
 			<InviteAccordian title={enable_bahasa ? 'Ucapan' : 'Wishes'}>
 				<WishContainer wishlist={wishlist} />
 			</InviteAccordian>
+		</div>
+	);
+}
+
+export function WishDefault({ wishlist = [], enable_bahasa }) {
+	return (
+		<div className='w-full'>
+			<InviteDetailContainer title={enable_bahasa ? 'Ucapan' : 'Wishes'}>
+				<WishContainer wishlist={wishlist} />
+			</InviteDetailContainer>
 		</div>
 	);
 }

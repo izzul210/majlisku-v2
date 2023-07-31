@@ -28,7 +28,7 @@ const GreetingTitle = ({ children }) => {
 
 const MainTitle = ({ children }) => {
 	return (
-		<InviteTextProvider color='#1D4648' className='text-base font-semibold uppercase'>
+		<InviteTextProvider color='#1D4648' className='text-xl font-medium uppercase'>
 			{children}
 		</InviteTextProvider>
 	);

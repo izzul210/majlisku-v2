@@ -2,6 +2,7 @@
 
 import React from 'react';
 import InviteAccordian from '../../../components/invite/InviteAccordian';
+import InviteDetailContainer from '../../../components/invite/InviteDetailContainer';
 import InviteTextProvider from '../../../components/invite/InviteTextProvider';
 import moment from 'moment';
 import './Tentative.scss';
@@ -38,6 +39,16 @@ export function TentativeAccordian({ activities = [], enable_bahasa }) {
 			<InviteAccordian title={enable_bahasa ? 'Tentatif' : ' Tentative'}>
 				<TentativeContainer activities={activities} />
 			</InviteAccordian>
+		</div>
+	);
+}
+
+export function TentativeDefault({ activities = [], enable_bahasa }) {
+	return (
+		<div className='w-full itinerary_activity'>
+			<InviteDetailContainer title={enable_bahasa ? 'Tentatif' : ' Tentative'}>
+				<TentativeContainer activities={activities} />
+			</InviteDetailContainer>
 		</div>
 	);
 }

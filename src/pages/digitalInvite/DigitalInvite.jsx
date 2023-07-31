@@ -11,6 +11,7 @@ import { useRsvp } from '../../hooks/useRsvp';
 //Page import
 import Setting from './Setting';
 import Content from './Content';
+import Template from './Template';
 //Component import
 import DigitalInviteTabs from '../../components/atom/TabsProvider/DigitalInviteTabs';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
@@ -105,6 +106,7 @@ function DigitalInvite() {
 			<Routes>
 				<Route exact path='/' element={<Setting />} />
 				<Route exact path='/content' element={<Content />} />
+				<Route exact path='/template' element={<Template />} />
 			</Routes>
 		</div>
 	);

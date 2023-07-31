@@ -25,7 +25,7 @@ const initialState = {
 	wishlist: [],
 	activities: [],
 	accordiansCollapsed: false,
-	design: 'default',
+	design: 2,
 };
 
 const rsvpDetails = {

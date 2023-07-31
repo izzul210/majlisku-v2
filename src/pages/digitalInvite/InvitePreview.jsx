@@ -9,19 +9,26 @@ import {
 } from '../../context/DigitalInviteContext';
 import { useUserContext } from '../../context/UserContext';
 //Invite components
-import { FirstScreenDefault } from '../../template/invite/firstScreen/FirstScreenDefault';
+import {
+	FirstScreenDefault,
+	FirstScreen2,
+	FirstScreen3,
+} from '../../template/invite/firstScreen/FirstScreenDefault';
 import { GreetingScreenDefault } from '../../template/invite/greetingScreen/GreetingScreenDefault';
-import { EventDetailsDefault } from '../../template/invite/eventDetails/EventDetailsDefault';
-import { TentativeAccordian } from '../../template/invite/tetantive/Tentative';
-import { ContactAccordian } from '../../template/invite/contacts/Contacts';
-import { WishAccordian } from '../../template/invite/wishlist/Wishlist';
-import { CalendarAccordian } from '../../template/invite/calendar/Calendar';
+import {
+	EventDetails2,
+	EventDetailsDefault,
+} from '../../template/invite/eventDetails/EventDetailsDefault';
+import { TentativeAccordian, TentativeDefault } from '../../template/invite/tetantive/Tentative';
+import { ContactAccordian, ContactDefault } from '../../template/invite/contacts/Contacts';
+import { WishAccordian, WishDefault } from '../../template/invite/wishlist/Wishlist';
+import { CalendarAccordian, CalendarDefault } from '../../template/invite/calendar/Calendar';
 //Components import
 import { BackIcon } from '../../components/icons/actionIcons';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 
 const FirstScreen = () => {
-	const { inviteState } = useDigitalInviteContext();
+	const { inviteState, state } = useDigitalInviteContext();
 	const {
 		event_title_1,
 		rsvp_header_image,
@@ -29,18 +36,65 @@ const FirstScreen = () => {
 		event_date,
 		event_location,
 		italic_title,
+		event_time,
 	} = inviteState;
+	const { design } = state;
 
-	return (
-		<FirstScreenDefault
-			event_title_1={event_title_1}
-			rsvp_header_image={rsvp_header_image}
-			rsvp_header_image_file={rsvp_header_image_file}
-			event_date={event_date}
-			event_location={event_location}
-			italic_title={italic_title}
-		/>
-	);
+	useEffect(() => {}, [design]);
+
+	const FirstScreenComponent = () => {
+		return (
+			<FirstScreenDefault
+				event_title_1={event_title_1}
+				rsvp_header_image={rsvp_header_image}
+				rsvp_header_image_file={rsvp_header_image_file}
+				event_date={event_date}
+				event_location={event_location}
+				italic_title={italic_title}
+			/>
+		);
+	};
+
+	const FirstScreen2Component = () => {
+		return (
+			<FirstScreen2
+				event_title_1={event_title_1}
+				rsvp_header_image={rsvp_header_image}
+				rsvp_header_image_file={rsvp_header_image_file}
+				event_date={event_date}
+				event_location={event_location}
+				italic_title={italic_title}
+				event_start={event_time?.start}
+				event_end={event_time?.end}
+			/>
+		);
+	};
+
+	const FirstScreen3Component = () => {
+		return (
+			<FirstScreen3
+				event_title_1={event_title_1}
+				rsvp_header_image={rsvp_header_image}
+				rsvp_header_image_file={rsvp_header_image_file}
+				event_date={event_date}
+				event_location={event_location}
+				italic_title={italic_title}
+				event_start={event_time?.start}
+				event_end={event_time?.end}
+			/>
+		);
+	};
+
+	switch (design) {
+		case 0:
+			return <FirstScreenComponent />;
+		case 1:
+			return <FirstScreen2Component />;
+		case 2:
+			return <FirstScreen3Component />;
+		default:
+			return <FirstScreen3Component />;
+	}
 };
 
 const GreetingScreen = () => {
@@ -71,59 +125,116 @@ const GreetingScreen = () => {
 };
 
 const EventDetails = () => {
-	const { inviteState } = useDigitalInviteContext();
+	const { inviteState, state } = useDigitalInviteContext();
 	const { event_date, event_time, description, location_info } = inviteState;
+	const { design } = state;
 
-	return (
-		<EventDetailsDefault
-			event_date={event_date}
-			event_start={event_time?.start}
-			event_end={event_time?.end}
-			description={description}
-			event_address={location_info.address}
-			waze_link={location_info?.wazeLink}
-			google_link={location_info?.googleLink}
-		/>
-	);
+	useEffect(() => {}, [design]);
+
+	const eventDetailsProps = {
+		event_date,
+		event_start: event_time?.start,
+		event_end: event_time?.end,
+		description,
+		event_address: location_info.address,
+		waze_link: location_info?.wazeLink,
+		google_link: location_info?.googleLink,
+	};
+
+	switch (design) {
+		case 0:
+			return <EventDetailsDefault {...eventDetailsProps} background='white' />;
+		case 1:
+			return <EventDetails2 {...eventDetailsProps} />;
+		default:
+			return <EventDetailsDefault {...eventDetailsProps} />;
+	}
 };
 
 const Tentative = () => {
 	const { state, inviteState } = useDigitalInviteContext();
-	const { enable_bahasa } = inviteState;
-	const { activities } = state;
+	const { enableBahasa } = inviteState;
+	const { activities, design } = state;
 
-	return <TentativeAccordian activities={activities} enable_bahasa={enable_bahasa} />;
+	const renderComponent = () => {
+		switch (design) {
+			case 0:
+				return <TentativeDefault activities={activities} enableBahasa={enableBahasa} />;
+			default:
+				return <TentativeAccordian activities={activities} enableBahasa={enableBahasa} />;
+		}
+	};
+
+	return renderComponent();
 };
 
 const Contacts = () => {
-	const { inviteState } = useDigitalInviteContext();
+	const { inviteState, state } = useDigitalInviteContext();
 	const { contact_info, emable_bahasa } = inviteState;
+	const { design } = state;
 
-	return <ContactAccordian contact_info={contact_info} emable_bahasa={emable_bahasa} />;
+	const renderComponent = () => {
+		switch (design) {
+			case 0:
+				return <ContactDefault contact_info={contact_info} emable_bahasa={emable_bahasa} />;
+			default:
+				return <ContactAccordian contact_info={contact_info} emable_bahasa={emable_bahasa} />;
+		}
+	};
+
+	return renderComponent();
 };
 
 const Wishlist = () => {
-	const { inviteState } = useDigitalInviteContext();
+	const { inviteState, state } = useDigitalInviteContext();
 	const { wishlist } = useUserContext();
 	const { emable_bahasa } = inviteState;
+	const { design } = state;
 
-	return <WishAccordian wishlist={wishlist} emable_bahasa={emable_bahasa} />;
+	const renderComponent = () => {
+		switch (design) {
+			case 0:
+				return <WishDefault wishlist={wishlist} emable_bahasa={emable_bahasa} />;
+			default:
+				return <WishAccordian wishlist={wishlist} emable_bahasa={emable_bahasa} />;
+		}
+	};
+
+	return renderComponent();
 };
 
 const Calendar = () => {
-	const { inviteState } = useDigitalInviteContext();
+	const { inviteState, state } = useDigitalInviteContext();
 	const { enable_bahasa, event_date, location_info, event_time, event_title_1, italic_title } =
 		inviteState;
+	const { design } = state;
 
-	return (
-		<CalendarAccordian
-			enable_bahasa={enable_bahasa}
-			location_info={location_info}
-			event_time={event_time}
-			event_date={event_date}
-			event_title={`${event_title_1} ${italic_title}`}
-		/>
-	);
+	const renderComponent = () => {
+		switch (design) {
+			case 0:
+				return (
+					<CalendarDefault
+						enable_bahasa={enable_bahasa}
+						location_info={location_info}
+						event_time={event_time}
+						event_date={event_date}
+						event_title={`${event_title_1} ${italic_title}`}
+					/>
+				);
+			default:
+				return (
+					<CalendarAccordian
+						enable_bahasa={enable_bahasa}
+						location_info={location_info}
+						event_time={event_time}
+						event_date={event_date}
+						event_title={`${event_title_1} ${italic_title}`}
+					/>
+				);
+		}
+	};
+
+	return renderComponent();
 };
 
 function InvitePreview() {
@@ -153,7 +264,7 @@ function InvitePreview() {
 					<GreetingScreen />
 					<EventDetails />
 					<div
-						className='w-full flex gap-4 flex-col px-4 sm:px-0 py-8'
+						className='w-full flex gap-6 flex-col px-4 sm:px-0 py-12'
 						style={{ maxWidth: '400px' }}>
 						<Tentative />
 						<Contacts />

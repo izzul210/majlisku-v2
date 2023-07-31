@@ -2,6 +2,7 @@
 
 import React from 'react';
 import InviteAccordian from '../../../components/invite/InviteAccordian';
+import InviteDetailContainer from '../../../components/invite/InviteDetailContainer';
 import InviteTextProvider from '../../../components/invite/InviteTextProvider';
 import { WhatsappIcon, PhoneIcon } from '../../../components/icons/inviteIcons';
 import moment from 'moment';
@@ -44,6 +45,16 @@ export function ContactAccordian({ contact_info = [], enable_bahasa }) {
 			<InviteAccordian title={enable_bahasa ? 'Hubungi' : 'Contact'}>
 				<ContactContainer contact_info={contact_info} />
 			</InviteAccordian>
+		</div>
+	);
+}
+
+export function ContactDefault({ contact_info = [], enable_bahasa }) {
+	return (
+		<div className='w-full'>
+			<InviteDetailContainer title={enable_bahasa ? 'Hubungi' : 'Contact'}>
+				<ContactContainer contact_info={contact_info} />
+			</InviteDetailContainer>
 		</div>
 	);
 }
