@@ -30,8 +30,6 @@ export const useGuestlist = () => {
 
 		setIsPending(true);
 
-		console.log(guestlistDetails);
-
 		try {
 			// Update the "groupList" field of the user document with the new group list
 			await addDoc(collection(projectFirestore, 'users', userId, 'guestlist'), guestlistDetails);
@@ -124,8 +122,6 @@ export const useGuestlist = () => {
 
 	const updateGuestDetails = async (updatedGuestDetails, guestId, postRequestFunc) => {
 		setIsPending(true);
-
-		console.log('updatedGuestDetails', updatedGuestDetails);
 
 		try {
 			await updateDoc(

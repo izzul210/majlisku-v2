@@ -19,6 +19,8 @@ import {
 	useDigitalInviteDispatchContext,
 } from '../../context/DigitalInviteContext';
 import { useUserContext } from '../../context/UserContext';
+//Hooks import
+import { useGiftregistry } from '../../hooks/useGiftregistry';
 //Icons impoort
 import { PlusIcon, DeleteIcon } from '../../components/icons/actionIcons';
 import { InfoIcon } from '../../components/icons/inviteIcons';
@@ -121,9 +123,27 @@ const GiftCard = ({ item, onClickGift }) => {
 export const AddGiftContent = ({ handleCancel }) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const { gift_image_file } = state;
+	//States
 	const [name, setName] = useState('');
 	const [category, setCategory] = useState('');
 	const [link, setLink] = useState('');
+	//Hooks
+	const { addGift, isPending } = useGiftregistry();
+
+	const handleAddGift = () => {
+		addGift(
+			{
+				name,
+				category,
+				link,
+			},
+			gift_image_file,
+			() => {
+				handleCancel();
+			}
+		);
+	};
+
 	return (
 		<div>
 			<div className='p-4 sm:p-6 flex flex-col gap-4'>
@@ -163,8 +183,15 @@ export const AddGiftContent = ({ handleCancel }) => {
 					<ButtonProvider onClick={handleCancel} width='auto' type='secondary' padding='12px 20px'>
 						<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
 					</ButtonProvider>
-					<ButtonProvider width='auto' type='primary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm text-white'>SAVE</TextProvider>
+					<ButtonProvider
+						width='auto'
+						type='primary'
+						padding='12px 20px'
+						disabled={isPending}
+						onClick={handleAddGift}>
+						<TextProvider className='text-base font-semibold text-sm text-white'>
+							{isPending ? 'Saving...' : 'SAVE'}
+						</TextProvider>
 					</ButtonProvider>
 				</div>
 			</div>
@@ -172,10 +199,11 @@ export const AddGiftContent = ({ handleCancel }) => {
 	);
 };
 
-export const EditGiftContent = ({ handleCancel, giftId }) => {
+export const EditGiftContent = ({ handleCancel, handlePostDelete, giftId }) => {
 	const [giftState, dispatch] = useReducer(reducer, initialState);
-	const { gift_image_file } = giftState;
+	const { edit_gift_image_file } = giftState;
 	const { giftlist } = useUserContext();
+	const [giftDetails, setGiftDetails] = useState({});
 	const [name, setName] = useState('');
 	const [category, setCategory] = useState('');
 	const [link, setLink] = useState('');
@@ -183,6 +211,8 @@ export const EditGiftContent = ({ handleCancel, giftId }) => {
 	const [reserved, setReserved] = useState(null);
 	//Modal state
 	const [deleteModal, setDeleteModal] = useState(false);
+	//Hooks
+	const { updateGiftDetails, deleteGift, isPending } = useGiftregistry();
 
 	useEffect(() => {
 		initiateInput(giftId);
@@ -193,6 +223,7 @@ export const EditGiftContent = ({ handleCancel, giftId }) => {
 			const tempGiftDetails = giftlist?.find((gift) => gift.id === id);
 
 			if (tempGiftDetails) {
+				setGiftDetails(tempGiftDetails);
 				setName(tempGiftDetails.name);
 				setCategory(tempGiftDetails.category);
 				setLink(tempGiftDetails.link);
@@ -201,6 +232,27 @@ export const EditGiftContent = ({ handleCancel, giftId }) => {
 			}
 		}
 	}
+
+	const handleEditGift = () => {
+		updateGiftDetails(
+			{
+				...giftDetails,
+				name,
+				category,
+				link,
+			},
+			edit_gift_image_file,
+			() => {
+				handleCancel();
+			}
+		);
+	};
+
+	const handleDeleteGift = () => {
+		deleteGift(giftId, () => {
+			handlePostDelete();
+		});
+	};
 
 	return (
 		<div>
@@ -270,8 +322,15 @@ export const EditGiftContent = ({ handleCancel, giftId }) => {
 					<ButtonProvider onClick={handleCancel} width='auto' type='secondary' padding='12px 20px'>
 						<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
 					</ButtonProvider>
-					<ButtonProvider width='auto' type='primary' padding='12px 20px' disabled={reserved}>
-						<TextProvider className='text-base font-semibold text-sm text-white'>SAVE</TextProvider>
+					<ButtonProvider
+						width='auto'
+						type='primary'
+						padding='12px 20px'
+						disabled={reserved || isPending}
+						onClick={handleEditGift}>
+						<TextProvider className='text-base font-semibold text-sm text-white'>
+							{isPending ? 'SAVING...' : 'SAVE'}
+						</TextProvider>
 					</ButtonProvider>
 				</div>
 			</div>
@@ -282,9 +341,9 @@ export const EditGiftContent = ({ handleCancel, giftId }) => {
 						<TextProvider className=' font-semibold mt-1'>REMOVE GIFT</TextProvider>
 					</div>
 				}
-				loading={false}
+				loading={isPending}
 				isOpen={deleteModal}
-				handleConfirm={() => console.log('confirmed!')}
+				handleConfirm={() => handleDeleteGift()}
 				handleClose={() => setDeleteModal(false)}>
 				<TextProvider>
 					Are you sure want to remove <b>{name}</b>?
@@ -302,10 +361,14 @@ const AddGiftModal = ({ isOpen, handleClose }) => {
 	);
 };
 
-const EditGiftModal = ({ isOpen, handleClose, giftId }) => {
+const EditGiftModal = ({ isOpen, handleClose, handlePostDelete, giftId }) => {
 	return (
 		<ModalProvider loading={false} isOpen={isOpen} handleClose={handleClose} title='Edit Gift'>
-			<EditGiftContent handleCancel={handleClose} giftId={giftId} />
+			<EditGiftContent
+				handleCancel={handleClose}
+				handlePostDelete={handlePostDelete}
+				giftId={giftId}
+			/>
 		</ModalProvider>
 	);
 };
@@ -317,7 +380,7 @@ const GiftDetailsModal = ({ isOpen, handleClose, handleEdit, giftId }) => {
 
 	useEffect(() => {
 		initiateInput(giftId);
-	}, [giftId]);
+	}, [giftId, giftlist]);
 
 	function initiateInput(id) {
 		if (id) {
@@ -476,6 +539,10 @@ function GiftRegistry() {
 				handleClose={() => {
 					setEditModal(false);
 					setDetailModal(true);
+				}}
+				handlePostDelete={() => {
+					setEditModal(false);
+					setDetailModal(false);
 				}}
 				giftId={giftId}
 			/>

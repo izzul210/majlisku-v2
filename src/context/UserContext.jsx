@@ -254,7 +254,7 @@ export const UserProvider = ({ children }) => {
 	};
 
 	return (
-		<UserContext.Provider value={{ ...state, getUserData }}>
+		<UserContext.Provider value={{ ...state, getUserData, getGiftReservedSummary }}>
 			<UserDispatchContext.Provider value={dispatch}>{children}</UserDispatchContext.Provider>
 		</UserContext.Provider>
 	);

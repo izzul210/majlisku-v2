@@ -26,7 +26,7 @@ export const EditGroupBulkModal = ({ isOpen, handleClose, guestIds }) => {
 			isOpen={isOpen}
 			handleClose={handleClose}
 			title='Edit Guest Group'>
-			<div className='w-72'>
+			<div className='w-full'>
 				<div className='p-4'>
 					<TextProvider className='font-semibold uppercase'>Select Group</TextProvider>
 					<MultipleSelectChip group={group} setGroup={setGroup} />

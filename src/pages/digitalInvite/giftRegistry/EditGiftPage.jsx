@@ -29,7 +29,13 @@ function EditGiftPage() {
 			</div>
 
 			<div>
-				<EditGiftContent handleCancel={() => navigate(-1)} giftId={id} />
+				<EditGiftContent
+					handleCancel={() => navigate(-1)}
+					giftId={id}
+					handlePostDelete={() => {
+						navigate(-1);
+					}}
+				/>
 			</div>
 		</div>
 	);
