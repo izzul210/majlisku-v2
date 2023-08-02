@@ -68,7 +68,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 function SettingCard(props) {
-	const { stepNum = '0', cardTitle = 'General', children } = props;
+	const { stepNum = null, cardTitle = 'General', children } = props;
 	const { state } = useDigitalInviteContext();
 	const { dispatch } = useDigitalInviteDispatchContext();
 	const { accordiansCollapsed } = state;
@@ -97,9 +97,12 @@ function SettingCard(props) {
 						id='panel1a-header'
 						styles={phoneSize ? { background: 'black' } : null}>
 						<div className='p-4 px-2 flex gap-3 items-center w-full'>
-							<div className='settingCard-number w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center'>
-								<TextProvider className='font-bold text-lg'>{stepNum}</TextProvider>
-							</div>
+							{stepNum && (
+								<div className='settingCard-number w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center'>
+									<TextProvider className='font-bold text-lg'>{stepNum}</TextProvider>
+								</div>
+							)}
+
 							<TextProvider className='settingCard-title uppercase font-bold text-lg'>
 								{cardTitle}
 							</TextProvider>
@@ -117,9 +120,11 @@ function SettingCard(props) {
 						id='panel1a-header'
 						styles={phoneSize ? { background: 'black' } : null}>
 						<div className='py-4 px-2 flex gap-3 items-center'>
-							<div className='settingCard-number w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center'>
-								<TextProvider className='font-bold text-lg'>{stepNum}</TextProvider>
-							</div>
+							{stepNum && (
+								<div className='settingCard-number w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center'>
+									<TextProvider className='font-bold text-lg'>{stepNum}</TextProvider>
+								</div>
+							)}
 							<TextProvider className='settingCard-title uppercase font-bold text-lg'>
 								{cardTitle}
 							</TextProvider>

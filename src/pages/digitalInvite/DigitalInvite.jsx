@@ -13,6 +13,7 @@ import Setting from './Setting';
 import Content from './Content';
 import Template from './Template';
 import GiftRegistry from './GiftRegistry';
+import ShareInvite from './ShareInvite';
 //Component import
 import DigitalInviteTabs from '../../components/atom/TabsProvider/DigitalInviteTabs';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
@@ -109,6 +110,7 @@ function DigitalInvite() {
 				<Route exact path='/content' element={<Content />} />
 				<Route exact path='/template' element={<Template />} />
 				<Route exact path='/gift' element={<GiftRegistry />} />
+				<Route exact path='/share' element={<ShareInvite />} />
 			</Routes>
 		</div>
 	);

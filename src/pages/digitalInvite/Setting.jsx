@@ -18,7 +18,7 @@ import ModalProvider2 from '../../components/atom/ModalProvider/ModalProvider2';
 import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirmation';
 import ImageUpload from '../../components/atom/ImageUpload/ImageUpload';
 //Icons import
-import { InfoIcon } from '../../components/icons/generalIcons';
+import { InfoIcon, EnglishIcon, MalayIcon } from '../../components/icons/generalIcons';
 import { DeleteIcon, PlusIcon } from '../../components/icons/actionIcons';
 //Context import
 import {
@@ -50,6 +50,7 @@ function Setting() {
 					</ButtonProvider>
 				</div>
 			</div>
+			<General />
 			<EventDetails />
 			<DateTime />
 			<LocationMap />
@@ -79,6 +80,77 @@ const SubDescriptionText = ({ children }) => (
 const InputTitleText = ({ children }) => (
 	<TextProvider className='uppercase font-semibold text-sm mb-0'>{children}</TextProvider>
 );
+
+const General = () => {
+	const { inviteState } = useDigitalInviteContext();
+	const { dispatchInvite } = useDigitalInviteDispatchContext();
+	const { enable_bahasa } = inviteState;
+
+	const handleOnChange = (type, payload) => {
+		return dispatchInvite({ type, payload });
+	};
+
+	const LanguageCard = ({
+		Icon = <EnglishIcon />,
+		title,
+		description,
+		active = false,
+		handleOnClick,
+	}) => {
+		return (
+			<div
+				onClick={() => {
+					handleOnClick();
+				}}
+				className='p-4 flex-1 flex gap-2 rounded-lg cursor-pointer'
+				style={
+					active
+						? { backgroundColor: '#F9FAFB', border: '1px solid var(--neutral-dark-grey, #1D4648)' }
+						: { border: ' 1px solid var(--neutral-grey-300, #D0D5DD)', backgroundColor: 'white' }
+				}>
+				<div className='flex h-6 p-1 bg-gray-100 rounded-sm justify-center items-center'>
+					{Icon}
+				</div>
+				<div className='flex flex-col gap-1'>
+					<TextProvider
+						colorStyle='#344054'
+						className='uppercase text-base font-semibold tracking-wide'>
+						{title}
+					</TextProvider>
+					<TextProvider colorStyle='#98A2B3' className='font-semibold text-sm'>
+						{description}
+					</TextProvider>
+				</div>
+			</div>
+		);
+	};
+
+	return (
+		<SettingCard stepNum='1' cardTitle={enable_bahasa ? 'Umum' : 'General'}>
+			<div className='py-4 px-6 text-start flex flex-col gap-4'>
+				<div>
+					<InputTitleText>Select Language / Pilih Bahasa*</InputTitleText>
+					<div className='flex mt-3 gap-2'>
+						<LanguageCard
+							Icon={<EnglishIcon />}
+							title='English'
+							description={`You're cordially invite to...`}
+							active={!enable_bahasa}
+							handleOnClick={() => handleOnChange('ENABLE_BAHASA', false)}
+						/>
+						<LanguageCard
+							Icon={<MalayIcon />}
+							title='Malay'
+							description={`Anda dijemput ke..`}
+							active={enable_bahasa}
+							handleOnClick={() => handleOnChange('ENABLE_BAHASA', true)}
+						/>
+					</div>
+				</div>
+			</div>
+		</SettingCard>
+	);
+};
 
 {
 	/******* Event Details ******/

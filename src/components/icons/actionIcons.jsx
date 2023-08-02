@@ -512,3 +512,34 @@ export const ImageUploadIcon = ({ width = '20', height = '20', fill = '#1D4648' 
 		</g>
 	</svg>
 );
+
+export const CopyIcon = ({ width = '20', height = '20', fill = '#1D4648' }) => (
+	<svg
+		xmlns='http://www.w3.org/2000/svg'
+		width={width}
+		height={height}
+		viewBox='0 0 20 20'
+		fill='none'>
+		<g clip-path='url(#clip0_1698_8268)'>
+			<path
+				d='M16.6667 7.5H9.16667C8.24619 7.5 7.5 8.24619 7.5 9.16667V16.6667C7.5 17.5871 8.24619 18.3333 9.16667 18.3333H16.6667C17.5871 18.3333 18.3333 17.5871 18.3333 16.6667V9.16667C18.3333 8.24619 17.5871 7.5 16.6667 7.5Z'
+				stroke={fill}
+				strokeWidth='1.5'
+				strokeLinecap='round'
+				strokeLinejoin='round'
+			/>
+			<path
+				d='M4.1665 12.5013H3.33317C2.89114 12.5013 2.46722 12.3257 2.15466 12.0131C1.8421 11.7006 1.6665 11.2767 1.6665 10.8346V3.33464C1.6665 2.89261 1.8421 2.46868 2.15466 2.15612C2.46722 1.84356 2.89114 1.66797 3.33317 1.66797H10.8332C11.2752 1.66797 11.6991 1.84356 12.0117 2.15612C12.3242 2.46868 12.4998 2.89261 12.4998 3.33464V4.16797'
+				stroke={fill}
+				strokeWidth='1.5'
+				strokeLinecap='round'
+				strokeLinejoin='round'
+			/>
+		</g>
+		<defs>
+			<clipPath id='clip0_1698_8268'>
+				<rect width='20' height='20' fill='white' />
+			</clipPath>
+		</defs>
+	</svg>
+);

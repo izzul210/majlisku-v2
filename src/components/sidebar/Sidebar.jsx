@@ -130,7 +130,7 @@ const WebSideBar = ({ activeTab = '', handleLogout }) => {
 								Digital Invite
 							</div>
 						</Link>
-						<Link to='/' className={checkForActiveTabIcon('gift', activeTab)}>
+						<Link to='/digitalinvite/gift' className={checkForActiveTabIcon('gift', activeTab)}>
 							{activeTab === 'gift' ? (
 								<GiftRegistryIcon width={ICON_WIDTH_WEB} height={ICON_HEIGHT_WEB} />
 							) : (
@@ -539,6 +539,7 @@ function Sidebar(props) {
 						anchor={'left'}
 						variant='temporary'
 						open={mobileOpen}
+						onClick={handleDrawerToggle}
 						onClose={handleDrawerToggle}
 						ModalProps={{
 							keepMounted: true, // Better open performance on mobile.

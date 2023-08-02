@@ -9,11 +9,8 @@ import { GuestlistProvider, useGuestlistContext } from '../../context/GuestlistC
 import MyGuestlist from './MyGuestlist';
 import OpenInvites from './OpenInvites';
 import TabsProvider from '../../components/atom/TabsProvider/TabsProvider';
-import { getAuth } from 'firebase/auth';
 
 function Guestlist() {
-	console.log(getAuth().currentUser.uid);
-
 	return (
 		<div className='guestlist-container'>
 			<div className='px-4'>
