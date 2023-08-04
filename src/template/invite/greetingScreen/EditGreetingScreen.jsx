@@ -6,6 +6,8 @@ import EditContentField from '../../../components/atom/InputField/EditContentFie
 import InviteTextProvider from '../../../components/invite/InviteTextProvider';
 import InviteLineLogo from '../../../components/invite/InviteLineLogo';
 import { MajliskuIconV3, GiftIcon, MoneyGift } from '../../../components/icons/inviteIcons';
+//Context import
+import { useDigitalInviteInputErrorContext } from '../../../context/DigitalInviteContext';
 //Hooks import
 import { useInviteFunc } from '../../../hooks/useInviteFunc';
 
@@ -65,6 +67,8 @@ export const EditGreetingScreen = ({
 	onClickMoneyGift = () => {},
 }) => {
 	const { useConvertText } = useInviteFunc();
+	const { hostedBy, hostedByError, eventTitle2, eventTitle2Error } =
+		useDigitalInviteInputErrorContext();
 
 	let renderHosts = useConvertText(host_details);
 	let renderEventTitle = useConvertText(event_title_2);
@@ -77,7 +81,7 @@ export const EditGreetingScreen = ({
 				className='w-full flex flex-col gap-4 items-center px-5 sm:p-0'
 				style={{ maxWidth: '400px' }}>
 				<InviteLineLogo height='2px' />
-				<div className='pb-2 border-b-2 w-full border-dotted'>
+				<div ref={hostedBy} className='pb-2 border-b-2 w-full border-dotted'>
 					<EditContentField
 						fontStyle={{
 							fontSize: '16px',
@@ -94,6 +98,7 @@ Simpulan binti Simpulan'
 						value={host_details}
 						multiline
 						fullWidth
+						error={hostedByError ? true : false}
 					/>
 				</div>
 				<div className='flex flex-col gap-0 w-full'>
@@ -145,7 +150,7 @@ Simpulan binti Simpulan'
 						fullWidth
 					/>
 				</div>
-				<div className='flex w-full items-center flex-col gap-4'>
+				<div className='flex w-full items-center flex-col gap-4' ref={eventTitle2}>
 					<MajliskuIconV3 />
 					<EditContentField
 						fontStyle={{
@@ -163,6 +168,7 @@ Nurul Syafiqah binti Othman'
 						value={event_title_2}
 						multiline
 						fullWidth
+						error={eventTitle2Error ? true : false}
 					/>
 					<MajliskuIconV3 />
 				</div>

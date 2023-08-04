@@ -104,8 +104,28 @@ export const useRsvp = () => {
 		}
 	};
 
+	const addInviteId = async (inviteId, postRequestFunc) => {
+		setIsPending(true);
+
+		let updatedData = {
+			inviteId: inviteId.toLowerCase(),
+		};
+
+		try {
+			await updateDoc(doc(projectFirestore, 'users', userId), updatedData);
+			postRequestFunc();
+			getUserData(userId);
+			setIsPending(false);
+		} catch (error) {
+			console.log(error);
+			setError(error);
+			setIsPending(false);
+		}
+	};
+
 	return {
 		updateUserRsvp,
+		addInviteId,
 		isCancelled,
 		error,
 		isPending,

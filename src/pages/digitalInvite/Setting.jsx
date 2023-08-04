@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
 //Components import
 import SettingCard from '../../components/cards/SettingCard';
@@ -24,6 +24,7 @@ import { DeleteIcon, PlusIcon } from '../../components/icons/actionIcons';
 import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
+	useDigitalInviteInputErrorContext,
 } from '../../context/DigitalInviteContext';
 //Hooks import
 import { useItinerary } from '../../hooks/useItinerary';
@@ -79,6 +80,12 @@ const SubDescriptionText = ({ children }) => (
 
 const InputTitleText = ({ children }) => (
 	<TextProvider className='uppercase font-semibold text-sm mb-0'>{children}</TextProvider>
+);
+
+const InputErrorText = ({ children }) => (
+	<TextProvider colorStyle='#D83232' className='text-sm'>
+		{children}
+	</TextProvider>
 );
 
 const General = () => {
@@ -157,6 +164,8 @@ const General = () => {
 }
 const EventDetails = () => {
 	const { inviteState } = useDigitalInviteContext();
+	const { eventTitle1, eventTitle2, hostedBy, eventTitle1Error, eventTitle2Error, hostedByError } =
+		useDigitalInviteInputErrorContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
 	const {
 		enable_bahasa,
@@ -175,31 +184,43 @@ const EventDetails = () => {
 	return (
 		<SettingCard stepNum='2' cardTitle={enable_bahasa ? 'Maklumat Majlis' : 'Event Details'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-4'>
-				<InputFieldProvider
-					title='EVENT TITLE 1*'
-					placeholder='Walimatulurus'
-					error={null}
-					value={event_title_1}
-					textSize='text-sm'
-					onChange={handleOnChange('SET_EVENT_TITLE_1')}
-				/>
-				<TextAreaProvider
-					title='EVENT TITLE 2*'
-					placeholder='Izzul Syazwan & Nurul Syafiqah'
-					value={event_title_2}
-					className='text-center'
-					minHeight='100px'
-					onChange={handleOnChange('SET_EVENT_TITLE_2')}
-				/>
-				<TextAreaProvider
-					title='HOSTED BY*'
-					placeholder='Ir. Ts Mohd Rizal bin Johari
+				<div ref={eventTitle1}>
+					<InputFieldProvider
+						title='EVENT TITLE 1*'
+						placeholder='Walimatulurus'
+						value={event_title_1}
+						textSize='text-sm'
+						onChange={handleOnChange('SET_EVENT_TITLE_1')}
+						error={eventTitle1Error}
+					/>
+					{eventTitle1Error && <InputErrorText>{eventTitle1Error}</InputErrorText>}
+				</div>
+				<div ref={eventTitle2}>
+					<TextAreaProvider
+						title='EVENT TITLE 2*'
+						placeholder='Izzul Syazwan & Nurul Syafiqah'
+						value={event_title_2}
+						className='text-center'
+						minHeight='100px'
+						onChange={handleOnChange('SET_EVENT_TITLE_2')}
+						error={eventTitle2Error}
+					/>
+					{eventTitle2Error && <InputErrorText>{eventTitle2Error}</InputErrorText>}
+				</div>
+				<div ref={hostedBy}>
+					<TextAreaProvider
+						title='HOSTED BY*'
+						placeholder='Ir. Ts Mohd Rizal bin Johari
 &	 Zubaidah Binti Mohd Isa'
-					value={host_details}
-					className='text-center'
-					minHeight='100px'
-					onChange={handleOnChange('SET_HOST_DETAILS')}
-				/>
+						value={host_details}
+						className='text-center'
+						minHeight='100px'
+						onChange={handleOnChange('SET_HOST_DETAILS')}
+						error={hostedByError}
+					/>
+					{hostedByError && <InputErrorText>{hostedByError}</InputErrorText>}
+				</div>
+
 				<TextAreaProvider
 					title='OPTIONAL DESCRIPTION'
 					placeholder='Tema:
@@ -233,12 +254,20 @@ Sila rsvp sebelum 27 may'
 const DateTime = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { enable_bahasa, event_date, event_time, enable_multiple_slot, multiple_time_slot } =
-		inviteState;
+	const { dateTime, dateTimeError } = useDigitalInviteInputErrorContext();
+	const {
+		enable_bahasa,
+		event_date,
+		event_time,
+		enable_multiple_slot,
+		event_time_slot_2,
+		enable_deadline,
+		event_date_deadline,
+	} = inviteState;
 
 	return (
 		<SettingCard stepNum='3' cardTitle={!enable_bahasa ? 'Date & Time' : 'Tarikh & Masa'}>
-			<div className='py-4 px-6 text-start flex flex-col gap-4'>
+			<div className='py-4 px-6 text-start flex flex-col gap-4' ref={dateTime}>
 				<div>
 					<TextProvider className='uppercase font-semibold mb-2 text-sm'>Date</TextProvider>
 					<DatePickerProvider
@@ -264,7 +293,8 @@ const DateTime = () => {
 						/>
 					</div>
 				</div>
-				{/* <div className='flex flex-row justify-between'>
+				{dateTimeError && <InputErrorText>{dateTimeError}</InputErrorText>}
+				<div className='flex flex-row justify-between border-t pt-4'>
 					<div className='flex flex-col gap-2'>
 						<TextProvider className='uppercase text-sm font-semibold' color='text-gray-500'>
 							Multiple Time Slot
@@ -282,20 +312,66 @@ const DateTime = () => {
 					</div>
 				</div>
 				{enable_multiple_slot && (
-					<div>
+					<div className='flex flex-col gap-3'>
 						<div className='flex flex-col gap-1'>
-							<TextProvider className='text-sm font-medium' color='text-gray-500'>
-								SLOT 2
-							</TextProvider>
+							<TextProvider className='uppercase font-semibold text-sm mb-1'>Slot 1</TextProvider>
 							<TimePickerProvider
-							label='Start'
-							value={multiple_time_slot[0]}
-							dispatchInvite={dispatchInvite}
-							type='ADD_TIME_SLOT'
-						/>
+								label='Start'
+								value={event_time?.start}
+								dispatchInvite={dispatchInvite}
+								type='NULL'
+								disabled
+							/>
+						</div>
+						<div className='flex flex-col gap-1'>
+							<TextProvider className='uppercase font-semibold text-sm mb-1'>Slot 2</TextProvider>
+							<TimePickerProvider
+								label='Start'
+								value={event_time_slot_2}
+								dispatchInvite={dispatchInvite}
+								type='SET_EVENT_SLOT_2'
+							/>
 						</div>
 					</div>
-				)} */}
+				)}
+				<div className='pt-4 border-t'>
+					<div
+						className='rounded-xl p-4 '
+						style={{
+							background:
+								'var(--nude-tint-90, linear-gradient(0deg, rgba(255, 255, 255, 0.90) 0%, rgba(255, 255, 255, 0.90) 100%), #F1BFBE)',
+						}}>
+						<div className='flex flex-row justify-between'>
+							<div>
+								<TextProvider className='uppercase text-sm font-semibold' color='text-gray-500'>
+									Deadline
+								</TextProvider>
+								<TextProvider className='font-medium text-xs' color='text-gray-500'>
+									Stop allowing guest to RSVP by the date
+								</TextProvider>
+							</div>
+							<div>
+								<ToggleSwitch
+									value={enable_deadline}
+									dispatch={dispatchInvite}
+									type='ENABLE_DEADLINE'
+								/>
+							</div>
+						</div>
+
+						{enable_deadline && (
+							<div className='w-full mt-2'>
+								<DatePickerProvider
+									defaultValue={moment(event_date)}
+									value={event_date_deadline}
+									dispatchInvite={dispatchInvite}
+									type='SET_EVENT_DATE_DEADLINE'
+									className='w-full'
+								/>
+							</div>
+						)}
+					</div>
+				</div>
 			</div>
 		</SettingCard>
 	);
@@ -307,6 +383,8 @@ const DateTime = () => {
 const LocationMap = () => {
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
+	const { locationInfo, locationInfoError } = useDigitalInviteInputErrorContext();
+
 	const { location_info, event_address, enable_bahasa } = inviteState;
 
 	const handleOnChange = (type) => {
@@ -321,16 +399,21 @@ const LocationMap = () => {
 	return (
 		<SettingCard stepNum='4' cardTitle={!enable_bahasa ? 'Location & Map' : 'Lokasi & Map'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-4'>
-				<TextAreaProvider
-					title='LOCATION *'
-					placeholder='Eg: Changkat Telang,
+				<div ref={locationInfo}>
+					<TextAreaProvider
+						title='LOCATION *'
+						placeholder='Eg: Changkat Telang,
 49, B52, Pekan Batu Lapan Belas,
 43100 Hulu Langat, Selangor.'
-					value={event_address}
-					className='text-left'
-					minHeight='100px'
-					onChange={handleOnChangeLocation}
-				/>
+						value={event_address}
+						className='text-left'
+						minHeight='100px'
+						onChange={handleOnChangeLocation}
+						error={locationInfoError}
+					/>
+					{locationInfoError && <InputErrorText>{locationInfoError}</InputErrorText>}
+				</div>
+
 				<div className='flex flex-col gap-4'>
 					<InputFieldProvider
 						textSize='text-sm'

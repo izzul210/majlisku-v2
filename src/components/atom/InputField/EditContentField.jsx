@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 
-const CssTextField = styled(TextField)(({ fontStyle }) => ({
+const CssTextField = styled(TextField)(({ fontStyle, error }) => ({
 	'& label.Mui-focused': {
 		color: 'green',
 	},
@@ -21,7 +21,7 @@ const CssTextField = styled(TextField)(({ fontStyle }) => ({
 		fontSize: fontStyle.fontSize,
 
 		color: 'black',
-		border: '1px solid rgba(0,0,0,0)',
+		border: error ? '1px solid red' : '1px solid rgba(0,0,0,0)',
 		borderRadius: '0px',
 		transition: 'all 0.3s ease-in-out',
 		'&:hover': {
@@ -50,6 +50,7 @@ const CssTextField = styled(TextField)(({ fontStyle }) => ({
 export default function EditContentField(props) {
 	const {
 		name,
+		error = false,
 		fontStyle = {
 			fontSize: '16px',
 			fontFamily: 'EB Garamond',
@@ -59,5 +60,5 @@ export default function EditContentField(props) {
 		required = false,
 	} = props;
 
-	return <CssTextField fontStyle={fontStyle} {...props} />;
+	return <CssTextField fontStyle={fontStyle} error={error} {...props} />;
 }

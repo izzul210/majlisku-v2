@@ -1,7 +1,7 @@
 /** @format */
 
-import { createContext, useContext, useReducer, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { createContext, useState, useContext, useReducer, useEffect, useRef } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useUserContext } from './UserContext';
 //Firebase import
 import { projectFirestore } from '../firebase/config';
@@ -9,6 +9,7 @@ import { doc, collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 
 export const DigitalInviteContext = createContext(null);
 export const DigitalInviteDispatchContext = createContext(null);
+export const DigitalInviteInputErrorContext = createContext(null);
 
 export function useDigitalInviteContext() {
 	return useContext(DigitalInviteContext);
@@ -16,6 +17,10 @@ export function useDigitalInviteContext() {
 
 export function useDigitalInviteDispatchContext() {
 	return useContext(DigitalInviteDispatchContext);
+}
+
+export function useDigitalInviteInputErrorContext() {
+	return useContext(DigitalInviteInputErrorContext);
 }
 
 const initialState = {
@@ -38,7 +43,9 @@ const rsvpDetails = {
 	host_details: '',
 	description: '',
 	event_date: '',
+	event_date_deadline: '',
 	event_time: { start: null, end: null },
+	event_time_slot_2: null,
 	event_location: '',
 	location_info: {
 		address: '',
@@ -55,7 +62,6 @@ const rsvpDetails = {
 		name: null,
 		qrCodeUrl: null,
 	},
-	multiple_time_slot: [],
 	delivery_address: '',
 	thank_you_text: '',
 	//file
@@ -69,6 +75,7 @@ const rsvpDetails = {
 	enable_money_gift: false,
 	enable_unlimited_pax: false,
 	enable_wishes: false,
+	enable_deadline: false,
 };
 
 export const rsvpDetailsReducer = (state, action) => {
@@ -127,12 +134,30 @@ export const rsvpDetailsReducer = (state, action) => {
 		case 'SET_EVENT_START_TIME':
 			return {
 				...state,
-				event_time: { start: action.payload, end: state.event_time.end },
+				event_time: {
+					start: action.payload,
+					end: state.event_time.end,
+					slot_2: state.event_time.slot_2,
+				},
 			};
 		case 'SET_EVENT_END_TIME':
 			return {
 				...state,
-				event_time: { end: action.payload, start: state.event_time.start },
+				event_time: {
+					end: action.payload,
+					start: state.event_time.start,
+					slot_2: state.event_time.slot_2,
+				},
+			};
+		case 'SET_EVENT_SLOT_2':
+			return {
+				...state,
+				event_time_slot_2: action.payload,
+			};
+		case 'SET_EVENT_DATE_DEADLINE':
+			return {
+				...state,
+				event_date_deadline: action.payload,
 			};
 		case 'SET_EVENT_LOCATION':
 			return {
@@ -266,6 +291,11 @@ export const rsvpDetailsReducer = (state, action) => {
 				...state,
 				enable_multiple_slot: action.payload,
 			};
+		case 'ENABLE_DEADLINE':
+			return {
+				...state,
+				enable_deadline: action.payload,
+			};
 		case 'ADD_TIME_SLOT':
 			return {
 				...state,
@@ -329,12 +359,112 @@ export const DigitalInviteContextProvider = () => {
 	const [state, dispatch] = useReducer(digitalInviteReducer, initialState);
 	const [inviteState, dispatchInvite] = useReducer(rsvpDetailsReducer, rsvpDetails);
 	const { userData, userId, wishlist } = useUserContext();
+	//Refs for Input Error
+	const eventTitle1 = useRef(null);
+	const [eventTitle1Error, setEventTitle1Error] = useState(null);
+	const eventTitle2 = useRef(null);
+	const [eventTitle2Error, setEventTitle2Error] = useState(null);
+	const hostedBy = useRef(null);
+	const [hostedByError, setHostedByError] = useState(null);
+	const dateTime = useRef(null);
+	const [dateTimeError, setDateTimeError] = useState(null);
+	const locationInfo = useRef(null);
+	const [locationInfoError, setLocationInfoError] = useState(null);
+	const italicTitle = useRef(null);
+	const [italicTitleError, setItalicTitleError] = useState(null);
+	const location = useLocation();
 
 	useEffect(() => {
 		if (userData?.eventDetails) {
 			dispatchInvite({ type: 'SET_EVENT_DETAILS', payload: userData.eventDetails });
 		}
 	}, [userData, wishlist]);
+
+	function checkForInputError() {
+		let contentPage = location.pathname === '/digitalinvite/content' ? true : false;
+
+		// event_title_1, event_title_2, host_details, location.address, event_time.start, evet_time.end, event_date
+		setEventTitle1Error(null);
+		setEventTitle2Error(null);
+		setHostedByError(null);
+		setDateTimeError(null);
+		setLocationInfoError(null);
+		setItalicTitleError(null);
+		if (
+			inviteState.event_title_1 === '' ||
+			inviteState.event_title_2 === '' ||
+			inviteState.host_details === '' ||
+			inviteState.location_info.address === '' ||
+			inviteState.event_time.start === '' ||
+			inviteState.event_time.end === '' ||
+			inviteState.event_date === '' ||
+			inviteState.italic_title === ''
+		) {
+			if (inviteState.event_title_1 === '') {
+				setEventTitle1Error('Please enter event title');
+				scrollEventTitle1();
+				return;
+			}
+
+			if (inviteState.italic_title === '' && contentPage) {
+				setItalicTitleError('Please enter event title');
+				scrollItalicTitle();
+				return;
+			}
+
+			if (inviteState.event_title_2 === '') {
+				setEventTitle2Error('Please enter event title');
+				scrollEventTitle2();
+				return;
+			}
+
+			if (inviteState.host_details === '') {
+				setHostedByError('Please enter host details');
+				scrollHostedBy();
+				return;
+			}
+
+			if (
+				(inviteState.event_time?.start === null ||
+					inviteState.event_time?.end === null ||
+					inviteState.event_date === '') &&
+				!contentPage
+			) {
+				setDateTimeError('Please enter event date and time');
+				scrollDateTime();
+				return;
+			}
+
+			if (inviteState.location_info.address === '' && !contentPage) {
+				setLocationInfoError('Please enter location');
+				scrollLocationInfo();
+				return;
+			}
+
+			return;
+		} else {
+			return true;
+		}
+	}
+
+	function scrollEventTitle1() {
+		eventTitle1.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+	}
+	function scrollEventTitle2() {
+		eventTitle2.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+	}
+	function scrollHostedBy() {
+		hostedBy.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+	}
+	function scrollDateTime() {
+		dateTime.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+	}
+	function scrollLocationInfo() {
+		locationInfo.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+	}
+	function scrollItalicTitle() {
+		italicTitle.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+	}
 
 	//Real-time update for Itinerary
 	useEffect(() => {
@@ -358,9 +488,26 @@ export const DigitalInviteContextProvider = () => {
 
 	return (
 		<DigitalInviteContext.Provider value={{ state, inviteState }}>
-			<DigitalInviteDispatchContext.Provider value={{ dispatch, dispatchInvite }}>
-				<Outlet />
-			</DigitalInviteDispatchContext.Provider>
+			<DigitalInviteInputErrorContext.Provider
+				value={{
+					checkForInputError,
+					eventTitle1,
+					eventTitle1Error,
+					eventTitle2,
+					eventTitle2Error,
+					hostedBy,
+					hostedByError,
+					dateTime,
+					dateTimeError,
+					locationInfo,
+					locationInfoError,
+					italicTitle,
+					italicTitleError,
+				}}>
+				<DigitalInviteDispatchContext.Provider value={{ dispatch, dispatchInvite }}>
+					<Outlet />
+				</DigitalInviteDispatchContext.Provider>
+			</DigitalInviteInputErrorContext.Provider>
 		</DigitalInviteContext.Provider>
 	);
 };

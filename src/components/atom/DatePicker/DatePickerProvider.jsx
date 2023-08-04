@@ -8,7 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import InputField from '../InputField/InputField';
 
-export default function DatePickerProvider({ value, dispatchInvite, type = 'SET_DATE' }) {
+export default function DatePickerProvider({ value, dispatchInvite, type = 'SET_DATE', ...props }) {
 	return (
 		<LocalizationProvider dateAdapter={AdapterMoment}>
 			<DatePicker
@@ -17,6 +17,7 @@ export default function DatePickerProvider({ value, dispatchInvite, type = 'SET_
 					dispatchInvite({ type, payload: moment(newValue).format('YYYY-MM-DD') });
 				}}
 				slotProps={{ textField: { variant: 'outlined' } }}
+				{...props}
 			/>
 		</LocalizationProvider>
 	);

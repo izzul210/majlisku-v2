@@ -7,7 +7,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
-export default function ResponsiveTimePickers({ label, value, dispatchInvite, type = 'SET_DATE' }) {
+export default function ResponsiveTimePickers({
+	label,
+	value,
+	dispatchInvite,
+	type = 'SET_DATE',
+	...props
+}) {
 	return (
 		<LocalizationProvider dateAdapter={AdapterMoment}>
 			<TimePicker
@@ -17,6 +23,7 @@ export default function ResponsiveTimePickers({ label, value, dispatchInvite, ty
 					dispatchInvite({ type, payload: moment(newValue).format() });
 				}}
 				renderInput={(params) => <TextField {...params} />}
+				{...props}
 			/>
 		</LocalizationProvider>
 	);

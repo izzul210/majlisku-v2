@@ -14,6 +14,7 @@ function TextAreaProvider({
 	width = '100%',
 	className = '',
 	minHeight = '80px',
+	error = false,
 	...props
 }) {
 	return (
@@ -26,7 +27,7 @@ function TextAreaProvider({
 					placeholder={placeholder}
 					value={value}
 					onChange={onChange}
-					className={`input-field ${className}`}
+					className={`input-field ${className} ${error ? 'error-field' : ''}`}
 					style={flex ? { width: width, flex: 1, minHeight } : { width: width, minHeight }}
 					{...props}
 				/>

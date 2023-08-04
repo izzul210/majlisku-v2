@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
+	useDigitalInviteInputErrorContext,
 } from '../../context/DigitalInviteContext';
 import { useUserContext } from '../../context/UserContext';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
