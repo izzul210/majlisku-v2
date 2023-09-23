@@ -1,14 +1,24 @@
 /** @format */
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { useUserContext } from '../../../context/UserContext';
+import moment from 'moment';
 //Components import
 import TextProvider from '../TextProvider/TextProvider';
 
 export default function BasicSelect({ timeSlot, setTimeSlot }) {
+	//Extract timeslot 1 and 2
+	const { userData } = useUserContext();
+
+	const timeSlot_1 = userData?.eventDetails?.event_time?.start;
+	const timeSlot_2 = userData?.eventDetails?.event_time_slot_2;
+	const formatted_timeSlot_1 = moment(timeSlot_1).format('h:mm A');
+	const formatted_timeSlot_2 = moment(timeSlot_2).format('h:mm A');
+
 	const handleChange = (event) => {
 		setTimeSlot(event.target.value);
 	};
@@ -26,11 +36,11 @@ export default function BasicSelect({ timeSlot, setTimeSlot }) {
 					id='demo-simple-select'
 					value={timeSlot}
 					onChange={handleChange}>
-					<MenuItem value={11}>
-						<TimeSlotCard label={'11:00 AM'} />
+					<MenuItem value={timeSlot_1}>
+						<TimeSlotCard label={formatted_timeSlot_1} />
 					</MenuItem>
-					<MenuItem value={14}>
-						<TimeSlotCard label={'2:00 PM'} />
+					<MenuItem value={timeSlot_2}>
+						<TimeSlotCard label={formatted_timeSlot_2} />
 					</MenuItem>
 				</Select>
 			</FormControl>

@@ -68,7 +68,7 @@ const rsvpDetails = {
 	rsvp_header_image_file: null,
 	qrCode_image_file: null,
 	//enable states
-	enable_multiple_slot: false,
+	enable_multiple_slots: false,
 	enable_bahasa: false,
 	enable_gift_registry: false,
 	enable_itinerary: false,
@@ -137,7 +137,6 @@ export const rsvpDetailsReducer = (state, action) => {
 				event_time: {
 					start: action.payload,
 					end: state.event_time.end,
-					slot_2: state.event_time.slot_2,
 				},
 			};
 		case 'SET_EVENT_END_TIME':
@@ -146,7 +145,6 @@ export const rsvpDetailsReducer = (state, action) => {
 				event_time: {
 					end: action.payload,
 					start: state.event_time.start,
-					slot_2: state.event_time.slot_2,
 				},
 			};
 		case 'SET_EVENT_SLOT_2':
@@ -289,7 +287,7 @@ export const rsvpDetailsReducer = (state, action) => {
 		case 'ENABLE_MULTIPLE_SLOT':
 			return {
 				...state,
-				enable_multiple_slot: action.payload,
+				enable_multiple_slots: action.payload,
 			};
 		case 'ENABLE_DEADLINE':
 			return {
@@ -376,6 +374,7 @@ export const DigitalInviteContextProvider = () => {
 
 	useEffect(() => {
 		if (userData?.eventDetails) {
+			console.log('eventDetails', userData.eventDetails);
 			dispatchInvite({ type: 'SET_EVENT_DETAILS', payload: userData.eventDetails });
 		}
 	}, [userData, wishlist]);

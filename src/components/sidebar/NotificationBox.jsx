@@ -44,6 +44,7 @@ function NotificationBox() {
 	const [totalNotifications, setTotalNotifications] = useState(0);
 	const { userId, guestlist, newguestlist } = useUserContext();
 	const { markNotificationsRead } = useNotifications();
+	let navigate = useNavigate();
 
 	const open = Boolean(anchorEl);
 
@@ -80,7 +81,7 @@ function NotificationBox() {
 	};
 
 	const onClickFunc = (page) => {
-		console.log('page');
+		navigate(page);
 	};
 
 	const onMenuOpened = () => {
@@ -111,7 +112,7 @@ function NotificationBox() {
 				<div
 					className={notificationBoxStyle}
 					style={body.read ? { opacity: 0.7 } : { opacity: 1 }}
-					onClick={() => onClickFunc('guestlist')}>
+					onClick={() => onClickFunc(guestBody?.guestInviteId ? 'guestlist' : 'guestlist/open')}>
 					<div className='w-4 pt-1'>
 						<div
 							className={statusCircleStyle}
@@ -119,7 +120,7 @@ function NotificationBox() {
 						/>
 					</div>
 
-					<div>
+					<div className='w-64'>
 						<TextProvider className='text-base font-semibold'>
 							{guestBody.name?.length > 16
 								? `${guestBody?.name.substring(0, 16)}...`
@@ -147,7 +148,7 @@ function NotificationBox() {
 				<div
 					className={notificationBoxStyle}
 					style={body.read ? { opacity: 0.7 } : { opacity: 1 }}
-					onClick={() => onClickFunc('gift')}>
+					onClick={() => onClickFunc('digitalinvite/gift')}>
 					<div className='w-4 pt-1'>
 						<div
 							className={statusCircleStyle}

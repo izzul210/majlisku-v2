@@ -61,10 +61,9 @@ export const useGuestlist = () => {
 				pax: guestlistBody.pax,
 				rsvp: guestlistBody.rsvp,
 				wish: guestlistBody.wish,
+				timeSlot: guestlistBody.timeSlot ? guestlistBody.timeSlot : null,
 			},
 		};
-
-		console.log('addOpenInviteGuest', updatedGuestlistBody);
 
 		try {
 			// Update the "groupList" field of the user document with the new group list

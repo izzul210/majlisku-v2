@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import './Guestlist.scss';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 //Context import
@@ -44,6 +45,7 @@ const OpenInvites = () => {
 	const [guestToBeDeleted, setGuestToBeDeleted] = useState(null);
 	//Filter states
 	const [guestRsvp, setGuestRsvp] = useState([]);
+	const [guestTimeSlots, setGuestTimeSlots] = useState([]);
 	//Modal states
 	const [filterModal, setFilterModal] = useState(false);
 	const [shareInviteModal, setShareInviteModal] = useState(false);
@@ -61,7 +63,7 @@ const OpenInvites = () => {
 
 	let navigate = useNavigate();
 
-	let tableStyle = phoneSize ? 'px-0 h-full' : 'px-4 h-5/6';
+	let tableStyle = phoneSize ? 'px-0 h-full' : 'px-4 mb-20';
 	let textTitleStyle = phoneSize ? 'text-base text-gray-900' : 'text-lg text-gray-900';
 	let tableBorderRadius = phoneSize ? 'rounded-none' : 'rounded-lg';
 
@@ -85,6 +87,20 @@ const OpenInvites = () => {
 			return guest.name.toLowerCase().includes(searchGuest);
 		} else {
 			return guest;
+		}
+	};
+
+	const filterTimeSlot = (guest) => {
+		if (guestTimeSlots.length === 0) {
+			return 1;
+		} else {
+			const timeSlot = guest?.timeSlot
+				? moment(guest.timeSlot).format('h:mm A')
+				: guest?.response?.timeSlot
+				? moment(guest.response.timeSlot).format('h:mm A')
+				: null;
+
+			return guestTimeSlots.includes(timeSlot);
 		}
 	};
 
@@ -154,7 +170,10 @@ const OpenInvites = () => {
 		}
 	};
 
-	const filteredNewGuestlist = newguestlist?.filter(filterSearch).filter(filterRsvp);
+	const filteredNewGuestlist = newguestlist
+		?.filter(filterSearch)
+		.filter(filterTimeSlot)
+		.filter(filterRsvp);
 
 	return (
 		<div className='w-full flex-grow flex-col pt-8 justify-start h-full'>
@@ -239,6 +258,8 @@ const OpenInvites = () => {
 				<FilterGuestModalContent
 					guestRsvp={guestRsvp}
 					setGuestRsvp={setGuestRsvp}
+					guestTimeSlots={guestTimeSlots}
+					setGuestTimeSlots={setGuestTimeSlots}
 					handleCancel={() => setFilterModal(false)}
 				/>
 			</ModalProvider2>
@@ -344,15 +365,28 @@ const ImportBulkToMyGuestlist = ({ isOpen, handleClose, guestlistIds, resetGuest
 	);
 };
 
-const FilterGuestModalContent = ({ guestRsvp, setGuestRsvp, handleCancel }) => {
+const FilterGuestModalContent = ({
+	guestRsvp,
+	setGuestRsvp,
+	guestTimeSlots,
+	setGuestTimeSlots,
+	handleCancel,
+}) => {
 	const [rsvpFilter, setRsvpFilter] = useState([]);
+	const [timeSlotFilter, setTimeSlotFilter] = useState([]);
+	const { userData } = useUserContext();
 
 	useEffect(() => {
 		setRsvpFilter(guestRsvp);
-	}, [guestRsvp]);
+		setTimeSlotFilter(guestTimeSlots);
+	}, [guestRsvp, guestTimeSlots]);
 
 	const rsvpClicked = (status) => {
 		return rsvpFilter.includes(status);
+	};
+
+	const timeFilterClicked = (time) => {
+		return timeSlotFilter.includes(time);
 	};
 
 	const clickStatus = (status) => {
@@ -361,14 +395,22 @@ const FilterGuestModalContent = ({ guestRsvp, setGuestRsvp, handleCancel }) => {
 		else setRsvpFilter((prev) => [...prev, status]);
 	};
 
+	const clickTimeSlot = (time) => {
+		if (timeSlotFilter.includes(time)) setTimeSlotFilter((prev) => prev.filter((t) => t !== time));
+		else setTimeSlotFilter((prev) => [...prev, time]);
+	};
+
 	const handleReset = () => {
 		setRsvpFilter([]);
 		setGuestRsvp([]);
+		setTimeSlotFilter([]);
+		setGuestTimeSlots([]);
 		handleCancel();
 	};
 
 	const handleApply = () => {
 		setGuestRsvp(rsvpFilter);
+		setGuestTimeSlots(timeSlotFilter);
 		handleCancel();
 	};
 
@@ -378,10 +420,6 @@ const FilterGuestModalContent = ({ guestRsvp, setGuestRsvp, handleCancel }) => {
 			<div className='p-5'>
 				<TextProvider className='text-base font-semibold'>BY RSVP</TextProvider>
 				<div className='flex gap-2 mt-2 flex-wrap'>
-					{/* <RSVPTag onClick={() => clickStatus('invited')} active={rsvpClicked('invited')}>
-						<InvitedIcon width={20} height={20} />
-						<div>Invited</div>
-					</RSVPTag> */}
 					<RSVPTag onClick={() => clickStatus('attending')} active={rsvpClicked('attending')}>
 						<AttendingIcon width={20} height={20} />
 						<div>Attending</div>
@@ -399,6 +437,32 @@ const FilterGuestModalContent = ({ guestRsvp, setGuestRsvp, handleCancel }) => {
 					</RSVPTag> */}
 				</div>
 			</div>
+
+			{userData?.eventDetails?.enable_multiple_slots ? (
+				<div className='p-5'>
+					<TextProvider className='text-base font-semibold'>BY TIMESLOT</TextProvider>
+					<div className='flex gap-2 mt-2 flex-wrap'>
+						<RSVPTag
+							onClick={() =>
+								clickTimeSlot(moment(userData?.eventDetails?.event_time?.start).format('h:mm A'))
+							}
+							active={timeFilterClicked(
+								moment(userData?.eventDetails?.event_time?.start).format('h:mm A')
+							)}>
+							<div>{moment(userData?.eventDetails?.event_time?.start).format('h:mm A')}</div>
+						</RSVPTag>
+						<RSVPTag
+							onClick={() =>
+								clickTimeSlot(moment(userData?.eventDetails?.event_time_slot_2).format('h:mm A'))
+							}
+							active={timeFilterClicked(
+								moment(userData?.eventDetails?.event_time_slot_2).format('h:mm A')
+							)}>
+							<div>{moment(userData?.eventDetails?.event_time_slot_2).format('h:mm A')}</div>
+						</RSVPTag>
+					</div>
+				</div>
+			) : null}
 
 			<div className='flex justify-between items-center gap-4 p-5 border-t border-gray-200'>
 				<div className='flex gap-2 items-center cursor-pointer' onClick={handleReset}>

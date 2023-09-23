@@ -16,6 +16,7 @@ import { useGuestlistContext } from '../../context/GuestlistContext';
 import { useUserContext } from '../../context/UserContext';
 //Hooks import
 import { useGuestlist } from '../../hooks/useGuestlist';
+import { useFormatTimeSlot } from '../../hooks/useFormat';
 //Icons import
 import {
 	AttendingIcon,
@@ -191,7 +192,9 @@ export const GuestDetailContent = ({
 	handleCloseMainModal = () => {},
 	openInvite = false,
 }) => {
+	const { formatTimeSlot } = useFormatTimeSlot();
 	const [guestGroup, setGuestGroup] = useState([]);
+	const [guestTimeSlot, setGuestTimeSlot] = useState(null);
 	const [editPaxLimitModal, setEditPaxLimitModal] = useState(false);
 	const [importGuestModal, setImportGuestModal] = useState(false);
 
@@ -201,7 +204,6 @@ export const GuestDetailContent = ({
 
 	//Make sure old user group is included
 	useEffect(() => {
-		console.log(guestDetails);
 		const renderGroupTag = () => {
 			if (guestDetails?.groups) {
 				setGuestGroup(guestDetails.groups);
@@ -211,6 +213,16 @@ export const GuestDetailContent = ({
 				}
 			}
 		};
+
+		if (guestDetails) {
+			if (guestDetails?.timeSlot) {
+				setGuestTimeSlot(guestDetails?.timeSlot);
+			} else if (guestDetails?.response?.timeSlot) {
+				setGuestTimeSlot(guestDetails?.response?.timeSlot);
+			} else {
+				return;
+			}
+		}
 
 		renderGroupTag();
 	}, [guestDetails]);
@@ -279,10 +291,10 @@ export const GuestDetailContent = ({
 					<TextProvider className='text-gray-400 font-semibold uppercase w-24 sm:w-40'>
 						Timeslot:
 					</TextProvider>
-					{guestDetails?.timeSlot ? (
+					{guestDetails?.timeSlot || guestDetails?.response?.timeSlot ? (
 						<div className='flex items-center justify-center rounded-full bg-gray-200 px-4 py-1'>
 							<TextProvider className='text-gray-900 font-bold text-base uppercase'>
-								{guestDetails?.timeSlot}
+								{formatTimeSlot(guestDetails)}
 							</TextProvider>
 						</div>
 					) : (

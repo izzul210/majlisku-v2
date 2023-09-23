@@ -6,6 +6,7 @@ import './App.scss';
 import { OnboardingProvider } from './context/OnboardingContext';
 import { GuestlistProvider } from './context/GuestlistContext';
 import { DigitalInviteContextProvider } from './context/DigitalInviteContext';
+import { PlannerProvider } from './context/PlannerContext';
 import { useUserContext } from './context/UserContext';
 import Sidebar from './components/sidebar/Sidebar';
 import WholePageLoadingState from './components/atom/loading/WholePageLoadingState';
@@ -15,6 +16,10 @@ const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const SignUpPage = lazy(() => import('./pages/auth/SignUpPage'));
 const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
 const Guestlist = lazy(() => import('./pages/guestlist/Guestlist'));
+const Planner = lazy(() => import('./pages/planner/Planner'));
+const AddVendorPage = lazy(() => import('./pages/planner/AddVendorPage'));
+const EditVendorPage = lazy(() => import('./pages/planner/EditVendorPage'));
+const VendorDetailPage = lazy(() => import('./pages/planner/VendorDetailPage'));
 const AddGuestPage = lazy(() => import('./pages/guestlist/AddGuestPage'));
 const EditGuestPage = lazy(() => import('./pages/guestlist/EditGuestPage'));
 const DigitalInvite = lazy(() => import('./pages/digitalInvite/DigitalInvite'));
@@ -79,6 +84,28 @@ function App() {
 										exact
 										path='/guestlist/edit/:id'
 										element={userId ? <EditGuestPage /> : <Navigate to='/login' />}
+									/>
+								</Route>
+								<Route element={<PlannerProvider />}>
+									<Route
+										exact
+										path='/planner/*'
+										element={userId ? <Planner /> : <Navigate to='/login' />}
+									/>
+									<Route
+										exact
+										path='/planner/addvendor'
+										element={userId ? <AddVendorPage /> : <Navigate to='/login' />}
+									/>
+									<Route
+										exact
+										path='/planner/vendordetail/:id'
+										element={userId ? <VendorDetailPage /> : <Navigate to='/login' />}
+									/>
+									<Route
+										exact
+										path='/planner/editvendor/:id'
+										element={userId ? <EditVendorPage /> : <Navigate to='/login' />}
 									/>
 								</Route>
 

@@ -259,7 +259,7 @@ const DateTime = () => {
 		enable_bahasa,
 		event_date,
 		event_time,
-		enable_multiple_slot,
+		enable_multiple_slots,
 		event_time_slot_2,
 		enable_deadline,
 		event_date_deadline,
@@ -305,13 +305,13 @@ const DateTime = () => {
 					</div>
 					<div>
 						<ToggleSwitch
-							value={enable_multiple_slot}
+							value={enable_multiple_slots}
 							dispatch={dispatchInvite}
 							type='ENABLE_MULTIPLE_SLOT'
 						/>
 					</div>
 				</div>
-				{enable_multiple_slot && (
+				{enable_multiple_slots && (
 					<div className='flex flex-col gap-3'>
 						<div className='flex flex-col gap-1'>
 							<TextProvider className='uppercase font-semibold text-sm mb-1'>Slot 1</TextProvider>

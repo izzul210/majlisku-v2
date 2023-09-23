@@ -139,14 +139,16 @@ const WebSideBar = ({ activeTab = '', handleLogout }) => {
 							<div className={checkForActiveTabText('gift', activeTab)}>Gift Registry</div>
 						</Link>
 						<Link
-							to='/'
-							className={activeTab === '' ? 'sidebar-navigate active' : 'sidebar-navigate normal'}>
-							{activeTab === '' ? (
+							to='/planner'
+							className={
+								activeTab === 'planner' ? 'sidebar-navigate active' : 'sidebar-navigate normal'
+							}>
+							{activeTab === 'planner' ? (
 								<ChecklistActive width={ICON_WIDTH_WEB} height={ICON_HEIGHT_WEB} />
 							) : (
 								<ChecklistDefault width={ICON_WIDTH_WEB} height={ICON_HEIGHT_WEB} />
 							)}
-							<div className='sidebar-navigate-text'>Planner</div>
+							<div className={checkForActiveTabText('planner', activeTab)}>Planner</div>
 						</Link>
 					</div>
 				</div>
@@ -472,7 +474,10 @@ function Sidebar(props) {
 				'openinvite',
 				'digitalinvite',
 				'invite-preview',
-			].includes(activeTab) && !['add', 'detail', 'edit', 'openinvite'].includes(subTab);
+			].includes(activeTab) &&
+			!['add', 'detail', 'addvendor', 'edit', 'editvendor', 'vendordetail', 'openinvite'].includes(
+				subTab
+			);
 
 		return isTabValid;
 	};

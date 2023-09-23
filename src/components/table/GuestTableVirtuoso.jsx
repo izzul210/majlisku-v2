@@ -15,6 +15,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { TableVirtuoso } from 'react-virtuoso';
 import { useMediaQuery } from '@mui/material';
 import { alpha } from '@mui/material/styles';
+import moment from 'moment';
 import Fab from '@mui/material/Fab';
 //Component import
 import TextProvider from '../atom/TextProvider/TextProvider';
@@ -23,6 +24,7 @@ import { EditIcon, DropDownIcon, DeleteIcon } from '../icons/actionIcons';
 import { GuestRSVPTag, GuestRSVPMobileTag } from '../atom/tags/Tag';
 //Hokes import
 import { useGuestlistMigration } from '../../hooks/useMigration';
+import { useFormatTimeSlot } from '../../hooks/useFormat';
 
 const columns = [
 	{
@@ -44,16 +46,16 @@ const columns = [
 		label: 'RSVP',
 	},
 	{
-		id: 'group',
-		numeric: false,
-		disablePadding: false,
-		label: 'GROUP',
-	},
-	{
 		id: 'time',
 		numeric: false,
 		disablePadding: false,
 		label: 'TIME SLOT',
+	},
+	{
+		id: 'group',
+		numeric: false,
+		disablePadding: false,
+		label: 'GROUP',
 	},
 ];
 
@@ -227,6 +229,7 @@ function fixedHeaderContent(
 
 function rowContent(_index, row, phoneSize, handleClick, isSelected, openGuestModal) {
 	const { migrateGroup } = useGuestlistMigration();
+	const { formatTimeSlot } = useFormatTimeSlot();
 
 	//RSVP Tags
 	const invitedRSVP = phoneSize ? (
@@ -323,6 +326,43 @@ function rowContent(_index, row, phoneSize, handleClick, isSelected, openGuestMo
 						: ''}
 				</div>
 			</TableCell>
+
+			<TableCell
+				sx={{
+					fontFamily: 'Poppins',
+					textTransform: 'uppercase',
+					color: '#475467',
+					cursor: 'pointer',
+				}}
+				onClick={() => openGuestModal(row)}
+				align='left'>
+				<div className='flex text-xs'>
+					{row?.timeSlot || row?.response?.timeSlot ? (
+						<div
+							style={{
+								padding: '0px 15px',
+								borderRadius: 20,
+								border: '1px solid rgba(0,0,0, 0.1)',
+								fontWeight: 500,
+								height: '30px',
+								display: 'flex',
+								alignItems: 'center',
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap',
+								maxWidth: '140px',
+								background: '#F2F4F7',
+							}}>
+							{formatTimeSlot(row)}
+						</div>
+					) : (
+						<div
+							style={{
+								height: '30px',
+							}}></div>
+					)}
+				</div>
+			</TableCell>
 			<TableCell
 				sx={{
 					fontFamily: 'Poppins',
@@ -364,22 +404,6 @@ function rowContent(_index, row, phoneSize, handleClick, isSelected, openGuestMo
 								width: '30px',
 							}}></div>
 					)}
-				</div>
-			</TableCell>
-			<TableCell
-				sx={{
-					fontFamily: 'Poppins',
-					textTransform: 'uppercase',
-					color: '#475467',
-					cursor: 'pointer',
-				}}
-				onClick={() => openGuestModal(row)}
-				align='left'>
-				<div className='flex text-xs'>
-					<div
-						style={{
-							height: '30px',
-						}}></div>
 				</div>
 			</TableCell>
 		</React.Fragment>

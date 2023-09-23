@@ -66,7 +66,7 @@ const TickIcon = () => (
 		<path
 			d='M13.8332 4L6.49984 11.3333L3.1665 8'
 			stroke='black'
-			stroke-opacity='0.5'
+			strokeOpacity='0.5'
 			strokeWidth='1.5'
 			strokeLinecap='round'
 			strokeLinejoin='round'

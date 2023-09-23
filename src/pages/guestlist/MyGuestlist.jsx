@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import readXlsxFile from 'read-excel-file';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 import './Guestlist.scss';
 //MUI import
 import Paper from '@mui/material/Paper';
@@ -17,6 +18,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 //Context import
+import { useUserContext } from '../../context/UserContext';
 import { useGuestlistContext, useGuestlistDispatchContext } from '../../context/GuestlistContext';
 //Components import
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
@@ -46,6 +48,7 @@ import EmptyGuestImg from '../../assets/images/emptyGuest.png';
 import XLSXTemplate from '../../assets/docs/GuestListTemplate.xlsx';
 //Hooks import
 import { useGuestlist } from '../../hooks/useGuestlist';
+import { useFormatTimeSlot } from '../../hooks/useFormat';
 import { usePDF } from '../../hooks/usePDF';
 
 const MyGuestlist = () => {
@@ -58,6 +61,7 @@ const MyGuestlist = () => {
 	//Filter states
 	const [searchGuest, setSearchGuest] = useState('');
 	const [guestRsvp, setGuestRsvp] = useState([]);
+	const [guestTimeSlots, setGuestTimeSlots] = useState([]);
 	const [guestGroup, setGuestGroup] = useState([]);
 	//Modal states
 	const [filterModal, setFilterModal] = useState(false);
@@ -73,13 +77,14 @@ const MyGuestlist = () => {
 	//Temporary states
 	const [groupToBeDeleted, setGroupToBeDeleted] = useState(null);
 
+	const { formatTimeSlot } = useFormatTimeSlot();
 	const phoneSize = useMediaQuery('(max-width:600px)');
 
 	let navigate = useNavigate();
 
 	let filteredGuestlist;
 
-	let tableStyle = phoneSize ? 'px-0' : 'px-4 mb-20';
+	let tableStyle = phoneSize ? 'px-0 h-full' : 'px-4 mb-20';
 	let textTitleStyle = phoneSize ? 'text-base text-gray-900' : 'text-lg text-gray-900';
 	let tableBorderRadius = phoneSize ? 'rounded-none' : 'rounded-lg';
 
@@ -113,6 +118,18 @@ const MyGuestlist = () => {
 		}
 	};
 
+	const filterTimeSlot = (guest) => {
+		if (guestTimeSlots.length === 0) {
+			return 1;
+		} else {
+			if (guest?.timeSlot || guest?.response?.timeSlot) {
+				return guestTimeSlots.includes(formatTimeSlot(guest));
+			} else {
+				return 0;
+			}
+		}
+	};
+
 	const filterGroup = (guest) => {
 		const { group, groups } = guest;
 
@@ -127,7 +144,11 @@ const MyGuestlist = () => {
 		}
 	};
 
-	filteredGuestlist = guestlist?.filter(filterSearch).filter(filterRsvp).filter(filterGroup);
+	filteredGuestlist = guestlist
+		?.filter(filterSearch)
+		.filter(filterRsvp)
+		.filter(filterTimeSlot)
+		.filter(filterGroup);
 
 	const countFilteredGuest = () => {
 		return guestGroup?.length + guestRsvp?.length;
@@ -301,6 +322,8 @@ const MyGuestlist = () => {
 				<FilterGuestModalContent
 					guestRsvp={guestRsvp}
 					setGuestRsvp={setGuestRsvp}
+					guestTimeSlots={guestTimeSlots}
+					setGuestTimeSlots={setGuestTimeSlots}
 					guestGroup={guestGroup}
 					setGuestGroup={setGuestGroup}
 					handleAddGroupButton={handleAddGroupButton}
@@ -382,6 +405,8 @@ export default MyGuestlist;
 const FilterGuestModalContent = ({
 	guestRsvp,
 	setGuestRsvp,
+	guestTimeSlots,
+	setGuestTimeSlots,
 	guestGroup,
 	setGuestGroup,
 	handleCancel,
@@ -389,17 +414,23 @@ const FilterGuestModalContent = ({
 	handleEditGroupButton,
 }) => {
 	const { groupList } = useGuestlistContext();
-
+	const { userData } = useUserContext();
 	const [rsvpFilter, setRsvpFilter] = useState([]);
 	const [groupFilter, setGroupFilter] = useState([]);
+	const [timeSlotFilter, setTimeSlotFilter] = useState([]);
 
 	useEffect(() => {
 		setRsvpFilter(guestRsvp);
 		setGroupFilter(guestGroup);
-	}, [guestRsvp, guestGroup]);
+		setTimeSlotFilter(guestTimeSlots);
+	}, [guestRsvp, guestGroup, guestTimeSlots]);
 
 	const rsvpClicked = (status) => {
 		return rsvpFilter.includes(status);
+	};
+
+	const timeFilterClicked = (time) => {
+		return timeSlotFilter.includes(time);
 	};
 
 	const groupClicked = (group) => {
@@ -412,6 +443,11 @@ const FilterGuestModalContent = ({
 		else setRsvpFilter((prev) => [...prev, status]);
 	};
 
+	const clickTimeSlot = (time) => {
+		if (timeSlotFilter.includes(time)) setTimeSlotFilter((prev) => prev.filter((t) => t !== time));
+		else setTimeSlotFilter((prev) => [...prev, time]);
+	};
+
 	const clickGroup = (group) => {
 		if (groupFilter.includes(group)) setGroupFilter((prev) => prev.filter((g) => g !== group));
 		else setGroupFilter((prev) => [...prev, group]);
@@ -419,14 +455,17 @@ const FilterGuestModalContent = ({
 
 	const handleReset = () => {
 		setRsvpFilter([]);
+		setTimeSlotFilter([]);
 		setGroupFilter([]);
 		setGuestRsvp([]);
 		setGuestGroup([]);
+		setGuestTimeSlots([]);
 		handleCancel();
 	};
 
 	const handleApply = () => {
 		setGuestRsvp(rsvpFilter);
+		setGuestTimeSlots(timeSlotFilter);
 		setGuestGroup(groupFilter);
 		handleCancel();
 	};
@@ -458,6 +497,31 @@ const FilterGuestModalContent = ({
 					</RSVPTag>
 				</div>
 			</div>
+			{userData?.eventDetails?.enable_multiple_slots ? (
+				<div className='p-5'>
+					<TextProvider className='text-base font-semibold'>BY TIMESLOT</TextProvider>
+					<div className='flex gap-2 mt-2 flex-wrap'>
+						<RSVPTag
+							onClick={() =>
+								clickTimeSlot(moment(userData?.eventDetails?.event_time?.start).format('h:mma'))
+							}
+							active={timeFilterClicked(
+								moment(userData?.eventDetails?.event_time?.start).format('h:mma')
+							)}>
+							<div>{moment(userData?.eventDetails?.event_time?.start).format('h:mma')}</div>
+						</RSVPTag>
+						<RSVPTag
+							onClick={() =>
+								clickTimeSlot(moment(userData?.eventDetails?.event_time_slot_2).format('h:mma'))
+							}
+							active={timeFilterClicked(
+								moment(userData?.eventDetails?.event_time_slot_2).format('h:mma')
+							)}>
+							<div>{moment(userData?.eventDetails?.event_time_slot_2).format('h:mma')}</div>
+						</RSVPTag>
+					</div>
+				</div>
+			) : null}
 
 			{/*** By Group */}
 			<div className='p-5'>

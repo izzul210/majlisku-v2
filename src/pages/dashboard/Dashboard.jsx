@@ -53,7 +53,6 @@ const MainDashboardCard = () => {
 	const { userData } = useUserContext();
 	const { event_title_1, event_location, italic_title, event_date, rsvp_header_image } =
 		userData?.eventDetails ? userData.eventDetails : {};
-
 	const [eventTitle1, setEventTitle1] = useState(event_title_1);
 	const [eventTitle2, setEventTitle2] = useState(italic_title);
 	const [eventLocation, setEventLocation] = useState(event_location);
@@ -349,22 +348,28 @@ const QuickAccessContainer = () => {
 };
 
 const PlannerContainer = () => {
+	let navigate = useNavigate();
+
 	return (
 		<div className='my-guestlist-container'>
 			<div className='container-header'>
 				<div className='container-title uppercase'>Planner</div>
 			</div>
 			<div className='container-content'>
-				<ToolsCard
-					title='Checklist'
-					descripton='Create and manage your event checklist'
-					id='checklist'
-				/>
-				<ToolsCard
-					title='Vendor shortlist'
-					descripton='Create and manage vendor shortlist for your event'
-					id='vendor'
-				/>
+				<div className='w-full' onClick={() => navigate('/planner')}>
+					<ToolsCard
+						title='Checklist'
+						descripton='Create and manage your event checklist'
+						id='checklist'
+					/>
+				</div>
+				<div className='w-full' onClick={() => navigate('/planner/vendor')}>
+					<ToolsCard
+						title='Vendor shortlist'
+						descripton='Create and manage vendor shortlist for your event'
+						id='vendor'
+					/>
+				</div>
 			</div>
 		</div>
 	);

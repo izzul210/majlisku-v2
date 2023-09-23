@@ -36,6 +36,9 @@
 	background: linear-gradient(180deg, #ffdbcf 0%, #fff 100%);
 }
 
+.modal-top-vendor {
+	background: linear-gradient(180deg, #a8a4a284 0%, #fff 100%);
+}
 .modal-content-2 {
-	min-width: 400px;
+	width: min(100%, 400px);
 }

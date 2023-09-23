@@ -1,0 +1,96 @@
+/** @format */
+
+@use '../../stylesheet/container' as container;
+
+.planner-container {
+	@include container.pageContainerStyle();
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.vendor-card {
+	height: 260px;
+	max-width: 335px;
+	width: 100%;
+	background: var(--base-white, #fff);
+	border: 1px solid var(--neutral-grey-200, #e4e7ec);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: box-shadow 0.3s ease;
+
+	&:hover {
+		box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+		transition: box-shadow 0.3s ease;
+	}
+}
+
+.finalized {
+	padding: 5px 14px;
+	border-radius: 15px;
+	background: rgba(241, 191, 190, 0.5);
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.shortlisted {
+	padding: 5px 14px;
+	border-radius: 15px;
+	background: rgba(242, 242, 244, 1);
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.deposited {
+	padding: 5px 14px;
+	border-radius: 15px;
+	background: #decef8;
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.paid {
+	padding: 5px 14px;
+	border-radius: 15px;
+	background: #19d37982;
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.checklist-card {
+	border-radius: 8px;
+	cursor: pointer;
+	transition: box-shadow 0.3s ease;
+
+	&:hover {
+		box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+		transition: box-shadow 0.3s ease;
+	}
+
+	.checklist-card-desc {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: pre-wrap;
+		overflow-wrap: break-word;
+		width: auto;
+		display: -webkit-box;
+		-webkit-line-clamp: 3; /* number of lines to show */
+		-webkit-box-orient: vertical;
+		max-height: 44px;
+	}
+}
+
+.checklist-card-todo {
+	background: var(--base-white, #fff);
+	border: 1px solid var(--neutral-grey-200, #e4e7ec);
+}
+
+.checklist-card-completed {
+	background: linear-gradient(0deg, hsla(0, 0%, 100%, 0.8), hsla(0, 0%, 100%, 0.8)),
+		linear-gradient(0deg, #19d37a, #19d37a);
+	border: 1px solid rgb(152, 162, 179);
+}

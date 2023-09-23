@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import moment from 'moment';
 //Components  import
 import ModalProvider2 from '../../components/atom/ModalProvider/ModalProvider2';
 import InputFieldProvider from '../../components/atom/InputField/InputFieldProvider';
@@ -16,6 +17,7 @@ import WholePageLoadingState from '../../components/atom/loading/WholePageLoadin
 import ModalConfirmation from '../../components/atom/ModalProvider/ModalConfirmation';
 //Hooks import
 import { useGuestlist } from '../../hooks/useGuestlist';
+import { useUserContext } from '../../context/UserContext';
 //Icons import
 import { BackIcon, DeleteIcon } from '../../components/icons/actionIcons';
 import { useGuestlistContext } from '../../context/GuestlistContext';
@@ -85,6 +87,7 @@ export function EditGuestPage() {
 
 export const EditGuestContent = ({ handleCancel, handleSubmit, handlePostDeleteGuest, id }) => {
 	const { guestlist } = useGuestlistContext();
+	const { userData } = useUserContext();
 	const { deleteGuest, isPending } = useGuestlist();
 	const [guestId, setGuestId] = useState(null);
 	const [deleteModal, setDeleteModal] = useState(false);
@@ -112,11 +115,40 @@ export const EditGuestContent = ({ handleCancel, handleSubmit, handlePostDeleteG
 				setName(tempGuestDetails.name || '');
 				setPhone(tempGuestDetails.phone || '');
 				setEmail(tempGuestDetails.email || '');
-				setTimeSlot(tempGuestDetails?.timeSlot || '');
 				setPax(tempGuestDetails.pax || '');
 				setNotes(tempGuestDetails.notes || '');
-				setGroups(tempGuestDetails.groups ? tempGuestDetails.groups : [tempGuestDetails.group]);
+				setGroups(
+					tempGuestDetails.groups
+						? tempGuestDetails.groups
+						: tempGuestDetails?.group !== ''
+						? [tempGuestDetails.group]
+						: []
+				);
+				if (tempGuestDetails?.timeSlot) {
+					initiateTimeslot(tempGuestDetails.timeSlot);
+				} else if (tempGuestDetails?.response?.timeSlot) {
+					initiateTimeslot(tempGuestDetails.response.timeSlot);
+				} else {
+					setTimeSlot(null);
+				}
 			}
+		}
+	}
+
+	function initiateTimeslot(timeSlot) {
+		const timeSlot_1 = userData?.eventDetails?.event_time?.start;
+		const timeSlot_2 = userData?.eventDetails?.event_time_slot_2;
+		const formatted_timeSlot_1 = moment(timeSlot_1).format('h:mm A');
+		const formatted_timeSlot_2 = moment(timeSlot_2).format('h:mm A');
+
+		const formatted_timeSlot = moment(timeSlot).format('h:mm A');
+
+		if (formatted_timeSlot === formatted_timeSlot_1) {
+			setTimeSlot(timeSlot_1);
+		} else if (formatted_timeSlot === formatted_timeSlot_2) {
+			setTimeSlot(timeSlot_2);
+		} else {
+			setTimeSlot(null);
 		}
 	}
 

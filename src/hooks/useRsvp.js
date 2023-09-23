@@ -55,7 +55,6 @@ export const useRsvp = () => {
 		};
 
 		/*********** Step 3: Update rsvp details */
-
 		let updatedRsvpDetails = {
 			contact_info: rsvpDetails.contact_info,
 			description: rsvpDetails.description,
@@ -84,13 +83,16 @@ export const useRsvp = () => {
 				: rsvpDetails.rsvp_header_image,
 			delivery_address: rsvpDetails.delivery_address,
 			thank_you_text: rsvpDetails.thank_you_text,
-			enable_multiple_slot: rsvpDetails.enable_multiple_slot,
+			enable_multiple_slots: rsvpDetails.enable_multiple_slots,
+			event_time_slot_2: rsvpDetails.event_time_slot_2,
 		};
 
 		/*********** Step 4: Update doc in Firebase */
 		let userDataUpdate = {
 			eventDetails: updatedRsvpDetails,
 		};
+
+		console.log('eventDetails', updatedRsvpDetails);
 
 		try {
 			await updateDoc(doc(projectFirestore, 'users', userId), userDataUpdate);

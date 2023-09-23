@@ -15,6 +15,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { TableVirtuoso } from 'react-virtuoso';
 import { useMediaQuery } from '@mui/material';
 import { alpha } from '@mui/material/styles';
+import moment from 'moment';
 //Component import
 import TextProvider from '../atom/TextProvider/TextProvider';
 import ButtonProvider from '../atom/ButtonProvider/ButtonProvider';
@@ -22,6 +23,7 @@ import { EditIcon, DropDownIcon, DeleteIcon, ImportIcon } from '../icons/actionI
 import { GuestRSVPTag, GuestRSVPMobileTag } from '../atom/tags/Tag';
 //Hokes import
 import { useGuestlistMigration } from '../../hooks/useMigration';
+import { useFormatTimeSlot } from '../../hooks/useFormat';
 
 const columns = [
 	{
@@ -35,6 +37,7 @@ const columns = [
 		numeric: true,
 		disablePadding: false,
 		label: 'PAX',
+		align: 'center',
 	},
 	{
 		id: 'rsvp',
@@ -43,10 +46,17 @@ const columns = [
 		label: 'RSVP',
 	},
 	{
+		id: 'timeslot',
+		numeric: false,
+		disablePadding: false,
+		label: 'TIME SLOT',
+	},
+	{
 		id: 'action',
-		numeric: true,
+		numeric: false,
 		disablePadding: false,
 		label: 'IMPORT/DELETE',
+		width: 155,
 	},
 ];
 
@@ -136,7 +146,7 @@ function fixedHeaderContent(
 				<TableCell
 					key={column.id}
 					variant='head'
-					align={column.id === 'pax' ? 'center' : 'left'}
+					align={column.align}
 					padding={column.disablePadding ? 'none' : 'normal'}
 					style={{ width: column.width }}
 					sortDirection={orderBy === column.id ? order : false}
@@ -229,6 +239,7 @@ function rowContent(
 	deleteOpenInviteGuest
 ) {
 	const { migrateGroup } = useGuestlistMigration();
+	const { formatTimeSlot } = useFormatTimeSlot();
 
 	//RSVP Tags
 	const invitedRSVP = phoneSize ? (
@@ -304,7 +315,7 @@ function rowContent(
 				</div>
 			</TableCell>
 			<TableCell
-				width={!phoneSize ? '30%' : '10%'}
+				width={!phoneSize ? '30%' : '6%'}
 				sx={{
 					fontFamily: 'Poppins',
 					textTransform: 'uppercase',
@@ -322,6 +333,43 @@ function rowContent(
 						: row.rsvp === 'maybe'
 						? maybeRSVP
 						: ''}
+				</div>
+			</TableCell>
+			<TableCell
+				sx={{
+					fontFamily: 'Poppins',
+					textTransform: 'uppercase',
+					color: '#475467',
+					cursor: 'pointer',
+					minWidth: 160,
+				}}
+				onClick={() => openGuestModal(row)}
+				align='left'>
+				<div className='flex text-xs'>
+					{row?.timeSlot ? (
+						<div
+							style={{
+								padding: '0px 15px',
+								borderRadius: 20,
+								border: '1px solid rgba(0,0,0, 0.1)',
+								fontWeight: 500,
+								height: '30px',
+								display: 'flex',
+								alignItems: 'center',
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap',
+								maxWidth: '140px',
+								background: '#F2F4F7',
+							}}>
+							{formatTimeSlot(row)}
+						</div>
+					) : (
+						<div
+							style={{
+								height: '30px',
+							}}></div>
+					)}
 				</div>
 			</TableCell>
 			<TableCell
