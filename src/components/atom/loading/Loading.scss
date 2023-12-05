@@ -1,0 +1,27 @@
+/** @format */
+
+.loading-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #0e7f6e; /* Semi-transparent black background */
+	z-index: 9999; /* Ensure the overlay appears on top of other elements */
+}
+
+.loading-majlisku-icon {
+	animation: rotating 20s infinite linear forwards;
+}
+
+@keyframes rotating {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}

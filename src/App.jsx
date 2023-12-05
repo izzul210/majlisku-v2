@@ -10,6 +10,7 @@ import { PlannerProvider } from './context/PlannerContext';
 import { useUserContext } from './context/UserContext';
 import Sidebar from './components/sidebar/Sidebar';
 import WholePageLoadingState from './components/atom/loading/WholePageLoadingState';
+import PageLazyLoading from './components/atom/loading/PageLazyLoading';
 
 //Import lazy loading
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
@@ -43,7 +44,7 @@ function App() {
 			{authIsReady && (
 				<BrowserRouter>
 					<Sidebar />
-					<Suspense fallback={<WholePageLoadingState loadingState={true} noOpacity={true} />}>
+					<Suspense fallback={<PageLazyLoading loadingState={true} noOpacity={true} />}>
 						<div className='app-container'>
 							<Routes>
 								<Route

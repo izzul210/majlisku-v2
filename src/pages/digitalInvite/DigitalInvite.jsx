@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Route, Routes, Link, Navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
@@ -22,6 +22,7 @@ import DigitalInviteTabs from '../../components/atom/TabsProvider/DigitalInviteT
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 import ModalProvider from '../../components/atom/ModalProvider/ModalProvider2';
+import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/ModalProviderPreviewInvite';
 import './DigitalInvite.scss';
 //MUI import
 import AppBar from '@mui/material/AppBar';
@@ -124,13 +125,35 @@ const GenerateInviteLink = ({ isOpen, handleClose }) => {
 	);
 };
 
+const GeneratePreview = ({ isOpen, handleClose }) => {
+	const { userData } = useUserContext();
+
+	return (
+		<ModalProviderPreviewInvite
+			isOpen={isOpen}
+			handleClose={handleClose}
+			title='Digital Invite Preview'>
+			<div className='h-full w-full flex justify-center'>
+				<div className='w-full max-w-[400px]'>
+					<iframe
+						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/1/${userData.userId}`}
+						width='100%'
+						height='670'></iframe>
+				</div>
+			</div>
+		</ModalProviderPreviewInvite>
+	);
+};
+
 const DigitalInviteTopBar = () => {
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const { inviteState, state } = useDigitalInviteContext();
 	const { scrollEventTitle1, checkForInputError } = useDigitalInviteInputErrorContext();
 	const [modal, setModal] = useState(false);
+	const [previewModal, setPreviewModal] = useState(false);
 	const { updateUserRsvp, isPending } = useRsvp();
 	const { userData } = useUserContext();
+	const location = useLocation();
 
 	let navigate = useNavigate();
 
@@ -140,6 +163,10 @@ const DigitalInviteTopBar = () => {
 		} else {
 			console.log('Fix those errors!');
 		}
+	};
+
+	const handleNewPreview = () => {
+		setPreviewModal(true);
 	};
 
 	const handleSavePublish = () => {
@@ -194,7 +221,7 @@ const DigitalInviteTopBar = () => {
 					)}
 
 					<div className='flex items-center gap-2'>
-						<ButtonProvider padding='12px 20px' onClick={handlePreview}>
+						<ButtonProvider padding='12px 20px' onClick={handleNewPreview}>
 							<PreviewIcon />
 							{!phoneSize && <TextProvider className='uppercase'>Preview</TextProvider>}
 						</ButtonProvider>
@@ -209,11 +236,11 @@ const DigitalInviteTopBar = () => {
 						</ButtonProvider>
 					</div>
 				</div>
-				<div className='flex justify-center w-full'>
+				<div className='flex justify-center w-full border-t border-gray-200'>
 					<DigitalInviteTabs />
 				</div>
 			</div>
-
+			<GeneratePreview isOpen={previewModal} handleClose={() => setPreviewModal(false)} />
 			<GenerateInviteLink isOpen={modal} handleClose={() => setModal(false)} />
 		</AppBar>
 	);
@@ -225,7 +252,7 @@ function DigitalInvite() {
 			<DigitalInviteTopBar />
 			<Routes>
 				<Route exact path='/' element={<Setting />} />
-				<Route exact path='/content' element={<Content />} />
+				{/* <Route exact path='/content' element={<Content />} /> */}
 				<Route exact path='/template' element={<Template />} />
 				<Route exact path='/gift' element={<GiftRegistry />} />
 				<Route exact path='/share' element={<ShareInvite />} />

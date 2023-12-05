@@ -82,11 +82,10 @@ export default function DigitalInviteTabs() {
 		<Box sx={{ width: phoneSize ? '100%' : 'auto' }}>
 			<Box sx={{ bgcolor: 'none' }}>
 				<StyledTabs value={value} onChange={handleChange} aria-label='styled tabs example'>
-					<StyledTab label='SETTING' value='setting' />
-					<StyledTab label='TEMPLATE' value='template' />
-					<StyledTab label='CONTENT' value='content' />
+					<StyledTab label='1. THEME' value='template' />
+					<StyledTab label='2. DETAILS' value='setting' />
+					<StyledTab label='3. SHARE' value='share' />
 					<StyledTab label='GIFT' value='gift' />
-					<StyledTab label='SHARE' value='share' />
 				</StyledTabs>
 			</Box>
 		</Box>
