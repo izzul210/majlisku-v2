@@ -279,13 +279,6 @@ function Template() {
 		dispatch({ type: 'SET_DESIGN', payload: id });
 	};
 
-	const activeDesignIndex = designArrays.findIndex((item) => checkUserDesign(item.id));
-
-	if (activeDesignIndex !== -1) {
-		const activeDesign = designArrays.splice(activeDesignIndex, 1)[0];
-		designArrays.unshift(activeDesign);
-	}
-
 	return (
 		<>
 			<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col pt-24 bg-white sm:bg-transparent'>

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
+import { useUserData } from '../../hooks/useFetchAPI';
 //Components import
 import SettingCard from '../../components/cards/SettingCard';
 import InputFieldProvider from '../../components/atom/InputField/InputFieldProvider';
@@ -33,6 +34,7 @@ import './DigitalInvite.scss';
 
 function Setting() {
 	const { dispatch } = useDigitalInviteDispatchContext();
+	const { data: userData } = useUserData();
 
 	const handleSetDesign = (value) => {
 		dispatch({ type: 'SET_DESIGN', payload: value });
