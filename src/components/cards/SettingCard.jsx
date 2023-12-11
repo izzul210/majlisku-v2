@@ -70,21 +70,17 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function SettingCard(props) {
 	const { stepNum = null, cardTitle = 'General', children } = props;
 	const { state } = useDigitalInviteContext();
-	const { dispatch } = useDigitalInviteDispatchContext();
 	const { accordiansCollapsed } = state;
 	const [expanded, setExpanded] = useState(true);
 
 	const phoneSize = useMediaQuery('(max-width:600px)');
 
 	useEffect(() => {
-		if (accordiansCollapsed) {
-			setExpanded(false);
-		}
+		setExpanded(!accordiansCollapsed);
 	}, [accordiansCollapsed]);
 
 	const handleChange = () => {
 		setExpanded(!expanded);
-		dispatch({ type: 'RESET_ACCORDIANS_COLLAPSE' });
 	};
 
 	return (

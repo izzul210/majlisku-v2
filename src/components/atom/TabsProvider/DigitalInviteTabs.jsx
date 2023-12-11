@@ -85,6 +85,7 @@ export default function DigitalInviteTabs() {
 					<StyledTab label='1. THEME' value='template' />
 					<StyledTab label='2. DETAILS' value='setting' />
 					<StyledTab label='3. SHARE' value='share' />
+					<StyledTab label='WISHES' value='wishes' />
 					<StyledTab label='GIFT' value='gift' />
 				</StyledTabs>
 			</Box>

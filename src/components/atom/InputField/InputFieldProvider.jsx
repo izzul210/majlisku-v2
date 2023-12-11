@@ -12,11 +12,12 @@ const InputFieldProvider = ({
 	onChange,
 	type = 'text',
 	textSize = 'text-sm',
+	controls = null,
 	...props
 }) => {
 	return (
 		<div>
-			<TextProvider className={`font-semibold ${textSize} uppercase mb-1 text-gray-900`}>
+			<TextProvider colorStyle={'#475467'} className={`font-semibold ${textSize} uppercase mb-1 `}>
 				{title}
 			</TextProvider>
 			<InputField
@@ -26,6 +27,7 @@ const InputFieldProvider = ({
 				placeholder={placeholder}
 				value={value}
 				onChange={onChange}
+				controls={controls}
 				{...props}
 			/>
 		</div>

@@ -8,6 +8,7 @@ import { Pagination } from 'swiper/modules';
 //Component import
 import SettingCard from '../../components/cards/SettingCard';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
+import InputFieldProvider from '../../components/atom/InputField/InputFieldProvider';
 import TextAreaProvider from '../../components/atom/InputField/TextAreaProvider';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 //Icons import
@@ -39,7 +40,38 @@ const InputTitleText = ({ children }) => (
 	<TextProvider className='uppercase font-semibold text-sm mb-0'>{children}</TextProvider>
 );
 
+const DigitalInvitePublished = () => {
+	return (
+		<div className='flex gap-2 p-4 text-start'>
+			<div className='w-[32px]'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					width='32'
+					height='32'
+					viewBox='0 0 32 32'
+					fill='none'>
+					<path
+						d='M15.9987 5.33301C10.1107 5.33301 5.33203 10.1117 5.33203 15.9997C5.33203 21.8877 10.1107 26.6663 15.9987 26.6663C21.8867 26.6663 26.6654 21.8877 26.6654 15.9997C26.6654 10.1117 21.8867 5.33301 15.9987 5.33301ZM13.108 20.5757L9.2787 16.7463C8.8627 16.3303 8.8627 15.6583 9.2787 15.2423C9.6947 14.8263 10.3667 14.8263 10.7827 15.2423L13.8654 18.3143L21.204 10.9757C21.62 10.5597 22.292 10.5597 22.708 10.9757C23.124 11.3917 23.124 12.0637 22.708 12.4797L14.612 20.5757C14.2067 20.9917 13.524 20.9917 13.108 20.5757Z'
+						fill='#419E6A'
+					/>
+				</svg>
+			</div>
+
+			<div className='flex flex-col gap-2'>
+				<TextProvider colorStyle='#1D4648' className='text-[20px] font-semibold'>
+					Your digital invitation is now published and ready to share!
+				</TextProvider>
+				<TextProvider colorStyle='#667085' className='text-[16px] font-semibold'>
+					Customize your preview link and share it with your guests publicly or personally{' '}
+				</TextProvider>
+			</div>
+		</div>
+	);
+};
+
+/******** Customize Link Preview *********/
 const CustomizeLinkPreview = () => {
+	const [previewTitle, setPreviewTitle] = useState('');
 	const [previewDescription, setPreviewDescription] = useState('');
 	const [personalMessage, setPersonalMessage] = useState('');
 
@@ -47,19 +79,36 @@ const CustomizeLinkPreview = () => {
 		<SettingCard cardTitle='Customize Link Preview'>
 			<div className='px-6 sm:p-6 text-start'>
 				<img src={customizeLinkImg} className='w-auto h-auto mb-4 sm:h-72 rounded-xl' />
-				<div className='flex flex-col gap-5'>
+				<TextProvider className='text-[16px] my-2 font-semibold' colorStyle='#667085'>
+					Sending your personalized link to your guest will unveil a delightful preview
+				</TextProvider>
+				<div className='flex flex-col gap-3 my-4'>
+					<InputFieldProvider
+						title='Preview Title'
+						placeholder='Walimatulurus Izzul & Syaf'
+						value={previewTitle}
+						minHeight='30px'
+						onChange={(e) => {
+							setPreviewTitle(e.target.value);
+						}}
+					/>
 					<TextAreaProvider
-						title='Write a preview description'
-						placeholder='Anda dijemput dengan hormat ke Majlis Perkahwinan'
+						title='Preview Description'
+						placeholder='Sila tekan untuk sampaikan kehadiran anda'
 						value={previewDescription}
 						className='text-left'
-						minHeight='120px'
+						minHeight='30px'
 						onChange={(e) => {
 							setPreviewDescription(e.target.value);
 						}}
 					/>
+					<ButtonProvider type='primary' width='150px' className='uppercase'>
+						Update Preview
+					</ButtonProvider>
+				</div>
+				<div className='flex flex-col gap-3 my-4'>
 					<TextAreaProvider
-						title='Add a personal message to your invitation'
+						title='Message'
 						placeholder='🌹 UNDANGAN WALIMATUL URUS 🌹
  
 Assalamualaikum & Salam Sejahtera.
@@ -105,9 +154,9 @@ Sekian, terima kasih.'
 					<SubDescriptionText>
 						Copy and paste to WhatsApp or any other messenger along with the link
 					</SubDescriptionText>
-					<ButtonProvider width='120px' className='uppercase'>
+					<ButtonProvider width='160px' className='uppercase'>
 						<CopyIcon />
-						Copy
+						Copy Message
 					</ButtonProvider>
 				</div>
 			</div>
@@ -115,6 +164,7 @@ Sekian, terima kasih.'
 	);
 };
 
+/********* Public Link */
 const SharePublicInviteLink = () => {
 	return (
 		<SettingCard cardTitle='Share Public Invite Link'>
@@ -142,6 +192,7 @@ const SharePublicInviteLink = () => {
 	);
 };
 
+/******* Personalized Link */
 const PersonalizedImageContainer = ({ children }) => {
 	return (
 		<div
@@ -221,22 +272,20 @@ const SharePersonalizedInviteLink = () => {
 					<SubTitleText>
 						Step-by-step how to send personalized link to individual guest
 					</SubTitleText>
-					<div className='w-full'>
-						<Swiper pagination={true} modules={[Pagination]} className='mySwiper rounded-lg'>
-							<SwiperSlide>
-								<Personalized_1 />
-							</SwiperSlide>
-							<SwiperSlide>
-								<Personalized_2 />
-							</SwiperSlide>
-							<SwiperSlide>
-								<Personalized_3 />
-							</SwiperSlide>
-							<SwiperSlide>
-								<Personalized_4 />
-							</SwiperSlide>
-						</Swiper>
-					</div>
+					<Swiper pagination={true} modules={[Pagination]} className='max-w-[340px] rounded-lg'>
+						<SwiperSlide>
+							<Personalized_1 />
+						</SwiperSlide>
+						<SwiperSlide>
+							<Personalized_2 />
+						</SwiperSlide>
+						<SwiperSlide>
+							<Personalized_3 />
+						</SwiperSlide>
+						<SwiperSlide>
+							<Personalized_4 />
+						</SwiperSlide>
+					</Swiper>
 				</div>
 				<ButtonProvider
 					width='200px'
@@ -253,6 +302,7 @@ const SharePersonalizedInviteLink = () => {
 function ShareInvite() {
 	return (
 		<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col items-center pt-28 bg-white sm:bg-transparent'>
+			<DigitalInvitePublished />
 			<CustomizeLinkPreview />
 			<SharePublicInviteLink />
 			<SharePersonalizedInviteLink />

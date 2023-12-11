@@ -1,13 +1,14 @@
 /** @format */
 
 import React, { useState } from 'react';
+import { useUserData } from '../../hooks/useFetchAPI';
+import { useFormContext } from 'react-hook-form';
 import axios from 'axios';
 import { Route, Routes, Link, Navigate } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
-	useDigitalInviteInputErrorContext,
 } from '../../context/DigitalInviteContext';
 import { useUserContext } from '../../context/UserContext';
 import { useRsvp } from '../../hooks/useRsvp';
@@ -126,7 +127,7 @@ const GenerateInviteLink = ({ isOpen, handleClose }) => {
 };
 
 const GeneratePreview = ({ isOpen, handleClose }) => {
-	const { userData } = useUserContext();
+	const { data: userData } = useUserData();
 
 	return (
 		<ModalProviderPreviewInvite
@@ -136,7 +137,7 @@ const GeneratePreview = ({ isOpen, handleClose }) => {
 			<div className='h-full w-full flex justify-center'>
 				<div className='w-full max-w-[400px]'>
 					<iframe
-						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/1/${userData.userId}`}
+						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/1/${userData?.userId}`}
 						width='100%'
 						height='670'></iframe>
 				</div>
@@ -146,41 +147,31 @@ const GeneratePreview = ({ isOpen, handleClose }) => {
 };
 
 const DigitalInviteTopBar = () => {
+	const {
+		register,
+		watch,
+		formState: { errors },
+	} = useFormContext();
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const { inviteState, state } = useDigitalInviteContext();
-	const { scrollEventTitle1, checkForInputError } = useDigitalInviteInputErrorContext();
 	const [modal, setModal] = useState(false);
 	const [previewModal, setPreviewModal] = useState(false);
 	const { updateUserRsvp, isPending } = useRsvp();
-	const { userData } = useUserContext();
-	const location = useLocation();
+	const { dispatch } = useDigitalInviteDispatchContext();
 
 	let navigate = useNavigate();
 
-	const handlePreview = () => {
-		if (checkForInputError()) {
-			navigate('/invite-preview');
-		} else {
-			console.log('Fix those errors!');
-		}
-	};
+	const handlePreview = () => {};
 
 	const handleNewPreview = () => {
 		setPreviewModal(true);
 	};
 
 	const handleSavePublish = () => {
-		//checkForInputError returns true if no errors
-		if (checkForInputError()) {
-			if (userData?.inviteId) {
-				updateUserRsvp(inviteState, () => {
-					console.log('Done!');
-				});
-			} else {
-				setModal(true);
-			}
-		} else {
-			console.log('inviteState', inviteState);
+		const freeErrors = Object.keys(errors).length === 0;
+
+		if (!freeErrors) {
+			dispatch({ type: 'SET_ACCORDIANS_COLLAPSE', payload: false });
 		}
 	};
 
@@ -226,6 +217,7 @@ const DigitalInviteTopBar = () => {
 							{!phoneSize && <TextProvider className='uppercase'>Preview</TextProvider>}
 						</ButtonProvider>
 						<ButtonProvider
+							button
 							disabled={isPending}
 							padding='12px 20px'
 							type='primary'
@@ -255,6 +247,7 @@ function DigitalInvite() {
 				{/* <Route exact path='/content' element={<Content />} /> */}
 				<Route exact path='/template' element={<Template />} />
 				<Route exact path='/gift' element={<GiftRegistry />} />
+				<Route exact path='/wishes' element={<GiftRegistry />} />
 				<Route exact path='/share' element={<ShareInvite />} />
 			</Routes>
 		</div>

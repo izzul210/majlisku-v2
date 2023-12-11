@@ -14,14 +14,14 @@ const PaxButton = ({ children, ...props }) => {
 	);
 };
 
-function PaxInputProviderDispatch({ pax, dispatch, type }) {
+function PaxInputProviderDispatch({ setValue = null, pax }) {
 	const handleIncrement = () => {
-		dispatch({ type, payload: pax + 1 });
+		setValue('guest_pax_limit', pax + 1);
 	};
 
 	const handleDecrement = () => {
 		if (pax > 1) {
-			dispatch({ type, payload: pax - 1 });
+			setValue('guest_pax_limit', pax - 1);
 		}
 	};
 

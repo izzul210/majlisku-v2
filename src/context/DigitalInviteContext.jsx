@@ -2,10 +2,8 @@
 
 import { createContext, useState, useContext, useReducer, useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { useForm, FormProvider } from 'react-hook-form';
 import { useUserContext } from './UserContext';
-//Firebase import
-import { projectFirestore } from '../firebase/config';
-import { doc, collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 export const DigitalInviteContext = createContext(null);
 export const DigitalInviteDispatchContext = createContext(null);
@@ -340,7 +338,7 @@ export const digitalInviteReducer = (state, action) => {
 		case 'SET_ACCORDIANS_COLLAPSE':
 			return {
 				...state,
-				accordiansCollapsed: true,
+				accordiansCollapsed: action.payload,
 			};
 		case 'RESET_ACCORDIANS_COLLAPSE':
 			return {
@@ -370,120 +368,34 @@ export const DigitalInviteContextProvider = () => {
 	const [locationInfoError, setLocationInfoError] = useState(null);
 	const italicTitle = useRef(null);
 	const [italicTitleError, setItalicTitleError] = useState(null);
-	const location = useLocation();
+
+	//New Stuff
+	const methods = useForm();
+	const {
+		reset,
+		setError,
+		watch,
+		formState: { errors },
+	} = methods;
 
 	useEffect(() => {
 		if (userData?.eventDetails) {
-			console.log('eventDetails', userData.eventDetails);
+			reset(userData?.eventDetails);
 			dispatchInvite({ type: 'SET_EVENT_DETAILS', payload: userData.eventDetails });
 		}
 	}, [userData, wishlist]);
 
-	function checkForInputError() {
-		let contentPage = location.pathname === '/digitalinvite/content' ? true : false;
+	function checkForInputError() {}
 
-		// event_title_1, event_title_2, host_details, location.address, event_time.start, evet_time.end, event_date
-		setEventTitle1Error(null);
-		setEventTitle2Error(null);
-		setHostedByError(null);
-		setDateTimeError(null);
-		setLocationInfoError(null);
-		setItalicTitleError(null);
-		if (
-			inviteState.event_title_1 === '' ||
-			inviteState.event_title_2 === '' ||
-			inviteState.host_details === '' ||
-			inviteState.location_info.address === '' ||
-			inviteState.event_time.start === '' ||
-			inviteState.event_time.end === '' ||
-			inviteState.event_date === '' ||
-			inviteState.italic_title === ''
-		) {
-			if (inviteState.event_title_1 === '') {
-				setEventTitle1Error('Please enter event title');
-				scrollEventTitle1();
-				return;
-			}
+	const onSubmit = (formValues) => {
+		console.log('hello');
+		console.log('errors:', errors);
+		if (errors) {
+			dispatch({ type: 'SET_ACCORDIANS_COLLAPSE', payload: false });
 
-			if (inviteState.italic_title === '' && contentPage) {
-				setItalicTitleError('Please enter event title');
-				scrollItalicTitle();
-				return;
-			}
-
-			if (inviteState.event_title_2 === '') {
-				setEventTitle2Error('Please enter event title');
-				scrollEventTitle2();
-				return;
-			}
-
-			if (inviteState.host_details === '') {
-				setHostedByError('Please enter host details');
-				scrollHostedBy();
-				return;
-			}
-
-			if (
-				(inviteState.event_time?.start === null ||
-					inviteState.event_time?.end === null ||
-					inviteState.event_date === '') &&
-				!contentPage
-			) {
-				setDateTimeError('Please enter event date and time');
-				scrollDateTime();
-				return;
-			}
-
-			if (inviteState.location_info.address === '' && !contentPage) {
-				setLocationInfoError('Please enter location');
-				scrollLocationInfo();
-				return;
-			}
-
-			return;
-		} else {
-			return true;
+			console.log('formValues', { ...formValues });
 		}
-	}
-
-	function scrollEventTitle1() {
-		eventTitle1.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-	}
-	function scrollEventTitle2() {
-		eventTitle2.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-	}
-	function scrollHostedBy() {
-		hostedBy.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-	}
-	function scrollDateTime() {
-		dateTime.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-	}
-	function scrollLocationInfo() {
-		locationInfo.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-	}
-	function scrollItalicTitle() {
-		italicTitle.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-	}
-
-	//Real-time update for Itinerary
-	useEffect(() => {
-		const userRef = doc(collection(projectFirestore, 'users'), userId);
-		const activityRef = collection(userRef, 'activity');
-		const activityQuery = query(activityRef, orderBy('date', 'asc'));
-
-		const unsub = onSnapshot(activityQuery, (snapshot) => {
-			let totalGuest = 0;
-			// Handle the snapshot data here
-			// ...
-			const activities = snapshot.docs.map((doc) => {
-				return { ...doc.data(), id: doc.id };
-			});
-
-			dispatch({ type: 'SET_ACTIVITIES', payload: activities });
-		});
-
-		return unsub;
-	}, []);
+	};
 
 	return (
 		<DigitalInviteContext.Provider value={{ state, inviteState }}>
@@ -504,7 +416,11 @@ export const DigitalInviteContextProvider = () => {
 					italicTitleError,
 				}}>
 				<DigitalInviteDispatchContext.Provider value={{ dispatch, dispatchInvite }}>
-					<Outlet />
+					<FormProvider {...methods}>
+						<form onSubmit={methods.handleSubmit(onSubmit)}>
+							<Outlet />
+						</form>
+					</FormProvider>
 				</DigitalInviteDispatchContext.Provider>
 			</DigitalInviteInputErrorContext.Provider>
 		</DigitalInviteContext.Provider>

@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
-import { useUserData } from '../../hooks/useFetchAPI';
+import { useUserData, useEventActivity, useGiftlist } from '../../hooks/useFetchAPI';
+import { useFormContext } from 'react-hook-form';
 //Components import
+import FloatingToTopButton from '../../components/atom/buttons/FloatingToTopButton';
 import SettingCard from '../../components/cards/SettingCard';
 import InputFieldProvider from '../../components/atom/InputField/InputFieldProvider';
 import PaxInputProviderDispatch from '../../components/atom/InputField/PaxInputProviderDispatch';
@@ -29,39 +31,57 @@ import {
 } from '../../context/DigitalInviteContext';
 //Hooks import
 import { useItinerary } from '../../hooks/useItinerary';
+import { useItineraryAPI } from '../../hooks/useItineraryAPI';
+//Assets import
+import exampleEvent from '../../assets/images/exampleEvent.png';
+import exampleAdditional from '../../assets/images/exampleAdditional.png';
+import exampleGreeting from '../../assets/images/exampleGreeting.png';
 //Styling import
 import './DigitalInvite.scss';
 
 function Setting() {
 	const { dispatch } = useDigitalInviteDispatchContext();
+	const { state } = useDigitalInviteContext();
+	const { accordiansCollapsed } = state;
+	//from API
 	const { data: userData } = useUserData();
+	const { data: eventActivity } = useEventActivity();
+	const { data: giftlist } = useGiftlist();
 
-	const handleSetDesign = (value) => {
-		dispatch({ type: 'SET_DESIGN', payload: value });
+	const handleScrollToTop = () => {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth',
+		});
 	};
 
 	return (
 		<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col items-center pt-24 bg-white sm:bg-transparent'>
 			<div className='flex justify-end w-full  px-4 sm:px-6' style={{ maxWidth: '720px' }}>
 				<div className='flex gap-2'>
-					<ButtonProvider
-						height='22px'
+					<div
+						className='cursor-pointer'
 						onClick={() => {
-							dispatch({ type: 'SET_ACCORDIANS_COLLAPSE' });
+							dispatch({ type: 'SET_ACCORDIANS_COLLAPSE', payload: !accordiansCollapsed });
 						}}>
-						Collapse all
-					</ButtonProvider>
+						<TextProvider height='22px' colorStyle='#667085' className='uppercase font-semibold'>
+							{accordiansCollapsed ? 'Expand all' : 'Collapse all'}
+						</TextProvider>
+					</div>
 				</div>
 			</div>
 			<General />
 			<EventDetails />
 			<DateTime />
 			<LocationMap />
+			<Greeting />
 			<GuestPax />
 			<ContactInformation />
 			<Tentative />
+			<GuestWish />
 			<GiftRegistry />
 			<MoneyGift />
+			<FloatingToTopButton onClickToTop={handleScrollToTop} />
 		</div>
 	);
 }
@@ -81,7 +101,9 @@ const SubDescriptionText = ({ children }) => (
 );
 
 const InputTitleText = ({ children }) => (
-	<TextProvider className='uppercase font-semibold text-sm mb-0'>{children}</TextProvider>
+	<TextProvider className='uppercase font-semibold text-sm mb-2 text-[#475467]'>
+		{children}
+	</TextProvider>
 );
 
 const InputErrorText = ({ children }) => (
@@ -90,13 +112,21 @@ const InputErrorText = ({ children }) => (
 	</TextProvider>
 );
 
+const InputErrorText2 = (props) => {
+	const { errorField, errorText = 'This field is required!' } = props;
+	return errorField ? (
+		<TextProvider colorStyle='#D83232' className='text-sm'>
+			{errorText}
+		</TextProvider>
+	) : null;
+};
+
 const General = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { enable_bahasa } = inviteState;
+	const { watch, setValue } = useFormContext();
+	const enable_bahasa = watch('enable_bahasa');
 
 	const handleOnChange = (type, payload) => {
-		return dispatchInvite({ type, payload });
+		setValue('enable_bahasa', payload);
 	};
 
 	const LanguageCard = ({
@@ -161,177 +191,228 @@ const General = () => {
 	);
 };
 
-{
-	/******* Event Details ******/
-}
+/******* Event Details ******/
 const EventDetails = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { eventTitle1, eventTitle2, hostedBy, eventTitle1Error, eventTitle2Error, hostedByError } =
-		useDigitalInviteInputErrorContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
 	const {
-		enable_bahasa,
-		event_title_1,
-		event_title_2,
-		description,
-		host_details,
-		rsvp_header_image,
-		rsvp_header_image_file,
-	} = inviteState;
+		register,
+		watch,
+		formState: { errors },
+	} = useFormContext();
+	const { inviteState } = useDigitalInviteContext();
+	const { dispatchInvite } = useDigitalInviteDispatchContext();
+	const { rsvp_header_image, rsvp_header_image_file } = inviteState;
 
-	const handleOnChange = (type) => {
-		return (event) => dispatchInvite({ type, payload: event.target.value });
-	};
+	const [openExample, setOpenExample] = useState(false);
+	const [openAdditionalExample, setOpenAdditionalExample] = useState(false);
+
+	const enable_bahasa = watch('enable_bahasa');
 
 	return (
-		<SettingCard stepNum='2' cardTitle={enable_bahasa ? 'Maklumat Majlis' : 'Event Details'}>
-			<div className='py-4 px-6 text-start flex flex-col gap-4'>
-				<div ref={eventTitle1}>
-					<InputFieldProvider
-						title='EVENT TITLE 1*'
-						placeholder='Walimatulurus'
-						value={event_title_1}
-						textSize='text-sm'
-						onChange={handleOnChange('SET_EVENT_TITLE_1')}
-						error={eventTitle1Error}
-					/>
-					{eventTitle1Error && <InputErrorText>{eventTitle1Error}</InputErrorText>}
-				</div>
-				<div ref={eventTitle2}>
-					<TextAreaProvider
-						title='EVENT TITLE 2*'
-						placeholder='Izzul Syazwan & Nurul Syafiqah'
-						value={event_title_2}
-						className='text-center'
-						minHeight='100px'
-						onChange={handleOnChange('SET_EVENT_TITLE_2')}
-						error={eventTitle2Error}
-					/>
-					{eventTitle2Error && <InputErrorText>{eventTitle2Error}</InputErrorText>}
-				</div>
-				<div ref={hostedBy}>
-					<TextAreaProvider
-						title='HOSTED BY*'
-						placeholder='Ir. Ts Mohd Rizal bin Johari
-&	 Zubaidah Binti Mohd Isa'
-						value={host_details}
-						className='text-center'
-						minHeight='100px'
-						onChange={handleOnChange('SET_HOST_DETAILS')}
-						error={hostedByError}
-					/>
-					{hostedByError && <InputErrorText>{hostedByError}</InputErrorText>}
-				</div>
-
-				<TextAreaProvider
-					title='OPTIONAL DESCRIPTION'
-					placeholder='Tema:
+		<>
+			<SettingCard stepNum='2' cardTitle={enable_bahasa ? 'Maklumat Majlis' : 'Event Details'}>
+				<div className='py-4 px-6 text-start flex flex-col gap-4'>
+					<div
+						className='flex items-center gap-2 cursor-pointer'
+						onClick={() => setOpenExample(true)}>
+						<InfoIcon width={20} height={20} fill='#667085' />
+						<TextProvider
+							colorStyle='#667085'
+							className='text-sm font-semibold uppercase underline'>
+							{enable_bahasa ? 'Lihat Contoh' : 'View Example'}
+						</TextProvider>
+					</div>
+					<div>
+						<InputFieldProvider
+							controls={{
+								...register('event_title_1', { required: 'Event type is required!' }),
+							}}
+							title={enable_bahasa ? 'JENIS MAJLIS *' : 'EVENT TYPE *'}
+							placeholder='Walimatulurus'
+							textSize='text-sm'
+							error={errors.event_title_1}
+						/>
+						<InputErrorText2
+							errorField={errors.event_title_1}
+							errorText={errors.event_title_1?.message}
+						/>
+					</div>
+					<div>
+						<TextAreaProvider
+							controls={{
+								...register('italic_title', { required: 'Event title is required!' }),
+							}}
+							title={enable_bahasa ? 'TAJUK MAJLIS *' : 'EVENT TITLE *'}
+							placeholder='Izzul Syazwan & Nurul Syafiqah'
+							className='text-center'
+							minHeight='100px'
+							error={errors.italic_title}
+						/>
+						<InputErrorText2
+							errorField={errors.italic_title}
+							errorText={errors.italic_title?.message}
+						/>
+					</div>
+					<div>
+						<TextAreaProvider
+							controls={{ ...register('optional_description') }}
+							title={enable_bahasa ? 'DESKRIPSI SAMPINGAN' : 'OPTIONAL DESCRIPTION'}
+							placeholder='15.10.2022
+Shah Alam, Selangor'
+							className='text-center'
+							minHeight='120px'
+						/>
+						<TextProvider className='text-[14px]' colorStyle='#98A2B3'>
+							Date/ Time / Venue/ etc
+						</TextProvider>
+					</div>
+					<div>
+						<InputTitleText>{enable_bahasa ? 'Gambar Utama*' : 'Featured Image*'}</InputTitleText>
+						<ImageUpload
+							defaultImgUrl={
+								rsvp_header_image_file
+									? URL.createObjectURL(rsvp_header_image_file)
+									: rsvp_header_image
+							}
+							dispatch={dispatchInvite}
+							type='SET_RSVP_HEADER_IMAGE_FILE'
+							aspectRatio={0.88}
+							key='RSVP_HEADER_IMAGE_FILE'
+						/>
+					</div>
+					<div>
+						<TextAreaProvider
+							controls={{ ...register('description') }}
+							title={enable_bahasa ? 'BUTIRAN SAMPINGAN' : 'Additional Details'}
+							placeholder='Tema:
 Lelaki: Baju Melayu/ batik
 Perempuan: Baju kurung/ bersesuaian
 				
 Sila rsvp sebelum 27 may'
-					value={description}
-					className='text-left'
-					minHeight='160px'
-					onChange={handleOnChange('SET_DESCRIPTION')}
-				/>
-				<InputTitleText>{enable_bahasa ? 'Image Header' : 'Gambar'}</InputTitleText>
-				<ImageUpload
-					defaultImgUrl={
-						rsvp_header_image_file ? URL.createObjectURL(rsvp_header_image_file) : rsvp_header_image
-					}
-					dispatch={dispatchInvite}
-					type='SET_RSVP_HEADER_IMAGE_FILE'
-					aspectRatio={0.88}
-					key='RSVP_HEADER_IMAGE_FILE'
-				/>
-			</div>
-		</SettingCard>
+							className='text-left'
+							minHeight='160px'
+						/>
+
+						<div
+							className='flex items-center gap-2 cursor-pointer'
+							onClick={() => setOpenAdditionalExample(true)}>
+							<TextProvider
+								colorStyle='#667085'
+								className='text-sm font-semibold uppercase underline'>
+								{enable_bahasa ? 'Lihat Contoh' : 'View Example'}
+							</TextProvider>
+						</div>
+					</div>
+				</div>
+			</SettingCard>
+			<EventDetailsExample isOpen={openExample} handleClose={() => setOpenExample(false)} />
+			<EventAdditionalDetailsExample
+				isOpen={openAdditionalExample}
+				handleClose={() => setOpenAdditionalExample(false)}
+			/>
+		</>
 	);
 };
 
-{
-	/******* Date & Time ******/
-}
+const EventDetailsExample = ({ isOpen, handleClose }) => {
+	return (
+		<ModalProvider2 isOpen={isOpen} handleClose={handleClose} title='Example'>
+			<div className='flex justify-center itmes-center bg-[#FBEFEF] py-10'>
+				<img src={exampleEvent} alt='example' className='w-[234px]' />
+			</div>
+		</ModalProvider2>
+	);
+};
+
+const EventAdditionalDetailsExample = ({ isOpen, handleClose }) => {
+	return (
+		<ModalProvider2 isOpen={isOpen} handleClose={handleClose} title='Example'>
+			<div className='flex justify-center itmes-center bg-[#FBEFEF]'>
+				<img src={exampleAdditional} alt='example' className='w-full max-w-[400px]' />
+			</div>
+		</ModalProvider2>
+	);
+};
+
+/******* Date & Time ******/
 const DateTime = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { dateTime, dateTimeError } = useDigitalInviteInputErrorContext();
 	const {
-		enable_bahasa,
-		event_date,
-		event_time,
-		enable_multiple_slots,
-		event_time_slot_2,
-		enable_deadline,
-		event_date_deadline,
-	} = inviteState;
+		control,
+		watch,
+		formState: { errors },
+	} = useFormContext();
+
+	const enable_bahasa = watch('enable_bahasa');
 
 	return (
-		<SettingCard stepNum='3' cardTitle={!enable_bahasa ? 'Date & Time' : 'Tarikh & Masa'}>
-			<div className='py-4 px-6 text-start flex flex-col gap-4' ref={dateTime}>
+		<SettingCard stepNum='3' cardTitle={!enable_bahasa ? 'Date & Time' : 'Tarikh & Waktu'}>
+			<div className='py-4 px-6 text-start flex flex-col gap-4'>
 				<div>
-					<TextProvider className='uppercase font-semibold mb-2 text-sm'>Date</TextProvider>
-					<DatePickerProvider
-						value={event_date}
-						dispatchInvite={dispatchInvite}
-						type='SET_EVENT_DATE'
-					/>
+					<InputTitleText className='uppercase font-semibold mb-2 text-sm'>
+						{enable_bahasa ? 'Tarikh *' : 'Date *'}
+					</InputTitleText>
+					<DatePickerProvider control={control} name='event_date' required='Date is required!' />
 				</div>
 				<div>
-					<TextProvider className='uppercase font-semibold text-sm mb-2'>Time</TextProvider>
+					<InputTitleText className='uppercase font-semibold text-sm mb-2'>
+						{enable_bahasa ? 'Waktu *' : 'Time *'}
+					</InputTitleText>
 					<div className='flex gap-2'>
 						<TimePickerProvider
 							label='Start'
-							value={event_time?.start}
-							dispatchInvite={dispatchInvite}
-							type='SET_EVENT_START_TIME'
+							control={control}
+							name='event_time.start'
+							required='Start time is required!'
 						/>
 						<TimePickerProvider
 							label='End'
-							value={event_time?.end}
-							dispatchInvite={dispatchInvite}
-							type='SET_EVENT_END_TIME'
+							control={control}
+							name='event_time.end'
+							required='End time is required!'
 						/>
 					</div>
 				</div>
-				{dateTimeError && <InputErrorText>{dateTimeError}</InputErrorText>}
+				{errors.event_time && <InputErrorText>{errors.event_time?.message}</InputErrorText>}
 				<div className='flex flex-row justify-between border-t pt-4'>
 					<div className='flex flex-col gap-2'>
 						<TextProvider className='uppercase text-sm font-semibold' color='text-gray-500'>
-							Multiple Time Slot
+							{enable_bahasa ? 'Slot Masa' : 'Multiple Time Slot'}
 						</TextProvider>
 						<TextProvider className='font-medium text-xs' color='text-gray-500'>
-							Set up time slots for your event to connect with family, friends and coworkers.
+							{enable_bahasa
+								? 'Tetapkan slot masa majlis untuk bersama keluarga, kawan, dan rakan sekerja'
+								: 'Set up time slots for your event to connect with family, friends and coworkers.'}
 						</TextProvider>
 					</div>
 					<div>
 						<ToggleSwitch
-							value={enable_multiple_slots}
-							dispatch={dispatchInvite}
-							type='ENABLE_MULTIPLE_SLOT'
+							name='enable_multiple_slots'
+							defaultValue={watch('enable_multiple_slots')}
+							control={control}
 						/>
 					</div>
 				</div>
-				{enable_multiple_slots && (
+				{watch('enable_multiple_slots') && (
 					<div className='flex flex-col gap-3'>
 						<div className='flex flex-col gap-1'>
-							<TextProvider className='uppercase font-semibold text-sm mb-1'>Slot 1</TextProvider>
+							<InputTitleText className='uppercase font-semibold text-sm mb-1'>
+								Slot 1
+							</InputTitleText>
 							<TimePickerProvider
 								label='Start'
-								value={event_time?.start}
-								dispatchInvite={dispatchInvite}
-								type='NULL'
+								control={control}
+								name='event_time.start'
 								disabled
 							/>
 						</div>
 						<div className='flex flex-col gap-1'>
-							<TextProvider className='uppercase font-semibold text-sm mb-1'>Slot 2</TextProvider>
+							<InputTitleText className='uppercase font-semibold text-sm mb-1'>
+								Slot 2
+							</InputTitleText>
 							<TimePickerProvider
 								label='Start'
-								value={event_time_slot_2}
-								dispatchInvite={dispatchInvite}
-								type='SET_EVENT_SLOT_2'
+								control={control}
+								name='event_time_slot_2'
+								required='2nd Time Slot is required!'
 							/>
 						</div>
 					</div>
@@ -346,28 +427,30 @@ const DateTime = () => {
 						<div className='flex flex-row justify-between'>
 							<div>
 								<TextProvider className='uppercase text-sm font-semibold' color='text-gray-500'>
-									Deadline
+									{enable_bahasa ? 'Tarikh Akhir Rsvp' : 'Rsvp Deadline'}
 								</TextProvider>
 								<TextProvider className='font-medium text-xs' color='text-gray-500'>
-									Stop allowing guest to RSVP by the date
+									{enable_bahasa
+										? 'Hentikan penerimaan RSVP selepas tarikh yang ditetapkan'
+										: 'Stop accepting RSVPs after the specified date.'}
 								</TextProvider>
 							</div>
 							<div>
 								<ToggleSwitch
-									value={enable_deadline}
-									dispatch={dispatchInvite}
-									type='ENABLE_DEADLINE'
+									name='enable_deadline'
+									defaultValue={watch('enable_deadline')}
+									control={control}
 								/>
 							</div>
 						</div>
 
-						{enable_deadline && (
+						{watch('enable_deadline') && (
 							<div className='w-full mt-2'>
 								<DatePickerProvider
-									defaultValue={moment(event_date)}
-									value={event_date_deadline}
-									dispatchInvite={dispatchInvite}
-									type='SET_EVENT_DATE_DEADLINE'
+									defaultValue={moment(watch('event_date'))}
+									control={control}
+									name='event_date_deadline'
+									required='Deadline is required!'
 									className='w-full'
 								/>
 							</div>
@@ -379,67 +462,58 @@ const DateTime = () => {
 	);
 };
 
-{
-	/******* Location & Map ******/
-}
+/******* Location & Map ******/
 const LocationMap = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { locationInfo, locationInfoError } = useDigitalInviteInputErrorContext();
+	const {
+		register,
+		watch,
+		formState: { errors },
+	} = useFormContext();
 
-	const { location_info, event_address, enable_bahasa } = inviteState;
-
-	const handleOnChange = (type) => {
-		return (event) => dispatchInvite({ type, payload: event.target.value });
-	};
-
-	const handleOnChangeLocation = (event) => {
-		dispatchInvite({ type: 'SET_EVENT_ADDRESS', payload: event.target.value });
-		dispatchInvite({ type: 'SET_LOCATION_INFO_ADDRESS', payload: event.target.value });
-	};
+	const enable_bahasa = watch('enable_bahasa');
 
 	return (
-		<SettingCard stepNum='4' cardTitle={!enable_bahasa ? 'Location & Map' : 'Lokasi & Map'}>
+		<SettingCard stepNum='4' cardTitle={enable_bahasa ? 'Lokasi' : 'Location'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-4'>
-				<div ref={locationInfo}>
+				<div>
 					<TextAreaProvider
-						title='LOCATION *'
+						controls={{ ...register('event_address', { required: 'Venu address is required!' }) }}
+						title={enable_bahasa ? 'Alamat tempat *' : 'Venue Address'}
 						placeholder='Eg: Changkat Telang,
 49, B52, Pekan Batu Lapan Belas,
 43100 Hulu Langat, Selangor.'
-						value={event_address}
 						className='text-left'
 						minHeight='100px'
-						onChange={handleOnChangeLocation}
-						error={locationInfoError}
+						error={errors.event_address}
 					/>
-					{locationInfoError && <InputErrorText>{locationInfoError}</InputErrorText>}
+					<InputErrorText2
+						errorField={errors.event_address}
+						errorText={errors.event_address?.message}
+					/>
 				</div>
 
 				<div className='flex flex-col gap-4'>
 					<InputFieldProvider
-						textSize='text-sm'
-						title='GOOGLE MAP'
-						placeholder='https://www.google.com.my/maps'
-						error={null}
-						value={location_info?.googleLink}
-						onChange={handleOnChange('SET_GOOGLE_LOCATION_LINK')}
-					/>
-					<InputFieldProvider
+						controls={{ ...register('location_info.wazeLink') }}
 						textSize='text-sm'
 						title='WAZE'
 						placeholder='https://www.waze.com/live-map'
 						error={null}
-						value={location_info?.wazeLink}
-						onChange={handleOnChange('SET_WAZE_LOCATION_LINK')}
+					/>
+					<InputFieldProvider
+						controls={{ ...register('location_info.googleLink') }}
+						textSize='text-sm'
+						title='GOOGLE MAP'
+						placeholder='https://www.google.com.my/maps'
+						error={null}
 					/>
 				</div>
 				<a
 					href={'https://majlisku.com/create-digital-invite/#Step_3b_Location_and_Map'}
 					target='_blank'
 					rel='noreferrer'>
-					<TextProvider className='text-xs text-gray-500'>
-						Tutorial for copy and paste map URL
+					<TextProvider className='text-[14px] uppercase underline' colorStyle='#667085'>
+						Tutorial for copy and paste map url
 					</TextProvider>
 				</a>
 			</div>
@@ -447,48 +521,154 @@ const LocationMap = () => {
 	);
 };
 
-{
-	/******* Guest & Pax ******/
-}
-const GuestPax = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { enable_unlimited_pax, guest_pax_limit, enable_bahasa } = inviteState;
+/******* Event Details ******/
+const Greeting = () => {
+	const { register, watch } = useFormContext();
+	const [openExample, setOpenExample] = useState(false);
+
+	const enable_bahasa = watch('enable_bahasa');
 
 	return (
-		<SettingCard stepNum='5' cardTitle={enable_bahasa ? 'Bilangan Kehadiran' : 'Guest Pax'}>
+		<>
+			<SettingCard stepNum='5' cardTitle={enable_bahasa ? 'Ucapan' : 'Greeting'}>
+				<div className='py-4 px-6 text-start flex flex-col gap-4'>
+					<div
+						className='flex items-center gap-2 cursor-pointer'
+						onClick={() => setOpenExample(true)}>
+						<InfoIcon width={20} height={20} fill='#667085' />
+						<TextProvider
+							colorStyle='#667085'
+							className='text-sm font-semibold uppercase underline'>
+							{enable_bahasa ? 'Lihat Contoh' : 'View Example'}
+						</TextProvider>
+					</div>
+
+					<InputFieldProvider
+						controls={{
+							...register('event_opening_title'),
+						}}
+						title={enable_bahasa ? 'Pembuka' : 'Opening'}
+						placeholder='Assalammualaikum dan salam sejahtera'
+						textSize='text-sm'
+					/>
+					<TextAreaProvider
+						controls={{
+							...register('host_details'),
+						}}
+						title={enable_bahasa ? 'Penganjur' : 'Host'}
+						placeholder='Ir. Ts Mohd Rizal bin Johari
+&	 Zubaidah Binti Mohd Isa'
+						className='text-center'
+						minHeight='100px'
+					/>
+					<TextAreaProvider
+						controls={{
+							...register('greeting_1'),
+						}}
+						title={enable_bahasa ? 'Teks Ucapan A' : 'Greeting Text A'}
+						placeholder='Dengan segala hormatnya kami mempersilakan'
+						className='text-center'
+						minHeight='100px'
+					/>
+					<TextAreaProvider
+						controls={{
+							...register('greeting_title'),
+						}}
+						title={enable_bahasa ? 'Gelaran Rasmi' : 'Honorific Titles'}
+						placeholder='Ybhg Tun/ Toh Puan/ Tan Sri/ Puan Sri/ Dato’s Sri/ Datin Sri/ Dato’/ Datin/ Tuan/ Puan'
+						className='text-center'
+						minHeight='100px'
+					/>
+					<TextAreaProvider
+						controls={{
+							...register('greeting_2'),
+						}}
+						title={enable_bahasa ? 'Teks Ucapan B' : 'Greeting Text B'}
+						placeholder='ke majlis resepsi untuk meraikan Perkahwinan Putera kesayangan kami'
+						className='text-center'
+						minHeight='100px'
+					/>
+					<TextAreaProvider
+						controls={{
+							...register('event_title_2'),
+						}}
+						title={enable_bahasa ? 'Nama Penuh' : 'Full Name'}
+						placeholder='Mohd Izzul Syazwan bin Mohd Rizal
+						&
+						Nurul Syafiqah binti Othman'
+						className='text-center'
+						minHeight='110px'
+					/>
+				</div>
+			</SettingCard>
+			<GreetingDetailsExample isOpen={openExample} handleClose={() => setOpenExample(false)} />
+		</>
+	);
+};
+
+const GreetingDetailsExample = ({ isOpen, handleClose }) => {
+	return (
+		<ModalProvider2 isOpen={isOpen} handleClose={handleClose} title='Example'>
+			<div className='flex justify-center itmes-center bg-[#FBEFEF] py-10'>
+				<img src={exampleGreeting} alt='example' className='w-[264px]' />
+			</div>
+		</ModalProvider2>
+	);
+};
+
+/******* Guest & Pax ******/
+const GuestPax = () => {
+	const {
+		register,
+		setValue,
+		watch,
+		control,
+		formState: { errors },
+	} = useFormContext();
+
+	const enable_bahasa = watch('enable_bahasa');
+
+	return (
+		<SettingCard stepNum='6' cardTitle={enable_bahasa ? 'Tetamu' : 'Guest'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-6'>
 				<div className='flex justify-between'>
 					<div className='flex flex-col gap-2'>
 						<TextProvider className='uppercase text-sm font-semibold' color='text-gray-600'>
-							Unlimited Pax
+							{enable_bahasa ? 'Tiada had' : 'No limit'}
 						</TextProvider>
 						<TextProvider className='font-medium text-xs' color='text-gray-600'>
-							Guest can bring as many plus ones as they want
+							{enable_bahasa
+								? 'Tetamu boleh bawa seramai mungkin'
+								: 'Guest can bring as many plus ones as they want'}
 						</TextProvider>
 					</div>
 					<div>
 						<ToggleSwitch
-							value={enable_unlimited_pax}
-							dispatch={dispatchInvite}
-							type='ENABLE_UNLIMITED_PAX'
+							name='enable_unlimited_pax'
+							defaultValue={watch('enable_unlimited_pax')}
+							control={control}
 						/>
 					</div>
 				</div>
 				<div className='flex justify-between'>
 					<TextProvider className='uppercase text-sm font-semibold' color='text-gray-600'>
-						Limit Pax Per Guest
+						{enable_bahasa ? 'Had tetamu bagi setiap rsvp' : 'Guest Limit Per Rsvp'}
 					</TextProvider>
-					<PaxInputProviderDispatch
-						pax={guest_pax_limit}
-						dispatch={dispatchInvite}
-						type='SET_GUEST_PAX_LIMIT'
-					/>
+					<PaxInputProviderDispatch setValue={setValue} pax={watch('guest_pax_limit')} />
 				</div>
 				<div className='rounded-xl p-4 bg-red-50 flex items-start gap-2'>
 					<InfoIcon />
 					<TextProvider className='text-sm font-medium' color='text-black'>
-						You can edit pax for individual guest in <b className='italic'>Guestlist</b>
+						{enable_bahasa ? (
+							<>
+								Anda boleh menetapkan bilangan orang bagi setiap tetamu di{' '}
+								<b className='italic'>Guestlist</b> pada bila-bila masa
+							</>
+						) : (
+							<>
+								You can edit pax for individual guest in <b className='italic'>Guestlist</b> anytime
+							</>
+						)}
 					</TextProvider>
 				</div>
 			</div>
@@ -496,46 +676,43 @@ const GuestPax = () => {
 	);
 };
 
-{
-	/******* Contact Information ******/
-}
+/******* Contact Information ******/
 const ContactInformation = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { contact_info, enable_bahasa } = inviteState;
+	const {
+		setValue,
+		watch,
+		getValues,
+		formState: { errors },
+	} = useFormContext();
+
+	const enable_bahasa = watch('enable_bahasa');
 
 	const addContactPerson = () => {
-		let tempContacts = contact_info;
+		let tempContacts = getValues('contact_info');
 		tempContacts.push({ name: '', phone: '' });
-		dispatchInvite({ type: 'SET_CONTACT_INFO', payload: tempContacts });
+		setValue('contact_info', tempContacts);
 	};
 
 	const removeContactPerson = (contactIndex) => {
-		let tempContacts = contact_info;
+		let tempContacts = getValues('contact_info');
 		if (contactIndex > -1) {
 			tempContacts.splice(contactIndex, 1);
-			dispatchInvite({ type: 'SET_CONTACT_INFO', payload: tempContacts });
+			setValue('contact_info', tempContacts);
 		}
 	};
 
 	return (
-		<SettingCard stepNum='6' cardTitle={enable_bahasa ? 'Telefon' : 'Contact'}>
+		<SettingCard stepNum='7' cardTitle={enable_bahasa ? 'Hubungi' : 'Contact'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-6'>
 				<div className='flex flex-col gap-3'>
-					{contact_info.map((contact, index) => (
-						<ContactInfo
-							key={index}
-							index={index}
-							removeFunc={removeContactPerson}
-							value={contact}
-							dispatchInvite={dispatchInvite}
-						/>
+					{watch('contact_info')?.map((contact, index) => (
+						<ContactInfo key={index} index={index} removeFunc={removeContactPerson} />
 					))}
 
 					<div
 						onClick={() => addContactPerson()}
 						className='flex items-center gap-2 mt-2 cursor-pointer'>
-						<PlusIcon />{' '}
+						<PlusIcon />
 						<TextProvider className='uppercase text-sm font-semibold'>
 							{' '}
 							Add Contact Person
@@ -547,38 +724,51 @@ const ContactInformation = () => {
 	);
 };
 
-{
-	/******* Contact Information ******/
-}
-const ContactInfo = ({ index, removeFunc, value, dispatchInvite }) => {
-	const handleNameOnChange = (index) => {
-		return (event) =>
-			dispatchInvite({
-				type: 'EDIT_CONTACT_INFO_BASED_ON_INDEX',
-				payload: { name: event.target.value },
-				index: index,
-			});
-	};
-
-	const handlePhoneOnChange = (index) => {
-		return (event) =>
-			dispatchInvite({
-				type: 'EDIT_CONTACT_INFO_BASED_ON_INDEX',
-				payload: { phone: event.target.value },
-				index: index,
-			});
-	};
+const ContactInfo = ({ index, removeFunc }) => {
+	const {
+		register,
+		formState: { errors },
+	} = useFormContext();
 
 	return (
 		<div className='text-start'>
 			<SubTitleText>Person {index + 1}</SubTitleText>
 			<div className='flex flex-col gap-2 my-2'>
-				<InputField placeholder='Name' value={value.name} onChange={handleNameOnChange(index)} />
 				<InputField
-					placeholder='Phone Number'
-					value={value.phone}
-					onChange={handlePhoneOnChange(index)}
+					error={errors.contact_info && errors.contact_info[index]?.name}
+					placeholder='Name'
+					controls={{
+						...register(`contact_info[${index}].name`, {
+							required: 'Contact name is required!',
+						}),
+					}}
 				/>
+				<InputErrorText2
+					errorField={errors.contact_info && errors.contact_info[index]?.name}
+					errorText={
+						errors.contact_info && errors.contact_info[index]?.name
+							? errors.contact_info[index]?.name?.message
+							: null
+					}
+				/>
+				<InputField
+					error={errors.contact_info && errors.contact_info[index]?.phone}
+					placeholder='Phone Number'
+					controls={{
+						...register(`contact_info[${index}].phone`, {
+							required: 'Contact phone number is required!',
+						}),
+					}}
+				/>
+				<InputErrorText2
+					errorField={errors.contact_info && errors.contact_info[index]?.phone}
+					errorText={
+						errors.contact_info && errors.contact_info[index]?.phone
+							? errors.contact_info[index]?.phone?.message
+							: null
+					}
+				/>
+
 				<div style={{ width: '30px' }}>
 					{index !== 0 ? (
 						<div onClick={() => removeFunc(index)} style={{ cursor: 'pointer' }}>
@@ -593,31 +783,32 @@ const ContactInfo = ({ index, removeFunc, value, dispatchInvite }) => {
 	);
 };
 
-{
-	/******* Tentative ******/
-}
+/******* Tentative ******/
 const Tentative = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { enable_itinerary, enable_bahasa } = inviteState;
+	const {
+		watch,
+		control,
+		formState: { errors },
+	} = useFormContext();
+
+	const enable_bahasa = watch('enable_bahasa');
 
 	return (
-		<SettingCard stepNum='7' cardTitle={enable_bahasa ? 'Aturcara' : 'Tentative'}>
+		<SettingCard stepNum='8' cardTitle={enable_bahasa ? 'Aturcara' : 'Tentative'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-6'>
 				<div className='flex justify-between'>
 					<div className='flex flex-col gap-2'>
-						<SubTitleText>Enable Itinerary</SubTitleText>
-						<SubDescriptionText>Guest can bring as many plus ones as they want</SubDescriptionText>
+						<SubTitleText>{enable_bahasa ? 'Aktifkan Aturcara' : 'Enable Itinerary'}</SubTitleText>
 					</div>
 					<ToggleSwitch
-						value={enable_itinerary}
-						dispatch={dispatchInvite}
-						type='ENABLE_ITINERARY'
+						name='enable_itinerary'
+						defaultValue={watch('enable_itinerary')}
+						control={control}
 					/>
 				</div>
 				<div
 					className='edit-itinerary-actions border p-2 rounded-lg'
-					style={{ opacity: enable_itinerary ? 1 : 0.5 }}>
+					style={{ opacity: watch('enable_itinerary') ? 1 : 0.5 }}>
 					<TentativeContainer />
 				</div>
 			</div>
@@ -626,8 +817,7 @@ const Tentative = () => {
 };
 
 const TentativeContainer = () => {
-	const { state } = useDigitalInviteContext();
-	const { activities } = state;
+	const { data: eventActivity } = useEventActivity();
 	const [activityDetail, setActivityDetail] = useState(null);
 	const [openAddModal, setOpenAddModal] = useState(false);
 	const [openEditModal, setOpenEditModal] = useState(false);
@@ -648,7 +838,7 @@ const TentativeContainer = () => {
 
 	return (
 		<div className='itineraryContent_activity'>
-			{activities?.length === 0 ? (
+			{eventActivity?.length === 0 ? (
 				<div className='no_activity'>
 					<div className='date'>
 						<TextProvider className='font-bold text-sm'>
@@ -664,7 +854,7 @@ const TentativeContainer = () => {
 				</div>
 			) : (
 				<div className='activityContent'>
-					{activities?.map((activity, index) => {
+					{eventActivity?.map((activity, index) => {
 						return (
 							<div className='yes_activity' key={index}>
 								<div className='date'>
@@ -708,7 +898,7 @@ const TentativeContainer = () => {
 			<AddTentativeModal
 				isOpen={openAddModal}
 				handleClose={() => setOpenAddModal(false)}
-				activities={activities}
+				activities={eventActivity}
 			/>
 			<EditentativeModal
 				isOpen={openEditModal}
@@ -721,11 +911,12 @@ const TentativeContainer = () => {
 
 const AddTentativeModal = ({ isOpen, handleClose, activities }) => {
 	const [title, setTitle] = useState('');
+	const [titleError, setTitleError] = useState(false);
 	const [description, setDescription] = useState('');
 	const [time, setTime] = useState(
 		activities?.length > 0 ? `${activities[activities.length - 1]?.date}` : '1983-07-21 08:00'
 	);
-	const { addActivity, isPending } = useItinerary();
+	const { addActivity } = useItineraryAPI();
 
 	useEffect(() => {
 		if (activities?.length > 0) {
@@ -733,33 +924,47 @@ const AddTentativeModal = ({ isOpen, handleClose, activities }) => {
 		}
 	}, [activities]);
 
-	const handlerSubmitActivity = () => {
+	const handlerSubmitActivity = async () => {
 		const activityBody = {
 			title,
 			description,
 			date: time,
 		};
 
-		addActivity(activityBody, () => {
+		if (title === '') {
+			setTitleError(true);
+			return;
+		} else {
+			setTitleError(false);
+		}
+
+		try {
+			await addActivity.mutateAsync(activityBody);
 			handleClose();
-		});
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
 		<ModalProvider2
-			loading={isPending}
+			loading={addActivity?.isLoading}
 			isOpen={isOpen}
 			handleClose={handleClose}
 			title='Add Activity'>
 			<div className='p-4 sm:p-6 flex flex-col gap-4'>
-				<InputFieldProvider
-					title='TITLE'
-					placeholder='Wedding Ceremony'
-					error={null}
-					value={title}
-					textSize='text-sm'
-					onChange={(e) => setTitle(e.target.value)}
-				/>
+				<div className='flex flex-col gap-1'>
+					<InputFieldProvider
+						title='TITLE *'
+						placeholder='Wedding Ceremony'
+						error={titleError}
+						value={title}
+						textSize='text-sm'
+						onChange={(e) => setTitle(e.target.value)}
+					/>
+					<InputErrorText2 errorField={titleError} errorText={'Title is required!'} />
+				</div>
+
 				<TextAreaProvider
 					title='DESCRIPTION'
 					placeholder='1) Doa Recitation
@@ -794,10 +999,11 @@ const AddTentativeModal = ({ isOpen, handleClose, activities }) => {
 
 const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
 	const [title, setTitle] = useState(activityDetail?.title);
+	const [titleError, setTitleError] = useState(false);
 	const [description, setDescription] = useState(activityDetail?.description);
 	const [time, setTime] = useState(activityDetail?.date);
 	const [deleteModal, setDeleteModal] = useState(false);
-	const { editActivity, deleteActivity, isPending } = useItinerary();
+	const { editActivity, deleteActivity } = useItineraryAPI();
 
 	useEffect(() => {
 		//Change the states based on activityDetail
@@ -806,7 +1012,7 @@ const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
 		setTime(activityDetail?.date);
 	}, [activityDetail]);
 
-	const handlerEditActivity = () => {
+	const handlerEditActivity = async () => {
 		const activityBody = {
 			title,
 			description,
@@ -814,34 +1020,50 @@ const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
 			id: activityDetail?.id,
 		};
 
-		editActivity(activityBody, () => {
+		if (title === '') {
+			setTitleError(true);
+			return;
+		} else {
+			setTitleError(false);
+		}
+
+		try {
+			await editActivity.mutateAsync(activityBody);
 			handleClose();
-		});
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
-	const handleDeleteActivity = () => {
-		deleteActivity(activityDetail?.id, () => {
+	const handleDeleteActivity = async () => {
+		try {
+			await deleteActivity.mutateAsync(activityDetail?.id);
 			setDeleteModal(false);
 			handleClose();
-		});
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
 		<>
 			<ModalProvider2
-				loading={isPending}
+				loading={false}
 				isOpen={isOpen}
 				handleClose={handleClose}
 				title='Edit Activity'>
 				<div className='p-4 sm:p-6 flex flex-col gap-4'>
-					<InputFieldProvider
-						title='TITLE'
-						placeholder='Wedding Ceremony'
-						error={null}
-						value={title}
-						textSize='text-sm'
-						onChange={(e) => setTitle(e.target.value)}
-					/>
+					<div className='flex flex-col gap-1'>
+						<InputFieldProvider
+							title='TITLE *'
+							placeholder='Wedding Ceremony'
+							error={titleError}
+							value={title}
+							textSize='text-sm'
+							onChange={(e) => setTitle(e.target.value)}
+						/>
+						<InputErrorText2 errorField={titleError} errorText={'Title is required!'} />
+					</div>
 					<TextAreaProvider
 						title='DESCRIPTION'
 						placeholder='1) Doa Recitation
@@ -888,7 +1110,7 @@ const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
 						<TextProvider className=' font-semibold mt-1'>REMOVE ACTIVITY</TextProvider>
 					</div>
 				}
-				loading={isPending}
+				loading={deleteActivity?.isLoading}
 				isOpen={deleteModal}
 				handleConfirm={handleDeleteActivity}
 				handleClose={() => setDeleteModal(false)}>
@@ -898,52 +1120,61 @@ const EditentativeModal = ({ isOpen, handleClose, activityDetail }) => {
 	);
 };
 
-{
-	/******* Gift Registry ******/
-}
-const GiftRegistry = () => {
-	const { inviteState } = useDigitalInviteContext();
-	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { enable_gift_registry, delivery_address, thank_you_text, enable_bahasa } = inviteState;
+/********* Guest Wish *******/
+const GuestWish = () => {
+	const {
+		watch,
+		control,
+		formState: { errors },
+	} = useFormContext();
 
-	const handleOnChangeAddress = (e) => {
-		dispatchInvite({
-			type: 'SET_DELIVERY_ADDRESS',
-			payload: e.target.value,
-		});
-	};
-	const handleOnChangeText = (e) => {
-		dispatchInvite({
-			type: 'SET_THANK_YOU_GIFT_TEXT',
-			payload: e.target.value,
-		});
-	};
+	const enable_bahasa = watch('enable_bahasa');
 
 	return (
-		<SettingCard stepNum='8' cardTitle={enable_bahasa ? 'Registri Hadiah' : 'Gift Registry'}>
-			<div className='py-4 px-6 text-start flex flex-col gap-6'>
-				<div className='flex justify-between'>
-					<div className='flex flex-col gap-2'>
-						<SubTitleText>Enable Gift Registry</SubTitleText>
-						<SubDescriptionText>Guest can bring as many plus ones as they want</SubDescriptionText>
-					</div>
+		<SettingCard stepNum='9' cardTitle={enable_bahasa ? 'Ucapan Tetamu' : 'Wish'}>
+			<div className='py-4 px-6  flex justify-between items-center'>
+				<div className='flex flex-col gap-2'>
+					<SubTitleText>{enable_bahasa ? 'Aktifkan Ucapan' : 'Enable Wish'}</SubTitleText>
+				</div>
+				<ToggleSwitch
+					name='enable_wishes'
+					defaultValue={watch('enable_wishes')}
+					control={control}
+				/>
+			</div>
+		</SettingCard>
+	);
+};
+
+/******* Gift Registry ******/
+const GiftRegistry = () => {
+	const { register, watch, control } = useFormContext();
+
+	const enable_bahasa = watch('enable_bahasa');
+
+	return (
+		<SettingCard stepNum='10' cardTitle={enable_bahasa ? 'Hadiah' : 'Gift Registry'}>
+			<div className='py-4 px-6 text-start flex flex-col gap-3'>
+				<div className='flex items-center justify-between'>
+					<SubTitleText>{enable_bahasa ? ' Aktifkan Hadiah' : 'Enable Gift Registry'}</SubTitleText>
 					<ToggleSwitch
-						value={enable_gift_registry}
-						dispatch={dispatchInvite}
-						type='ENABLE_GIFT_REGISTRY'
+						name='enable_gift_registry'
+						defaultValue={watch('enable_gift_registry')}
+						control={control}
 					/>
 				</div>
-				<div className='flex flex-col gap-3' style={{ opacity: enable_gift_registry ? 1 : 0.5 }}>
+				<div
+					className='flex flex-col gap-3'
+					style={{ opacity: watch('enable_gift_registry') ? 1 : 0.5 }}>
 					<TextAreaProvider
-						disabled={!enable_gift_registry}
-						title='DELIVERY ADDRESS'
+						disabled={!watch('enable_gift_registry')}
+						title={enable_bahasa ? 'Alamat Penghantaran' : 'DELIVERY ADDRESS'}
 						placeholder='23, Jalan Raja Chulan, 50200 Kuala Lumpur, Malaysia'
-						value={delivery_address}
+						controls={{ ...register('delivery_address') }}
 						className='text-left'
 						minHeight='100px'
-						onChange={handleOnChangeAddress}
 					/>
-					<TextAreaProvider
+					{/* <TextAreaProvider
 						disabled={!enable_gift_registry}
 						title='THANK YOU TEXT'
 						placeholder='Thank you for the lovely gift! The bride and groom will definitely love it. Best regards, [Your name]'
@@ -951,68 +1182,103 @@ const GiftRegistry = () => {
 						className='text-left'
 						minHeight='100px'
 						onChange={handleOnChangeText}
-					/>
+					/> */}
 				</div>
 			</div>
 		</SettingCard>
 	);
 };
 
-{
-	/******* Money Gift ******/
-}
-
+/******* Money Gift ******/
 const MoneyGift = () => {
+	const {
+		register,
+		watch,
+		control,
+		formState: { errors },
+	} = useFormContext();
+
+	const enable_bahasa = watch('enable_bahasa');
+
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { money_gift_details, enable_money_gift, enable_bahasa } = inviteState;
-
-	const handleOnChange = (type) => {
-		return (event) => dispatchInvite({ type, payload: event.target.value });
-	};
+	const { money_gift_details } = inviteState;
 
 	return (
-		<SettingCard stepNum='10' cardTitle={enable_bahasa ? 'Salam Kaut Digital' : 'Money Gift'}>
+		<SettingCard stepNum='11' cardTitle={enable_bahasa ? 'Salam Kaut' : 'Money Gift'}>
 			<div className='py-4 px-6 text-start flex flex-col gap-6'>
 				<div className='flex justify-between'>
 					<div className='flex flex-col gap-2'>
-						<SubTitleText>Enable Money Gift</SubTitleText>
+						<SubTitleText>
+							{enable_bahasa ? 'Aktifkan Salam Kaut' : 'Enable Money Gift'}
+						</SubTitleText>
 						<SubDescriptionText>Display money gift details in digital invite</SubDescriptionText>
 					</div>
 					<ToggleSwitch
-						value={enable_money_gift}
-						dispatch={dispatchInvite}
-						type='ENABLE_MONEY_GIFT'
+						name='enable_money_gift'
+						defaultValue={watch('enable_money_gift')}
+						control={control}
 					/>
 				</div>
-				<div className='flex flex-col gap-4' style={{ opacity: enable_money_gift ? 1 : 0.7 }}>
-					<InputFieldProvider
-						disabled={!enable_money_gift}
-						textSize='text-sm'
-						title={enable_bahasa ? 'Nama' : 'Name'}
-						placeholder='Muhamad Izzul Syahmi bin Mohd Rizal'
-						error={null}
-						value={money_gift_details?.name}
-						onChange={handleOnChange('SET_MONEY_GIFT_NAME')}
-					/>
-					<InputFieldProvider
-						disabled={!enable_money_gift}
-						textSize='text-sm'
-						title={enable_bahasa ? 'Nama Bank' : 'Bank'}
-						placeholder='Maybank'
-						error={null}
-						value={money_gift_details?.bankName}
-						onChange={handleOnChange('SET_MONEY_GIFT_BANK_NAME')}
-					/>
-					<InputFieldProvider
-						disabled={!enable_money_gift}
-						textSize='text-sm'
-						title={enable_bahasa ? 'No Akaun' : 'Account Number'}
-						placeholder='1234567880'
-						error={null}
-						value={money_gift_details?.accNum}
-						onChange={handleOnChange('SET_MONEY_GIFT_ACC_NUMBER')}
-					/>
+				<div
+					className='flex flex-col gap-4'
+					style={{ opacity: watch('enable_money_gift') ? 1 : 0.7 }}>
+					<div>
+						<InputFieldProvider
+							disabled={!watch('enable_money_gift')}
+							textSize='text-sm'
+							title={enable_bahasa ? 'Nama *' : 'Name *'}
+							placeholder='Muhamad Izzul Syahmi bin Mohd Rizal'
+							error={errors.money_gift_details?.name}
+							controls={{
+								...register('money_gift_details.name', {
+									required: 'Name is required!',
+								}),
+							}}
+						/>
+
+						<InputErrorText2
+							errorField={errors.money_gift_details?.name}
+							errorText={errors.money_gift_details?.name?.message}
+						/>
+					</div>
+					<div>
+						<InputFieldProvider
+							disabled={!watch('enable_money_gift')}
+							textSize='text-sm'
+							title={enable_bahasa ? 'Nama Bank *' : 'Bank *'}
+							placeholder='Maybank'
+							error={errors.money_gift_details?.bankName}
+							controls={{
+								...register('money_gift_details.bankName', {
+									required: 'Bank name is required!',
+								}),
+							}}
+						/>
+						<InputErrorText2
+							errorField={errors.money_gift_details?.bankName}
+							errorText={errors.money_gift_details?.bankName?.message}
+						/>
+					</div>
+					<div>
+						<InputFieldProvider
+							disabled={!watch('enable_money_gift')}
+							textSize='text-sm'
+							title={enable_bahasa ? 'No Akaun *' : 'Account Number *'}
+							placeholder='1234567880'
+							error={errors.money_gift_details?.accNum}
+							controls={{
+								...register('money_gift_details.accNum', {
+									required: 'Account number is required!',
+								}),
+							}}
+						/>
+						<InputErrorText2
+							errorField={errors.money_gift_details?.accNum}
+							errorText={errors.money_gift_details?.accNum?.message}
+						/>
+					</div>
+
 					<InputTitleText>Qr Code Screenshot</InputTitleText>
 					<ImageUpload
 						defaultImgUrl={money_gift_details?.qrCodeUrl}

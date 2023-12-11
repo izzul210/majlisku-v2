@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Switch from '@mui/material/Switch';
+import { Controller } from 'react-hook-form';
 import { styled } from '@mui/material/styles';
 
 const IOSSwitch = styled((props) => (
@@ -52,12 +53,33 @@ const IOSSwitch = styled((props) => (
 	},
 }));
 
-function ToggleSwitch({ value, dispatch, type = 'SET_CHECK' }) {
+function ToggleSwitch({
+	value,
+	dispatch,
+	type = 'SET_CHECK',
+	//For React Hook Form props
+	name = 'check',
+	defaultValue = false,
+	control = null,
+}) {
 	const handleChange = (event) => {
 		dispatch({ type, payload: event.target.checked });
 	};
 
-	return <IOSSwitch sx={{ m: 1 }} defaultValue={false} onChange={handleChange} checked={value} />;
+	if (control) {
+		return (
+			<Controller
+				name={name}
+				controls={control}
+				defaultValue={defaultValue}
+				render={({ field: { onChange, value } }) => (
+					<IOSSwitch sx={{ m: 1 }} onChange={onChange} checked={value} />
+				)}
+			/>
+		);
+	} else {
+		return <IOSSwitch sx={{ m: 1 }} defaultValue={false} onChange={handleChange} checked={value} />;
+	}
 }
 
 export default ToggleSwitch;

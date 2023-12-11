@@ -15,11 +15,14 @@ function TextAreaProvider({
 	className = '',
 	minHeight = '80px',
 	error = false,
+	controls = null,
 	...props
 }) {
 	return (
 		<div>
-			<TextProvider className='font-semibold text-sm uppercase mb-1'>{title}</TextProvider>
+			<TextProvider colorStyle='#475467' className='font-semibold text-sm uppercase mb-1'>
+				{title}
+			</TextProvider>
 			<div className='input-container' style={flex ? { flex: 1 } : null}>
 				<textarea
 					type={type}
@@ -29,6 +32,7 @@ function TextAreaProvider({
 					onChange={onChange}
 					className={`input-field ${className} ${error ? 'error-field' : ''}`}
 					style={flex ? { width: width, flex: 1, minHeight } : { width: width, minHeight }}
+					{...controls}
 					{...props}
 				/>
 			</div>
