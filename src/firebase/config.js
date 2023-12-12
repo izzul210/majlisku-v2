@@ -31,8 +31,6 @@ const projectStorage = getStorage(app);
 const analytics = getAnalytics(app);
 const googleProvider = new GoogleAuthProvider();
 
-console.log('projectAuth:', projectAuth);
-
 // timestamp
 const timestap = null;
 

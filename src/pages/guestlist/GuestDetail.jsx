@@ -379,12 +379,10 @@ const EditPaxLimit = ({ isOpen, handleClose, guestDetails }) => {
 				<div className='flex justify-end items-center gap-4 p-5 border-t border-gray-200'>
 					<div className='flex gap-2 items-center'>
 						<ButtonProvider onClick={handleClose} width='auto' type='secondary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+							<TextProvider className='text-base font-semibold '>CANCEL</TextProvider>
 						</ButtonProvider>
 						<ButtonProvider onClick={handleSave} width='auto' type='primary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm text-white'>
-								SAVE
-							</TextProvider>
+							<TextProvider className='text-base font-semibold  text-white'>SAVE</TextProvider>
 						</ButtonProvider>
 					</div>
 				</div>
@@ -427,12 +425,10 @@ export const ImportToMyGuestlist = ({
 				<div className='flex justify-end items-center gap-4 p-5 border-t border-gray-200'>
 					<div className='flex gap-2 items-center'>
 						<ButtonProvider onClick={handleClose} width='auto' type='secondary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+							<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 						</ButtonProvider>
 						<ButtonProvider onClick={handleImport} width='auto' type='primary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm text-white'>
-								IMPORT
-							</TextProvider>
+							<TextProvider className='text-base font-semibold text-white'>IMPORT</TextProvider>
 						</ButtonProvider>
 					</div>
 				</div>

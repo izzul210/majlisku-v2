@@ -11,6 +11,11 @@ import { useUserContext } from './context/UserContext';
 import Sidebar from './components/sidebar/Sidebar';
 import WholePageLoadingState from './components/atom/loading/WholePageLoadingState';
 import PageLazyLoading from './components/atom/loading/PageLazyLoading';
+import Onboarding_1 from './pages/onboarding/Onboarding_1';
+import Onboarding_2 from './pages/onboarding/Onboarding_2';
+import Onboarding_3 from './pages/onboarding/Onboarding_3';
+import Onboarding_4 from './pages/onboarding/Onboarding_4';
+import Onboarding_5 from './pages/onboarding/Onboarding_5';
 
 //Import lazy loading
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
@@ -29,12 +34,6 @@ const OpenInviteGuestDetailPage = lazy(() => import('./pages/guestlist/OpenInvit
 const InvitePreview = lazy(() => import('./pages/digitalInvite/InvitePreview'));
 const AddGiftPage = lazy(() => import('./pages/digitalInvite/giftRegistry/AddGiftPage'));
 const EditGiftPage = lazy(() => import('./pages/digitalInvite/giftRegistry/EditGiftPage'));
-const Onboarding_1 = lazy(() => import('./pages/onboarding/Onboarding_1'));
-const Onboarding_2 = lazy(() => import('./pages/onboarding/Onboarding_2'));
-const Onboarding_3 = lazy(() => import('./pages/onboarding/Onboarding_3'));
-const Onboarding_4 = lazy(() => import('./pages/onboarding/Onboarding_4'));
-const Onboarding_5 = lazy(() => import('./pages/onboarding/Onboarding_5'));
-// const Sidebar = lazy(() => import('./components/sidebar/Sidebar'));
 
 function App() {
 	const { userId, authIsReady } = useUserContext();

@@ -181,7 +181,7 @@ export const AddGiftContent = ({ handleCancel }) => {
 				<div className='flex gap-2 items-center cursor-pointer'></div>
 				<div className='flex gap-2 items-center'>
 					<ButtonProvider onClick={handleCancel} width='auto' type='secondary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+						<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 					</ButtonProvider>
 					<ButtonProvider
 						width='auto'
@@ -189,7 +189,7 @@ export const AddGiftContent = ({ handleCancel }) => {
 						padding='12px 20px'
 						disabled={isPending}
 						onClick={handleAddGift}>
-						<TextProvider className='text-base font-semibold text-sm text-white'>
+						<TextProvider className='text-base font-semibold  text-white'>
 							{isPending ? 'Saving...' : 'SAVE'}
 						</TextProvider>
 					</ButtonProvider>
@@ -320,7 +320,7 @@ export const EditGiftContent = ({ handleCancel, handlePostDelete, giftId }) => {
 				</div>
 				<div className='flex gap-2 items-center'>
 					<ButtonProvider onClick={handleCancel} width='auto' type='secondary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+						<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 					</ButtonProvider>
 					<ButtonProvider
 						width='auto'
@@ -328,7 +328,7 @@ export const EditGiftContent = ({ handleCancel, handlePostDelete, giftId }) => {
 						padding='12px 20px'
 						disabled={reserved || isPending}
 						onClick={handleEditGift}>
-						<TextProvider className='text-base font-semibold text-sm text-white'>
+						<TextProvider className='text-base font-semibold text-white'>
 							{isPending ? 'SAVING...' : 'SAVE'}
 						</TextProvider>
 					</ButtonProvider>

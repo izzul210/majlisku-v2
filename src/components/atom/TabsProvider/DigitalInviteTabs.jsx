@@ -60,8 +60,8 @@ export default function DigitalInviteTabs() {
 			setValue('setting');
 		} else if (location.pathname === '/digitalinvite/template') {
 			setValue('template');
-		} else if (location.pathname === '/digitalinvite/content') {
-			setValue('content');
+		} else if (location.pathname === '/digitalinvite/wishes') {
+			setValue('wishes');
 		} else if (location.pathname === '/digitalinvite/gift') {
 			setValue('gift');
 		} else if (location.pathname === '/digitalinvite/share') {

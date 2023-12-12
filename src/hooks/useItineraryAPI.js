@@ -1,6 +1,4 @@
 /** @format */
-
-import React, { useState } from 'react';
 import { doc, updateDoc, addDoc, deleteDoc, collection } from 'firebase/firestore';
 import { projectFirestore } from '../firebase/config';
 import { useUserContext } from '../context/UserContext';
