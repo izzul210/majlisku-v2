@@ -141,8 +141,7 @@ export const DigitalInviteContextProvider = () => {
 	useEffect(() => {
 		if (userData?.eventDetails) {
 			reset({ ...initializeEventDetails, ...userData?.eventDetails });
-		}
-		if (userData?.previewDetails) {
+		} else if (userData?.previewDetails) {
 			reset({ ...initializeEventDetails, ...userData?.previewDetails });
 		} else {
 			reset(initializeEventDetails);
