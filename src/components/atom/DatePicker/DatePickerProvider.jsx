@@ -24,7 +24,7 @@ export default function DatePickerProvider({
 				<Controller
 					name={name}
 					controls={control}
-					rules={{ requred: required }}
+					rules={{ required: required }}
 					defaultValue={defaultValue}
 					render={({ field }) => (
 						<DatePicker

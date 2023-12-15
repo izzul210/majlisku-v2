@@ -23,6 +23,7 @@ import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 import ModalProvider from '../../components/atom/ModalProvider/ModalProvider2';
 import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/ModalProviderPreviewInvite';
+import WholePageLoading from '../../components/atom/loading/WholePageLoading';
 import './DigitalInvite.scss';
 //MUI import
 import AppBar from '@mui/material/AppBar';
@@ -32,6 +33,7 @@ import { BackIcon, PreviewIcon } from '../../components/icons/actionIcons';
 //Hooks Logic
 import { useUserLogic } from '../../hooks/useUserLogic';
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
+import { usePostRsvp } from '../../hooks/usePostAPI';
 
 const cloudApi = import.meta.env.VITE_APP_API_KEY;
 
@@ -174,7 +176,8 @@ const ThemeTopBar = () => {
 
 /******* TOP BUTTONS FOR DETAILS PAGE */
 const DetailsButtons = () => {
-	const { handleSubmit } = useDigitalInviteContext();
+	const { handleSubmit, inviteState } = useDigitalInviteContext();
+	const { savePreviewDetails } = usePostRsvp();
 	const { dispatch } = useDigitalInviteDispatchContext();
 	const [previewModal, setPreviewModal] = useState(false);
 	const phoneSize = useMediaQuery('(max-width:600px)');
@@ -183,8 +186,20 @@ const DetailsButtons = () => {
 		setPreviewModal(true);
 	};
 
-	const onSaveAsPreview = (formValues) => {
-		console.log('formValues from Preview:', formValues);
+	const onSaveAsPreview = async (formValues) => {
+		try {
+			savePreviewDetails.mutateAsync({
+				...formValues,
+				...inviteState,
+			});
+			notifySuccess('Saved as preview');
+		} catch (error) {
+			console.log('error:', error);
+		}
+	};
+
+	const onSubmit = (formValues) => {
+		console.log('formValues from onSubmit:', formValues);
 	};
 
 	const onError = (error) => {
@@ -193,12 +208,9 @@ const DetailsButtons = () => {
 		notifyError('Please fill all required fields');
 	};
 
-	const onSubmit = (formValues) => {
-		console.log('formValues from onSubmit:', formValues);
-	};
-
 	return (
 		<>
+			<WholePageLoading loading={savePreviewDetails.isLoading} text='Saving....' />
 			<div className='flex items-center gap-2'>
 				<ButtonProvider button padding='12px 20px' onClick={handleSubmit(onSaveAsPreview, onError)}>
 					<PreviewIcon />

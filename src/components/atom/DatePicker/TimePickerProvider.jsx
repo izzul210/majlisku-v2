@@ -25,7 +25,7 @@ export default function ResponsiveTimePickers({
 				<Controller
 					name={name}
 					controls={control}
-					rules={{ requred: required }}
+					rules={{ required: required }}
 					defaultValue={moment()}
 					render={({ field }) => (
 						<TimePicker

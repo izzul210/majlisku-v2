@@ -4,11 +4,67 @@ import { createContext, useState, useContext, useReducer, useEffect, useRef } fr
 import { Outlet, useLocation } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useUserContext } from './UserContext';
+import { useUserData } from '../hooks/useFetchAPI';
 import { usePostRsvp } from '../hooks/usePostAPI';
 
 export const DigitalInviteContext = createContext(null);
 export const DigitalInviteDispatchContext = createContext(null);
 export const DigitalInviteInputErrorContext = createContext(null);
+
+const initializeEventDetails = {
+	//General
+	enable_bahasa: false,
+	//EventDetails
+	event_title_1: '',
+	italic_title: '',
+	optional_description: '',
+	rsvp_header_image: '',
+	description: '',
+	//DateTime
+	event_date: null,
+	event_time: { start: null, end: null },
+	enable_multiple_slots: false,
+	event_time_slot_2: null,
+	enable_deadline: false,
+	event_date_deadline: null,
+	//LocationMap
+	event_address: '',
+	location_info: {
+		wazeLink: '',
+		googleLink: '',
+		address: '',
+	},
+	//Greeting
+	event_opening_title: '',
+	host_details: '',
+	greeting_1: '',
+	greeting_title: '',
+	greeting_2: '',
+	event_title_2: '',
+	//GuestPax
+	enable_unlimited_pax: false,
+	guest_pax_limit: 2,
+	//ContactInformation
+	contact_info: [{ name: '', phone: '' }],
+	//Tentative
+	enable_itinerary: false,
+	//Wishes
+	enable_wishes: false,
+	//GiftRegistry
+	enable_gift_registry: false,
+	delivery_address: '',
+	thank_you_text: '',
+	//MoneyGift
+	enable_money_gift: false,
+	money_gift_details: {
+		qrCodeUrl: '',
+		name: '',
+		bankName: '',
+		accNum: '',
+	},
+	//Misc
+	event_location: '',
+};
 
 export function useDigitalInviteContext() {
 	return useContext(DigitalInviteContext);
@@ -23,216 +79,17 @@ export function useDigitalInviteInputErrorContext() {
 }
 
 const initialState = {
-	rsvpPreview: null,
-	goToPreview: false,
-	submitted: false,
-	wishlist: [],
-	activities: [],
 	accordiansCollapsed: false,
-	design: 2,
 };
 
 const rsvpDetails = {
-	event_title_1: '',
-	event_title_2: '',
-	italic_title: '',
-	greeting_1: 'Dengan segala hormatnya kami mempersilakan',
-	greeting_2: 'ke majlis resepsi untuk meraikan majlis',
-	greeting_title: `Ybhg Tun/ Toh Puan/ Tan Sri/ Puan Sri/ Dato’s Sri/ Datin Sri/ Dato’/ Datin/ Tuan/ Puan`,
-	host_details: '',
-	description: '',
-	event_date: '',
-	event_date_deadline: '',
-	event_time: { start: null, end: null },
-	event_time_slot_2: null,
-	event_location: '',
-	location_info: {
-		address: '',
-		googleLink: '',
-		wazeLink: '',
-	},
-	event_address: '',
-	contact_info: [],
-	guest_pax_limit: 2,
-	rsvp_header_image: '',
-	money_gift_details: {
-		accNum: null,
-		bankName: null,
-		name: null,
-		qrCodeUrl: null,
-	},
-	delivery_address: '',
-	thank_you_text: '',
 	//file
 	rsvp_header_image_file: null,
 	qrCode_image_file: null,
-	//enable states
-	enable_multiple_slots: false,
-	enable_bahasa: false,
-	enable_gift_registry: false,
-	enable_itinerary: false,
-	enable_money_gift: false,
-	enable_unlimited_pax: false,
-	enable_wishes: false,
-	enable_deadline: false,
 };
 
 export const rsvpDetailsReducer = (state, action) => {
 	switch (action.type) {
-		case 'SET_EVENT_DETAILS':
-			return {
-				...rsvpDetails,
-				...action.payload,
-			};
-
-		case 'SET_EVENT_TITLE_1':
-			return {
-				...state,
-				event_title_1: action.payload,
-			};
-		case 'SET_EVENT_TITLE_2':
-			return {
-				...state,
-				event_title_2: action.payload,
-			};
-		case 'SET_ITALIC_TITLE':
-			return {
-				...state,
-				italic_title: action.payload,
-			};
-		case 'SET_GREETING_1':
-			return {
-				...state,
-				greeting_1: action.payload,
-			};
-		case 'SET_GREETING_2':
-			return {
-				...state,
-				greeting_2: action.payload,
-			};
-		case 'SET_GREETING_TITLE':
-			return {
-				...state,
-				greeting_title: action.payload,
-			};
-		case 'SET_HOST_DETAILS':
-			return {
-				...state,
-				host_details: action.payload,
-			};
-		case 'SET_DESCRIPTION':
-			return {
-				...state,
-				description: action.payload,
-			};
-		case 'SET_EVENT_DATE':
-			return {
-				...state,
-				event_date: action.payload,
-			};
-		case 'SET_EVENT_START_TIME':
-			return {
-				...state,
-				event_time: {
-					start: action.payload,
-					end: state.event_time.end,
-				},
-			};
-		case 'SET_EVENT_END_TIME':
-			return {
-				...state,
-				event_time: {
-					end: action.payload,
-					start: state.event_time.start,
-				},
-			};
-		case 'SET_EVENT_SLOT_2':
-			return {
-				...state,
-				event_time_slot_2: action.payload,
-			};
-		case 'SET_EVENT_DATE_DEADLINE':
-			return {
-				...state,
-				event_date_deadline: action.payload,
-			};
-		case 'SET_EVENT_LOCATION':
-			return {
-				...state,
-				event_location: action.payload,
-			};
-		case 'SET_EVENT_ADDRESS':
-			return {
-				...state,
-				event_address: action.payload,
-			};
-		case 'SET_LOCATION_INFO_ADDRESS':
-			return {
-				...state,
-				location_info: {
-					...state.location_info,
-					address: action.payload,
-				},
-			};
-		case 'SET_GOOGLE_LOCATION_LINK':
-			return {
-				...state,
-				location_info: {
-					...state.location_info,
-					googleLink: action.payload,
-				},
-			};
-		case 'SET_WAZE_LOCATION_LINK':
-			return {
-				...state,
-				location_info: {
-					...state.location_info,
-					wazeLink: action.payload,
-				},
-			};
-		case 'SET_CONTACT_INFO':
-			return {
-				...state,
-				contact_info: action.payload,
-			};
-		case 'EDIT_CONTACT_INFO_BASED_ON_INDEX':
-			return {
-				...state,
-				contact_info: state.contact_info.map((item, index) =>
-					index === action.index ? { ...item, ...action.payload } : item
-				),
-			};
-
-		case 'SET_GUEST_PAX_LIMIT':
-			return {
-				...state,
-				guest_pax_limit: action.payload,
-			};
-		case 'SET_RSVP_HEADER_IMAGE':
-			return {
-				...state,
-				rsvp_header_image: action.payload,
-			};
-		case 'SET_MONEY_GIFT_DETAILS':
-			return {
-				...state,
-				money_gift_details: action.payload,
-			};
-		case 'SET_MONEY_GIFT_NAME':
-			return {
-				...state,
-				money_gift_details: { ...state.money_gift_details, name: action.payload },
-			};
-		case 'SET_MONEY_GIFT_BANK_NAME':
-			return {
-				...state,
-				money_gift_details: { ...state.money_gift_details, bankName: action.payload },
-			};
-		case 'SET_MONEY_GIFT_ACC_NUMBER':
-			return {
-				...state,
-				money_gift_details: { ...state.money_gift_details, accNum: action.payload },
-			};
 		case 'SET_RSVP_HEADER_IMAGE_FILE':
 			return {
 				...state,
@@ -243,61 +100,7 @@ export const rsvpDetailsReducer = (state, action) => {
 				...state,
 				qrCode_image_file: action.payload,
 			};
-		case 'SET_DELIVERY_ADDRESS':
-			return {
-				...state,
-				delivery_address: action.payload,
-			};
-		case 'SET_THANK_YOU_GIFT_TEXT':
-			return {
-				...state,
-				thank_you_text: action.payload,
-			};
-		case 'ENABLE_BAHASA':
-			return {
-				...state,
-				enable_bahasa: action.payload,
-			};
-		case 'ENABLE_GIFT_REGISTRY':
-			return {
-				...state,
-				enable_gift_registry: action.payload,
-			};
-		case 'ENABLE_ITINERARY':
-			return {
-				...state,
-				enable_itinerary: action.payload,
-			};
-		case 'ENABLE_MONEY_GIFT':
-			return {
-				...state,
-				enable_money_gift: action.payload,
-			};
-		case 'ENABLE_UNLIMITED_PAX':
-			return {
-				...state,
-				enable_unlimited_pax: action.payload,
-			};
-		case 'ENABLE_WISHES':
-			return {
-				...state,
-				enable_wishes: action.payload,
-			};
-		case 'ENABLE_MULTIPLE_SLOT':
-			return {
-				...state,
-				enable_multiple_slots: action.payload,
-			};
-		case 'ENABLE_DEADLINE':
-			return {
-				...state,
-				enable_deadline: action.payload,
-			};
-		case 'ADD_TIME_SLOT':
-			return {
-				...state,
-				multiple_time_slot: [...state.multiple_time_slot, action.payload],
-			};
+
 		default:
 			return state;
 	}
@@ -305,37 +108,6 @@ export const rsvpDetailsReducer = (state, action) => {
 
 export const digitalInviteReducer = (state, action) => {
 	switch (action.type) {
-		case 'SET_RSVP_PREVIEW':
-			return {
-				...state,
-				rsvpPreview: action.payload,
-			};
-		case 'SET_ACTIVITIES':
-			return {
-				...state,
-				activities: action.payload,
-			};
-		case 'SET_GO_TO_PREVIEW':
-			return {
-				...state,
-				goToPreview: action.payload,
-			};
-		case 'SET_SUBMITTED':
-			return {
-				...state,
-				submitted: action.payload,
-			};
-
-		case 'SET_WISHLIST':
-			return {
-				...state,
-				wishlist: action.payload,
-			};
-		case 'SET_DESIGN':
-			return {
-				...state,
-				design: action.payload,
-			};
 		case 'SET_ACCORDIANS_COLLAPSE':
 			return {
 				...state,
@@ -355,8 +127,7 @@ export const digitalInviteReducer = (state, action) => {
 export const DigitalInviteContextProvider = () => {
 	const [state, dispatch] = useReducer(digitalInviteReducer, initialState);
 	const [inviteState, dispatchInvite] = useReducer(rsvpDetailsReducer, rsvpDetails);
-	const { userData, userId, wishlist } = useUserContext();
-	const { saveRsvpDetails } = usePostRsvp();
+	const { data: userData } = useUserData();
 	//New Stuff
 	const methods = useForm();
 	const {
@@ -369,11 +140,19 @@ export const DigitalInviteContextProvider = () => {
 
 	useEffect(() => {
 		if (userData?.eventDetails) {
-			reset(userData?.eventDetails);
-			dispatchInvite({ type: 'SET_EVENT_DETAILS', payload: userData.eventDetails });
+			reset({ ...initializeEventDetails, ...userData?.eventDetails });
 		}
-	}, [userData, wishlist]);
+		if (userData?.previewDetails) {
+			reset({ ...initializeEventDetails, ...userData?.previewDetails });
+		} else {
+			reset(initializeEventDetails);
+		}
+	}, [userData]);
 
+	/*
+	dispatch = dispatch non-eventDetails related (for eg: open/close accordians)
+	dispatchInvite = dispatch eventDetails related (1. main image 2. bank qrcode image)
+	*/
 	return (
 		<DigitalInviteContext.Provider value={{ state, inviteState, handleSubmit }}>
 			<DigitalInviteDispatchContext.Provider value={{ dispatch, dispatchInvite }}>

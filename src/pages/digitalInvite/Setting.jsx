@@ -196,7 +196,7 @@ const EventDetails = () => {
 	} = useFormContext();
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { rsvp_header_image, rsvp_header_image_file } = inviteState;
+	const { rsvp_header_image_file } = inviteState;
 
 	const [openExample, setOpenExample] = useState(false);
 	const [openAdditionalExample, setOpenAdditionalExample] = useState(false);
@@ -267,7 +267,7 @@ Shah Alam, Selangor'
 							defaultImgUrl={
 								rsvp_header_image_file
 									? URL.createObjectURL(rsvp_header_image_file)
-									: rsvp_header_image
+									: watch('rsvp_header_image')
 							}
 							dispatch={dispatchInvite}
 							type='SET_RSVP_HEADER_IMAGE_FILE'
@@ -347,24 +347,37 @@ const DateTime = () => {
 						{enable_bahasa ? 'Tarikh *' : 'Date *'}
 					</InputTitleText>
 					<DatePickerProvider control={control} name='event_date' required='Date is required!' />
+					<InputErrorText2 errorField={errors.event_date} errorText={errors.event_date?.message} />
 				</div>
 				<div>
 					<InputTitleText className='uppercase font-semibold text-sm mb-2'>
 						{enable_bahasa ? 'Waktu *' : 'Time *'}
 					</InputTitleText>
 					<div className='flex gap-2'>
-						<TimePickerProvider
-							label='Start'
-							control={control}
-							name='event_time.start'
-							required='Start time is required!'
-						/>
-						<TimePickerProvider
-							label='End'
-							control={control}
-							name='event_time.end'
-							required='End time is required!'
-						/>
+						<div>
+							<TimePickerProvider
+								label='Start'
+								control={control}
+								name='event_time.start'
+								required='Start time is required!'
+							/>
+							<InputErrorText2
+								errorField={errors.event_time?.start}
+								errorText={errors.event_time?.start?.message}
+							/>
+						</div>
+						<div>
+							<TimePickerProvider
+								label='End'
+								control={control}
+								name='event_time.end'
+								required='End time is required!'
+							/>
+							<InputErrorText2
+								errorField={errors.event_time?.end}
+								errorText={errors.event_time?.end?.message}
+							/>
+						</div>
 					</div>
 				</div>
 				{errors.event_time && <InputErrorText>{errors.event_time?.message}</InputErrorText>}
@@ -410,6 +423,10 @@ const DateTime = () => {
 								name='event_time_slot_2'
 								required='2nd Time Slot is required!'
 							/>
+							<InputErrorText2
+								errorField={errors.event_time_slot_2}
+								errorText={errors.event_time_slot_2?.message}
+							/>
 						</div>
 					</div>
 				)}
@@ -448,6 +465,10 @@ const DateTime = () => {
 									name='event_date_deadline'
 									required='Deadline is required!'
 									className='w-full'
+								/>
+								<InputErrorText2
+									errorField={errors.event_date_deadline}
+									errorText={errors.event_date_deadline?.message}
 								/>
 							</div>
 						)}
@@ -517,7 +538,7 @@ const LocationMap = () => {
 	);
 };
 
-/******* Event Details ******/
+/******* Greeting Details ******/
 const Greeting = () => {
 	const {
 		register,
@@ -1217,7 +1238,7 @@ const MoneyGift = () => {
 
 	const { inviteState } = useDigitalInviteContext();
 	const { dispatchInvite } = useDigitalInviteDispatchContext();
-	const { money_gift_details } = inviteState;
+	const { qrCode_image_file } = inviteState;
 
 	return (
 		<SettingCard stepNum='11' cardTitle={enable_bahasa ? 'Salam Kaut' : 'Money Gift'}>
@@ -1295,7 +1316,11 @@ const MoneyGift = () => {
 					</div>
 					<InputTitleText>Qr Code Screenshot</InputTitleText>
 					<ImageUpload
-						defaultImgUrl={money_gift_details?.qrCodeUrl}
+						defaultImgUrl={
+							qrCode_image_file
+								? URL.createObjectURL(qrCode_image_file)
+								: watch('money_gift_details.qrCodeUrl')
+						}
 						dispatch={dispatchInvite}
 						type='SET_QR_CODE_IMAGE_FILE'
 						key='QR_CODE_IMAGE_FILE'

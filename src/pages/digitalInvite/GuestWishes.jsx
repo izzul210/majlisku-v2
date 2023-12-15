@@ -1,10 +1,11 @@
 /** @format */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 //API
 import { useGuestwishes } from '../../hooks/useFetchAPI';
 import { usePostGuestWishes } from '../../hooks/usePostAPI';
+import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
 //MUI
 import { useMediaQuery } from '@mui/material';
 //Component import
@@ -68,28 +69,30 @@ const ShowInInvite = (props) => (
 const WishCard = ({ item }) => {
 	const { hideWishInInvite, showWishInInvite } = usePostGuestWishes();
 	const { name, wish, date, hideWish, from } = item;
-	const [hide, setHide] = useState(hideWish || false);
+	const hide = hideWish;
 
 	const handleHideWish = async () => {
 		try {
 			await hideWishInInvite.mutateAsync({ from, id: item.id });
-			setHide(true);
+			notifySuccess('Saved Successfully');
 		} catch (err) {
 			console.log(err);
+			notifySuccess(err);
 		}
 	};
 
 	const handleShowWish = async () => {
 		try {
 			await showWishInInvite.mutateAsync({ from, id: item.id });
-			setHide(false);
+			notifySuccess('Saved Successfully');
 		} catch (err) {
 			console.log(err);
+			notifySuccess(err);
 		}
 	};
 
 	return (
-		<div className='bg-white h-full flex flex-col gap-2 w-full max-w-[343px] p-5 rounded-[8px] border'>
+		<div className='bg-white h-auto flex flex-col gap-2 w-full max-w-[343px] p-5 rounded-[8px] border'>
 			<div className={`flex flex-col gap-2 ${hide ? 'opacity-30' : ''}`}>
 				<div className='flex align-center justify-between'>
 					<TextProvider colorStyle='#1D4648' className='text-[16px] text-start font-semibold'>
@@ -118,6 +121,8 @@ const WishCard = ({ item }) => {
 
 function GuestWishes() {
 	const { data: wishes } = useGuestwishes();
+
+	useEffect(() => {}, [wishes]);
 
 	return (
 		<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col pt-24 bg-white sm:bg-transparent'>

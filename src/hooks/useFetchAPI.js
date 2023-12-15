@@ -148,52 +148,106 @@ export const useGuestwishes = () => {
 	const { data: guestlist } = useGuestlist();
 	const { data: newguestlist } = useNewGuestlist();
 
-	const { isLoading, error, data } = useQuery({
-		queryKey: ['guestwishes'],
-		queryFn: async () => {
-			let results = [];
+	let results = [];
 
-			if (guestlist) {
-				guestlist.forEach((guest) => {
-					if (guest.response && guest.response.wish !== '') {
-						results.push({
-							...guest.response,
-							name: guest.name,
-							id: guest.id,
-							hideWish: guest.hideWish ? true : false,
-							from: 'guestlist',
-						});
-					}
+	console.log('guestwishes updated');
+
+	if (guestlist) {
+		guestlist.forEach((guest) => {
+			if (guest.response && guest.response.wish !== '') {
+				results.push({
+					...guest.response,
+					name: guest.name,
+					id: guest.id,
+					hideWish: guest.hideWish ? true : false,
+					from: 'guestlist',
 				});
 			}
+		});
+	}
 
-			if (newguestlist) {
-				newguestlist.forEach((guest) => {
-					if (guest.wish && guest.wish !== '') {
-						results.push({
-							...guest,
-							name: guest.name,
-							id: guest.id,
-							hideWish: guest.hideWish ? true : false,
-							from: 'newguestlist',
-						});
-					}
+	if (newguestlist) {
+		newguestlist.forEach((guest) => {
+			if (guest.wish && guest.wish !== '') {
+				results.push({
+					...guest,
+					name: guest.name,
+					id: guest.id,
+					hideWish: guest.hideWish ? true : false,
+					from: 'newguestlist',
 				});
 			}
+		});
+	}
 
-			//re-organize based on date. latest first
-			results.sort((a, b) => {
-				return new Date(b.date) - new Date(a.date);
-			});
-
-			return results;
-		},
-		enabled: !!guestlist,
+	//re-organize based on date. latest first
+	results.sort((a, b) => {
+		return new Date(b.date) - new Date(a.date);
 	});
 
 	return {
-		isLoading,
-		error,
-		data,
+		isLoading: false,
+		error: null,
+		data: results,
 	};
 };
+
+// export const useGuestwishes = () => {
+// 	const { data: guestlist } = useGuestlist();
+// 	const { data: newguestlist } = useNewGuestlist();
+
+// 	const { isLoading, error, data } = useQuery({
+// 		queryKey: ['guestwishes'],
+// 		queryFn: () => {
+// 			let results = [];
+
+// 			if (guestlist) {
+// 				guestlist.forEach((guest) => {
+// 					if (guest.response && guest.response.wish !== '') {
+// 						results.push({
+// 							...guest.response,
+// 							name: guest.name,
+// 							id: guest.id,
+// 							hideWish: guest.hideWish ? true : false,
+// 							from: 'guestlist',
+// 						});
+// 					}
+
+// 					if (guest.hideWish) {
+// 						console.log(guest);
+// 					}
+// 				});
+// 			}
+
+// 			if (newguestlist) {
+// 				newguestlist.forEach((guest) => {
+// 					if (guest.wish && guest.wish !== '') {
+// 						results.push({
+// 							...guest,
+// 							name: guest.name,
+// 							id: guest.id,
+// 							hideWish: guest.hideWish ? true : false,
+// 							from: 'newguestlist',
+// 						});
+// 					}
+// 				});
+// 			}
+
+// 			//re-organize based on date. latest first
+// 			results.sort((a, b) => {
+// 				return new Date(b.date) - new Date(a.date);
+// 			});
+
+// 			console.log('results', results);
+
+// 			return results;
+// 		},
+// 		enabled: !!guestlist || !!newguestlist,
+// 	});
+
+// 	return {
+// 		isLoading,
+// 		error,
+// 		data,
+// 	};
+// };
