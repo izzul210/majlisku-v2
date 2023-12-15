@@ -4,6 +4,7 @@ import { createContext, useState, useContext, useReducer, useEffect, useRef } fr
 import { Outlet, useLocation } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useUserContext } from './UserContext';
+import { usePostRsvp } from '../hooks/usePostAPI';
 
 export const DigitalInviteContext = createContext(null);
 export const DigitalInviteDispatchContext = createContext(null);
@@ -355,26 +356,14 @@ export const DigitalInviteContextProvider = () => {
 	const [state, dispatch] = useReducer(digitalInviteReducer, initialState);
 	const [inviteState, dispatchInvite] = useReducer(rsvpDetailsReducer, rsvpDetails);
 	const { userData, userId, wishlist } = useUserContext();
-	//Refs for Input Error
-	const eventTitle1 = useRef(null);
-	const [eventTitle1Error, setEventTitle1Error] = useState(null);
-	const eventTitle2 = useRef(null);
-	const [eventTitle2Error, setEventTitle2Error] = useState(null);
-	const hostedBy = useRef(null);
-	const [hostedByError, setHostedByError] = useState(null);
-	const dateTime = useRef(null);
-	const [dateTimeError, setDateTimeError] = useState(null);
-	const locationInfo = useRef(null);
-	const [locationInfoError, setLocationInfoError] = useState(null);
-	const italicTitle = useRef(null);
-	const [italicTitleError, setItalicTitleError] = useState(null);
-
+	const { saveRsvpDetails } = usePostRsvp();
 	//New Stuff
 	const methods = useForm();
 	const {
 		reset,
 		setError,
 		watch,
+		handleSubmit,
 		formState: { errors },
 	} = methods;
 
@@ -385,44 +374,13 @@ export const DigitalInviteContextProvider = () => {
 		}
 	}, [userData, wishlist]);
 
-	function checkForInputError() {}
-
-	const onSubmit = (formValues) => {
-		console.log('hello');
-		console.log('errors:', errors);
-		if (errors) {
-			dispatch({ type: 'SET_ACCORDIANS_COLLAPSE', payload: false });
-
-			console.log('formValues', { ...formValues });
-		}
-	};
-
 	return (
-		<DigitalInviteContext.Provider value={{ state, inviteState }}>
-			<DigitalInviteInputErrorContext.Provider
-				value={{
-					checkForInputError,
-					eventTitle1,
-					eventTitle1Error,
-					eventTitle2,
-					eventTitle2Error,
-					hostedBy,
-					hostedByError,
-					dateTime,
-					dateTimeError,
-					locationInfo,
-					locationInfoError,
-					italicTitle,
-					italicTitleError,
-				}}>
-				<DigitalInviteDispatchContext.Provider value={{ dispatch, dispatchInvite }}>
-					<FormProvider {...methods}>
-						<form onSubmit={methods.handleSubmit(onSubmit)}>
-							<Outlet />
-						</form>
-					</FormProvider>
-				</DigitalInviteDispatchContext.Provider>
-			</DigitalInviteInputErrorContext.Provider>
+		<DigitalInviteContext.Provider value={{ state, inviteState, handleSubmit }}>
+			<DigitalInviteDispatchContext.Provider value={{ dispatch, dispatchInvite }}>
+				<FormProvider {...methods}>
+					<Outlet />
+				</FormProvider>
+			</DigitalInviteDispatchContext.Provider>
 		</DigitalInviteContext.Provider>
 	);
 };

@@ -1,6 +1,7 @@
 /** @format */
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import './App.scss';
 //Context import
 import { OnboardingProvider } from './context/OnboardingContext';
@@ -45,6 +46,11 @@ function App() {
 					<Sidebar />
 					<Suspense fallback={<PageLazyLoading loadingState={true} noOpacity={true} />}>
 						<div className='app-container'>
+							<Toaster
+								containerStyle={{
+									top: 30,
+								}}
+							/>
 							<Routes>
 								<Route
 									exact

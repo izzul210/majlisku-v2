@@ -12,6 +12,7 @@ import {
 } from '../../components/cards/dashboardCards';
 import ModalProvider from '../../components/atom/ModalProvider/ModalProvider';
 import InputField from '../../components/atom/InputField/InputField';
+import TextProvider from '../../components/atom/TextProvider/TextProvider';
 //Hooks import
 import { useCalculation } from '../../hooks/useCalculation';
 //Icons import
@@ -59,26 +60,46 @@ const MainDashboardCard = () => {
 
 	const { calculateEventCountDown } = useCalculation();
 
+	let navigate = useNavigate();
+
+	const handleNavigate = () => {
+		if (userData?.design_num || userData?.type) {
+			navigate('/digitalinvite');
+		} else {
+			navigate('/digitalinvite/template');
+		}
+	};
+
 	const eventCountDown = calculateEventCountDown(event_date);
 	return (
 		<>
 			<div
 				className='main-dashboard-card'
-				onClick={() => {
-					setModal(true);
-				}}
+				onClick={handleNavigate}
 				style={{
 					cursor: 'pointer',
-					backgroundImage: `linear-gradient(rgb(37, 37, 37, 0.5), rgb(1, 1, 1, 0.5)), url(${weddingDefault})`,
+					backgroundImage: `linear-gradient(rgb(37, 37, 37, 0.7), rgb(1, 1, 1, 0.8)), url(${weddingDefault})`,
 				}}>
-				<div className='main-dashboard-content flex-1 px-4 py-5 md:px-8 md:py-10'>
-					<div>{event_title_1 ? event_title_1 : 'Title'}</div>
-					<div className='event-main-title text-4xl'>{italic_title ? italic_title : 'Title'}</div>
-					<div className='uppercase'>
-						{event_date ? moment(event_date).format('D MMMM YYYY') : 'Date'}
+				{userData?.eventDetails ? (
+					<div className='main-dashboard-content flex-1 px-4 py-5 md:px-8 md:py-10'>
+						<div>{event_title_1 ? event_title_1 : 'Title'}</div>
+						<div className='event-main-title text-4xl'>{italic_title ? italic_title : 'Title'}</div>
+						<div className='uppercase'>
+							{event_date ? moment(event_date).format('D MMMM YYYY') : 'Date'}
+						</div>
+						<div className='uppercase'>{event_location ? event_location : 'Location'}</div>
 					</div>
-					<div className='uppercase'>{event_location ? event_location : 'Location'}</div>
-				</div>
+				) : (
+					<div className='flex items-center flex-1 px-4 py-5 text-start md:px-8 md:py-10'>
+						<TextProvider
+							fontFamily='lora'
+							colorStyle='#fff'
+							className='text-[16px] sm:text-[20px] max-w-[330px]'>
+							Foster meaningful connections and effortlessly host your special day
+						</TextProvider>
+					</div>
+				)}
+
 				<div className='dashboard-event-countdown flex items-center justify-center gap-4'>
 					{event_date ? (
 						<>
@@ -93,8 +114,8 @@ const MainDashboardCard = () => {
 							</div>
 						</>
 					) : (
-						<div className='flex gap-5 items-center'>
-							Set your event details <ViewAllIcon fill='white' />
+						<div className='flex gap-5 items-center font-semibold'>
+							Create your invite <ViewAllIcon fill='white' />
 						</div>
 					)}
 				</div>

@@ -84,7 +84,7 @@ function SettingCard(props) {
 	};
 
 	return (
-		<div className='setting-card box-border sm:w-auto border-b sm:border-none'>
+		<div className='setting-card box-border w-full border-b sm:border-none'>
 			{phoneSize ? (
 				<AccordianPhone expanded={expanded} defaultExpanded={true} onChange={handleChange}>
 					<AccordionSummary

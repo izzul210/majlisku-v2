@@ -53,3 +53,61 @@ export const usePostGuestWishes = () => {
 		showWishInInvite,
 	};
 };
+
+export const usePostRsvp = () => {
+	const queryClient = useQueryClient();
+	const { userId } = useUserContext();
+
+	const savePreviewDetails = useMutation({
+		mutationFn: async (body) => {
+			return body;
+		},
+		mutationKey: ['savePreviewDetails'],
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['userData'],
+			});
+		},
+		onError: (error) => {
+			console.log('savePreviewDetails Error:', error);
+		},
+	});
+
+	const saveRsvpDetails = useMutation({
+		mutationFn: async (body) => {
+			return body;
+		},
+		mutationKey: ['saveRsvpDetails'],
+	});
+
+	return {
+		saveRsvpDetails,
+	};
+};
+
+export const useSelectTheme = () => {
+	const queryClient = useQueryClient();
+	const { userId } = useUserContext();
+
+	const selectTheme = useMutation({
+		mutationFn: async (body) => {
+			//id, from = body
+			return updateDoc(doc(projectFirestore, 'users', userId), {
+				design_num: body.id,
+			});
+		},
+		mutationKey: ['selectTheme'],
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['userData'],
+			});
+		},
+		onError: (error) => {
+			console.log('useSelectTheme Error:', error);
+		},
+	});
+
+	return {
+		selectTheme,
+	};
+};

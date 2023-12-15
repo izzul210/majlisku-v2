@@ -27,10 +27,8 @@ import { DeleteIcon, PlusIcon } from '../../components/icons/actionIcons';
 import {
 	useDigitalInviteContext,
 	useDigitalInviteDispatchContext,
-	useDigitalInviteInputErrorContext,
 } from '../../context/DigitalInviteContext';
 //Hooks import
-import { useItinerary } from '../../hooks/useItinerary';
 import { useItineraryAPI } from '../../hooks/useItineraryAPI';
 //Assets import
 import exampleEvent from '../../assets/images/exampleEvent.png';
@@ -43,10 +41,6 @@ function Setting() {
 	const { dispatch } = useDigitalInviteDispatchContext();
 	const { state } = useDigitalInviteContext();
 	const { accordiansCollapsed } = state;
-	//from API
-	const { data: userData } = useUserData();
-	const { data: eventActivity } = useEventActivity();
-	const { data: giftlist } = useGiftlist();
 
 	const handleScrollToTop = () => {
 		window.scrollTo({
@@ -56,7 +50,7 @@ function Setting() {
 	};
 
 	return (
-		<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col items-center pt-24 bg-white sm:bg-transparent'>
+		<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col items-center pt-[100px] bg-white sm:bg-transparent'>
 			<div className='flex justify-end w-full  px-4 sm:px-6' style={{ maxWidth: '720px' }}>
 				<div className='flex gap-2'>
 					<div
@@ -121,6 +115,7 @@ const InputErrorText2 = (props) => {
 	) : null;
 };
 
+/***** General ****/
 const General = () => {
 	const { watch, setValue } = useFormContext();
 	const enable_bahasa = watch('enable_bahasa');
@@ -196,6 +191,7 @@ const EventDetails = () => {
 	const {
 		register,
 		watch,
+		setValue,
 		formState: { errors },
 	} = useFormContext();
 	const { inviteState } = useDigitalInviteContext();
@@ -447,7 +443,7 @@ const DateTime = () => {
 						{watch('enable_deadline') && (
 							<div className='w-full mt-2'>
 								<DatePickerProvider
-									defaultValue={moment(watch('event_date'))}
+									defaultValue={moment(watch('event_date')).format('YYYY-MM-DD')}
 									control={control}
 									name='event_date_deadline'
 									required='Deadline is required!'
@@ -478,7 +474,7 @@ const LocationMap = () => {
 				<div>
 					<TextAreaProvider
 						controls={{ ...register('event_address', { required: 'Venu address is required!' }) }}
-						title={enable_bahasa ? 'Alamat tempat *' : 'Venue Address'}
+						title={enable_bahasa ? 'Alamat tempat *' : 'Venue Address *'}
 						placeholder='Eg: Changkat Telang,
 49, B52, Pekan Batu Lapan Belas,
 43100 Hulu Langat, Selangor.'
@@ -523,7 +519,11 @@ const LocationMap = () => {
 
 /******* Event Details ******/
 const Greeting = () => {
-	const { register, watch } = useFormContext();
+	const {
+		register,
+		watch,
+		formState: { errors },
+	} = useFormContext();
 	const [openExample, setOpenExample] = useState(false);
 
 	const enable_bahasa = watch('enable_bahasa');
@@ -551,16 +551,23 @@ const Greeting = () => {
 						placeholder='Assalammualaikum dan salam sejahtera'
 						textSize='text-sm'
 					/>
-					<TextAreaProvider
-						controls={{
-							...register('host_details'),
-						}}
-						title={enable_bahasa ? 'Penganjur' : 'Host'}
-						placeholder='Ir. Ts Mohd Rizal bin Johari
+					<div>
+						<TextAreaProvider
+							controls={{
+								...register('host_details', { required: 'Host is required!' }),
+							}}
+							title={enable_bahasa ? 'Penganjur *' : 'Host *'}
+							placeholder='Ir. Ts Mohd Rizal bin Johari
 &	 Zubaidah Binti Mohd Isa'
-						className='text-center'
-						minHeight='100px'
-					/>
+							className='text-center'
+							minHeight='100px'
+							error={errors.host_details}
+						/>
+						<InputErrorText2
+							errorField={errors.host_details}
+							errorText={errors.host_details?.message}
+						/>
+					</div>
 					<TextAreaProvider
 						controls={{
 							...register('greeting_1'),
@@ -588,17 +595,24 @@ const Greeting = () => {
 						className='text-center'
 						minHeight='100px'
 					/>
-					<TextAreaProvider
-						controls={{
-							...register('event_title_2'),
-						}}
-						title={enable_bahasa ? 'Nama Penuh' : 'Full Name'}
-						placeholder='Mohd Izzul Syazwan bin Mohd Rizal
-						&
-						Nurul Syafiqah binti Othman'
-						className='text-center'
-						minHeight='110px'
-					/>
+					<div>
+						<TextAreaProvider
+							controls={{
+								...register('event_title_2', { required: 'Full name is required!' }),
+							}}
+							title={enable_bahasa ? 'Nama Penuh *' : 'Full Name *'}
+							placeholder='Mohd Izzul Syazwan bin Mohd Rizal
+&
+Nurul Syafiqah binti Othman'
+							className='text-center'
+							minHeight='110px'
+							error={errors.event_title_2}
+						/>
+						<InputErrorText2
+							errorField={errors.event_title_2}
+							errorText={errors.event_title_2?.message}
+						/>
+					</div>
 				</div>
 			</SettingCard>
 			<GreetingDetailsExample isOpen={openExample} handleClose={() => setOpenExample(false)} />
@@ -1195,6 +1209,7 @@ const MoneyGift = () => {
 		register,
 		watch,
 		control,
+		setValue,
 		formState: { errors },
 	} = useFormContext();
 
@@ -1232,7 +1247,7 @@ const MoneyGift = () => {
 							error={errors.money_gift_details?.name}
 							controls={{
 								...register('money_gift_details.name', {
-									required: 'Name is required!',
+									required: watch('enable_money_gift') ? 'Name is required!' : false,
 								}),
 							}}
 						/>
@@ -1251,7 +1266,7 @@ const MoneyGift = () => {
 							error={errors.money_gift_details?.bankName}
 							controls={{
 								...register('money_gift_details.bankName', {
-									required: 'Bank name is required!',
+									required: watch('enable_money_gift') ? 'Bank name is required!' : false,
 								}),
 							}}
 						/>
@@ -1269,7 +1284,7 @@ const MoneyGift = () => {
 							error={errors.money_gift_details?.accNum}
 							controls={{
 								...register('money_gift_details.accNum', {
-									required: 'Account number is required!',
+									required: watch('enable_money_gift') ? 'Account number is required!' : false,
 								}),
 							}}
 						/>
@@ -1278,7 +1293,6 @@ const MoneyGift = () => {
 							errorText={errors.money_gift_details?.accNum?.message}
 						/>
 					</div>
-
 					<InputTitleText>Qr Code Screenshot</InputTitleText>
 					<ImageUpload
 						defaultImgUrl={money_gift_details?.qrCodeUrl}

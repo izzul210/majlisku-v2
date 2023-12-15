@@ -5,12 +5,12 @@ import React, { useState, useEffect } from 'react';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/ModalProviderPreviewInvite';
-//Context import
-import {
-	useDigitalInviteContext,
-	useDigitalInviteDispatchContext,
-} from '../../context/DigitalInviteContext';
-import { useUserContext } from '../../context/UserContext';
+import WholePageLoading from '../../components/atom/loading/WholePageLoading';
+//Hook import
+import { useUserData } from '../../hooks/useFetchAPI';
+import { useUserLogic } from '../../hooks/useUserLogic';
+import { useSelectTheme } from '../../hooks/usePostAPI';
+import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
 //Styling import
 import design_0 from '../../assets/images/design_0.png';
 import design_1 from '../../assets/images/design_1.png';
@@ -47,7 +47,7 @@ const designArrays = [
 		title: 'Minimal Chic',
 		category: 'free',
 		price: 0,
-		id: 0,
+		id: 3,
 		img: design_0,
 	},
 
@@ -131,8 +131,6 @@ const designArrays = [
 ];
 
 const GeneratePreview = ({ isOpen, handleClose, themeId = 1, themeName = 'Classic' }) => {
-	const { userData } = useUserContext();
-
 	return (
 		<ModalProviderPreviewInvite
 			isOpen={isOpen}
@@ -141,7 +139,7 @@ const GeneratePreview = ({ isOpen, handleClose, themeId = 1, themeName = 'Classi
 			<div className='h-full w-full flex justify-center'>
 				<div className='w-full max-w-[400px]'>
 					<iframe
-						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${themeId}/${userData.userId}`}
+						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${themeId}/eEBYP8ZKknVPcN6G601Mv073Kg13`}
 						width='100%'
 						height='670'></iframe>
 				</div>
@@ -218,14 +216,14 @@ const TemplateCard = ({
 	handlePreview,
 }) => {
 	const styleProp = active
-		? { border: '2px solid rgba(0,0,0,0.5)', backgroundImage: `url(${img})` }
+		? { border: '2px solid rgba(0,0,0,0.5)', backgroundImage: `url(${img})`, opacity: 0.7 }
 		: { backgroundImage: `url(${img})` };
 
 	return (
-		<div className='template-card-container'>
-			<div className='template-card ' style={styleProp}>
+		<div className='template-card-container '>
+			<div className='template-card' style={styleProp}>
 				{active ? (
-					<div className='template-buttons h-full flex flex-col gap-2 justify-center px-4'>
+					<div className='h-full flex flex-col gap-2 justify-center px-4'>
 						<div className='text-center bg-white p-4'>
 							<TextProvider className='text-sm font-semibold uppercase' colorStyle='#1D4648'>
 								Your Current Template
@@ -252,14 +250,23 @@ const TemplateCard = ({
 };
 
 function Template() {
-	const { state } = useDigitalInviteContext();
-	const { dispatch } = useDigitalInviteDispatchContext();
-	const { design } = state;
+	const { data: userInfo } = useUserData();
+	const { sanitizeOldTheme } = useUserLogic();
+	const { selectTheme } = useSelectTheme();
+
 	const [previewModal, setPreviewModal] = useState(false);
 	const [previewDetails, setPreviewDetails] = useState({
 		id: 0,
 		title: 'Classic',
 	});
+
+	//Extract design template from user
+	const designNum = userInfo?.design_num
+		? userInfo?.design_num
+		: userInfo?.type
+		? userInfo?.type
+		: null;
+	let design = sanitizeOldTheme(designNum);
 
 	const checkUserDesign = (id) => {
 		if (design === id) {
@@ -275,13 +282,20 @@ function Template() {
 		setPreviewModal(true);
 	};
 
-	const handleUseTemplate = (id) => {
-		dispatch({ type: 'SET_DESIGN', payload: id });
+	const handleUseTemplate = async (id) => {
+		try {
+			await selectTheme.mutateAsync({ id: id });
+			notifySuccess('Successfully saved!');
+		} catch (err) {
+			console.log(err);
+			notifyError(err);
+		}
 	};
 
 	return (
 		<>
 			<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col pt-24 bg-white sm:bg-transparent'>
+				<WholePageLoading loading={selectTheme.isLoading} text='Saving your theme of choice..' />
 				<div className='flex flex-col gap-2 text-start w-full px-5 mt-3 sm:mt-8'>
 					<TextProvider colorStyle='#1D4648' className='text-[20px] sm:text-[24px] font-semibold'>
 						Select theme
@@ -307,8 +321,8 @@ function Template() {
 				</div>
 			</div>
 			<GeneratePreview
-				themeId={previewDetails.id}
-				themeName={previewDetails.title}
+				themeId={previewDetails?.id}
+				themeName={previewDetails?.title}
 				isOpen={previewModal}
 				handleClose={() => setPreviewModal(false)}
 			/>

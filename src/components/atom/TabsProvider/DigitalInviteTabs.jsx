@@ -8,6 +8,9 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import './TabsProvider.scss';
+//Hooks import
+import { useUserLogic } from '../../../hooks/useUserLogic';
+import { notifySuccess, notifyError, notifyReminder } from '../../toast/toastprovider';
 
 const GrayScaleWarmBlack = '#1D4648';
 const NeutralGrey400 = '#98A2B3';
@@ -51,6 +54,7 @@ const StyledTab = styled((props) => (
 
 export default function DigitalInviteTabs() {
 	const [value, setValue] = React.useState('setting');
+	const { checkIfUserHasSelectedTheme, checkIfUserHasEventDetails } = useUserLogic();
 	const location = useLocation();
 	let navigate = useNavigate();
 
@@ -70,9 +74,19 @@ export default function DigitalInviteTabs() {
 	}, [location]);
 
 	const handleChange = (event, newValue) => {
-		setValue(newValue);
 		if (newValue === 'setting') {
-			navigate('');
+			if (checkIfUserHasSelectedTheme()) {
+				navigate('');
+			} else {
+				notifyReminder('Kindly select the theme first to continue');
+			}
+		} else if (newValue === 'share') {
+			if (checkIfUserHasEventDetails()) {
+				navigate(newValue);
+			} else {
+				notifyReminder('Kindly Save & Publish event details first to continue to Share!');
+				navigate('');
+			}
 		} else {
 			navigate(newValue);
 		}

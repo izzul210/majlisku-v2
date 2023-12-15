@@ -15,16 +15,16 @@ function FloatingToTopButton({ onClickToTop = () => {} }) {
 				<path
 					d='M10 15.8334V4.16675'
 					stroke='#1D4648'
-					stroke-width='1.5'
-					stroke-linecap='round'
-					stroke-linejoin='round'
+					strokeWidth='1.5'
+					strokeLinecap='round'
+					strokeLinejoin='round'
 				/>
 				<path
 					d='M4.1665 10.0001L9.99984 4.16675L15.8332 10.0001'
 					stroke='#1D4648'
-					stroke-width='1.5'
-					stroke-linecap='round'
-					stroke-linejoin='round'
+					strokeWidth='1.5'
+					strokeLinecap='round'
+					strokeLinejoin='round'
 				/>
 			</svg>
 		</div>

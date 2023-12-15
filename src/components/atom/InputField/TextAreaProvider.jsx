@@ -31,7 +31,11 @@ function TextAreaProvider({
 					value={value}
 					onChange={onChange}
 					className={`input-field ${className} ${error ? 'error-field' : ''}`}
-					style={flex ? { width: width, flex: 1, minHeight } : { width: width, minHeight }}
+					style={
+						flex
+							? { width: width, flex: 1, minHeight: minHeight }
+							: { width: width, minHeight: minHeight }
+					}
 					{...controls}
 					{...props}
 				/>
