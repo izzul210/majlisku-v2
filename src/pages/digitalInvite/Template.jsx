@@ -148,6 +148,37 @@ const GeneratePreview = ({ isOpen, handleClose, themeId = 1, themeName = 'Classi
 	);
 };
 
+const ConfirmTheme = ({
+	isOpen,
+	handleClose,
+	themeId = 1,
+	themeName = 'Classic',
+	img,
+	handleUseTemplate = () => {},
+}) => {
+	useEffect(() => {}, [themeId]);
+
+	return (
+		<ModalProviderPreviewInvite
+			isOpen={isOpen}
+			handleClose={handleClose}
+			title={`Choose ${themeName}?`}>
+			<div className='h-full w-full flex gap-3 flex-col items-center p-4 justify-center'>
+				<img src={img} alt={themeName} className='w-[200px] rounded-md border-2 border-black' />
+				<div className='flex gap-4 items-center'>
+					<ButtonProvider
+						type='primary'
+						width={200}
+						onClick={() => handleUseTemplate(themeId)}
+						className='w-full uppercase'>
+						Confirm and Use
+					</ButtonProvider>
+				</div>
+			</div>
+		</ModalProviderPreviewInvite>
+	);
+};
+
 const TemplateTitle = ({ title, category, price }) => {
 	if (category === 'free')
 		return (
@@ -214,6 +245,7 @@ const TemplateCard = ({
 	active = false,
 	handleUseTemplate,
 	handlePreview,
+	handleChooseTheme,
 }) => {
 	const styleProp = active
 		? { border: '2px solid rgba(0,0,0,0.5)', backgroundImage: `url(${img})`, opacity: 0.7 }
@@ -235,10 +267,10 @@ const TemplateCard = ({
 						<ButtonProvider
 							type='primary'
 							className='uppercase'
-							onClick={() => handleUseTemplate(id)}>
+							onClick={() => handleChooseTheme(id, title, img)}>
 							Use Template
 						</ButtonProvider>
-						<ButtonProvider className='uppercase' onClick={() => handlePreview(id, title)}>
+						<ButtonProvider className='uppercase' onClick={() => handlePreview(id, title, img)}>
 							Preview
 						</ButtonProvider>
 					</div>
@@ -253,12 +285,14 @@ function Template() {
 	const { data: userInfo } = useUserData();
 	const { sanitizeOldTheme } = useUserLogic();
 	const { selectTheme } = useSelectTheme();
-
 	const [previewModal, setPreviewModal] = useState(false);
+	const [confirmModal, setConfirmModal] = useState(false);
 	const [previewDetails, setPreviewDetails] = useState({
 		id: 0,
 		title: 'Classic',
+		img: '',
 	});
+	const [loading, setLoading] = useState(false);
 
 	//Extract design template from user
 	const designNum = userInfo?.design_num
@@ -274,28 +308,42 @@ function Template() {
 		} else return false;
 	};
 
-	const handlePreview = (id, title) => {
+	const handlePreview = (id, title, img) => {
 		setPreviewDetails({
 			id,
 			title,
+			img,
 		});
 		setPreviewModal(true);
 	};
 
+	const handleChooseTheme = (id, title, img) => {
+		setPreviewDetails({
+			id,
+			title,
+			img,
+		});
+		setConfirmModal(true);
+	};
+
 	const handleUseTemplate = async (id) => {
+		setLoading(true);
 		try {
 			await selectTheme.mutateAsync({ id: id });
+			setConfirmModal(false);
+			setLoading(false);
 			notifySuccess('Successfully saved!');
 		} catch (err) {
 			console.log(err);
 			notifyError(err);
+			setLoading(false);
 		}
 	};
 
 	return (
 		<>
 			<div className='w-full gap-2 sm:gap-5 px-0 pb-6 sm:px-4 h-full flex flex-col pt-24 bg-white sm:bg-transparent'>
-				<WholePageLoading loading={selectTheme.isLoading} text='Saving your theme of choice..' />
+				<WholePageLoading loading={loading} text='Saving your theme of choice..' />
 				<div className='flex flex-col gap-2 text-start w-full px-5 mt-3 sm:mt-8'>
 					<TextProvider colorStyle='#1D4648' className='text-[20px] sm:text-[24px] font-semibold'>
 						Select theme
@@ -316,6 +364,7 @@ function Template() {
 							active={checkUserDesign(item.id)}
 							handleUseTemplate={handleUseTemplate}
 							handlePreview={handlePreview}
+							handleChooseTheme={handleChooseTheme}
 						/>
 					))}
 				</div>
@@ -325,6 +374,14 @@ function Template() {
 				themeName={previewDetails?.title}
 				isOpen={previewModal}
 				handleClose={() => setPreviewModal(false)}
+			/>
+			<ConfirmTheme
+				isOpen={confirmModal}
+				handleClose={() => setConfirmModal(false)}
+				themeId={previewDetails?.id}
+				themeName={previewDetails?.title}
+				img={previewDetails?.img}
+				handleUseTemplate={handleUseTemplate}
 			/>
 		</>
 	);

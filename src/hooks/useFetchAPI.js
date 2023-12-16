@@ -15,7 +15,7 @@ export const useUserData = () => {
 			const docSnap = await getDoc(docRef);
 
 			if (docSnap.exists()) {
-				return docSnap.data();
+				return { userId: docSnap.id, ...docSnap.data() };
 			} else {
 				console.log('No such document!');
 			}

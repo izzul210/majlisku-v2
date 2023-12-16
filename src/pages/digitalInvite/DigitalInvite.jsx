@@ -141,7 +141,7 @@ const GeneratePreview = ({ isOpen, handleClose }) => {
 			<div className='h-full w-full flex justify-center'>
 				<div className='w-full max-w-[400px]'>
 					<iframe
-						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/1/${userData?.userId}`}
+						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${userData?.design_num}/${userData?.userId}`}
 						width='100%'
 						height='670'></iframe>
 				</div>
@@ -181,20 +181,26 @@ const DetailsButtons = () => {
 	const { dispatch } = useDigitalInviteDispatchContext();
 	const [previewModal, setPreviewModal] = useState(false);
 	const phoneSize = useMediaQuery('(max-width:600px)');
+	const [loading, setLoading] = useState(false);
 
 	const handlePreview = () => {
 		setPreviewModal(true);
 	};
 
 	const onSaveAsPreview = async (formValues) => {
+		setLoading(true);
 		try {
-			savePreviewDetails.mutateAsync({
+			await savePreviewDetails.mutateAsync({
 				...formValues,
 				...inviteState,
 			});
 			notifySuccess('Saved as preview');
+			handlePreview();
+			setLoading(false);
 		} catch (error) {
 			console.log('error:', error);
+			notifyError(error);
+			setLoading(false);
 		}
 	};
 
@@ -210,7 +216,7 @@ const DetailsButtons = () => {
 
 	return (
 		<>
-			<WholePageLoading loading={savePreviewDetails.isLoading} text='Saving....' />
+			<WholePageLoading loading={loading} text='Saving....' />
 			<div className='flex items-center gap-2'>
 				<ButtonProvider button padding='12px 20px' onClick={handleSubmit(onSaveAsPreview, onError)}>
 					<PreviewIcon />
