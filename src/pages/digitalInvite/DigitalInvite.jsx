@@ -130,7 +130,7 @@ const GenerateInviteLink = ({ isOpen, handleClose }) => {
 	);
 };
 
-const GeneratePreview = ({ isOpen, handleClose }) => {
+const GeneratePreview = ({ iframeKey, isOpen, handleClose }) => {
 	const { data: userData } = useUserData();
 
 	return (
@@ -141,6 +141,7 @@ const GeneratePreview = ({ isOpen, handleClose }) => {
 			<div className='h-full w-full flex justify-center'>
 				<div className='w-full max-w-[400px]'>
 					<iframe
+						key={iframeKey}
 						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${userData?.design_num}/${userData?.userId}`}
 						width='100%'
 						height='670'></iframe>
@@ -182,6 +183,7 @@ const DetailsButtons = () => {
 	const [previewModal, setPreviewModal] = useState(false);
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const [loading, setLoading] = useState(false);
+	const [iframeKey, setIframeKey] = useState(0);
 
 	const handlePreview = () => {
 		setPreviewModal(true);
@@ -196,6 +198,7 @@ const DetailsButtons = () => {
 			});
 			notifySuccess('Saved as preview');
 			handlePreview();
+			setIframeKey((prevKey) => prevKey + 1);
 			setLoading(false);
 		} catch (error) {
 			console.log('error:', error);
@@ -232,7 +235,11 @@ const DetailsButtons = () => {
 					</TextProvider>
 				</ButtonProvider>
 			</div>
-			<GeneratePreview isOpen={previewModal} handleClose={() => setPreviewModal(false)} />
+			<GeneratePreview
+				iframeKey={iframeKey}
+				isOpen={previewModal}
+				handleClose={() => setPreviewModal(false)}
+			/>
 		</>
 	);
 };
