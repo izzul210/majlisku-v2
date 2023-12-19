@@ -83,9 +83,11 @@ export default function DigitalInviteTabs() {
 		} else if (newValue === 'share') {
 			if (checkIfUserHasEventDetails()) {
 				navigate(newValue);
-			} else {
+			} else if (checkIfUserHasSelectedTheme()) {
 				notifyReminder('Kindly Save & Publish event details first to continue to Share!');
 				navigate('');
+			} else {
+				notifyReminder('Kindly select the theme first to continue');
 			}
 		} else {
 			navigate(newValue);

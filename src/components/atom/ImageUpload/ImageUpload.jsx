@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import imageCompression from 'browser-image-compression';
-
 import Button from '@mui/material/Button';
 import TextProvider from '../TextProvider/TextProvider';
 import { ImageUploadIcon } from '../../icons/actionIcons';

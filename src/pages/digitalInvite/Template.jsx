@@ -34,20 +34,28 @@ const GeneratePreview = ({ isOpen, handleClose, themeId = 1, themeName = 'Classi
 const ConfirmTheme = ({
 	isOpen,
 	handleClose,
+	price,
 	themeId = 1,
 	themeName = 'Classic',
 	img,
+	loading = false,
 	handleUseTemplate = () => {},
 }) => {
 	useEffect(() => {}, [themeId]);
 
 	return (
 		<ModalProviderPreviewInvite
+			loading={loading}
 			isOpen={isOpen}
 			handleClose={handleClose}
 			title={`Choose ${themeName}?`}>
 			<div className='h-full w-full flex gap-3 flex-col items-center p-4 justify-center'>
 				<img src={img} alt={themeName} className='w-[200px] rounded-md border-2 border-black' />
+				<TextProvider
+					colorStyle='#98A2B3'
+					className='text-start w-[200px] font-semibold uppercase text-[16px]'>
+					{price === 0 ? 'FREE' : `RM${price}`}
+				</TextProvider>
 				<div className='flex gap-4 items-center'>
 					<ButtonProvider
 						type='primary'
@@ -126,7 +134,6 @@ const TemplateCard = ({
 	category,
 	price,
 	active = false,
-	handleUseTemplate,
 	handlePreview,
 	handleChooseTheme,
 }) => {
@@ -150,7 +157,7 @@ const TemplateCard = ({
 						<ButtonProvider
 							type='primary'
 							className='uppercase'
-							onClick={() => handleChooseTheme(id, title, img)}>
+							onClick={() => handleChooseTheme(id, title, img, price)}>
 							Use Template
 						</ButtonProvider>
 						<ButtonProvider className='uppercase' onClick={() => handlePreview(id, title, img)}>
@@ -201,11 +208,12 @@ function Template() {
 		setPreviewModal(true);
 	};
 
-	const handleChooseTheme = (id, title, img) => {
+	const handleChooseTheme = (id, title, img, price) => {
 		setPreviewDetails({
 			id,
 			title,
 			img,
+			price,
 		});
 		setConfirmModal(true);
 	};
@@ -243,7 +251,7 @@ function Template() {
 							title={item.title}
 							id={item.design_id}
 							img={item.img}
-							category={item.premium ? 'Premium' : 'Free'}
+							category={item.premium ? 'premium' : 'free'}
 							price={item.price}
 							active={checkUserDesign(item.design_id)}
 							handleUseTemplate={handleUseTemplate}
@@ -260,11 +268,13 @@ function Template() {
 				handleClose={() => setPreviewModal(false)}
 			/>
 			<ConfirmTheme
+				loading={loading}
 				isOpen={confirmModal}
 				handleClose={() => setConfirmModal(false)}
 				themeId={previewDetails?.id}
 				themeName={previewDetails?.title}
 				img={previewDetails?.img}
+				price={previewDetails?.price}
 				handleUseTemplate={handleUseTemplate}
 			/>
 		</>

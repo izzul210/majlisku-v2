@@ -6,6 +6,7 @@ import { projectFirestore, projectStorage } from '../firebase/config';
 
 //user context
 import { useUserContext } from '../context/UserContext';
+import { useUserData } from './useFetchAPI';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const usePostGuestWishes = () => {
@@ -68,6 +69,7 @@ export const usePostGuestWishes = () => {
 export const usePostRsvp = () => {
 	const queryClient = useQueryClient();
 	const { userId } = useUserContext();
+	const { data: userData } = useUserData();
 
 	const savePreviewDetails = useMutation({
 		mutationFn: async (body) => {
@@ -291,7 +293,7 @@ export const usePostRsvp = () => {
 
 			const { imageFile } = body;
 
-			let photoURL = '';
+			let photoURL = userData?.metadata?.photoURL ? userData?.metadata?.photoURL : null;
 
 			const metadata = {
 				contentType: 'image/jpeg',
@@ -324,11 +326,30 @@ export const usePostRsvp = () => {
 		},
 	});
 
+	const savePersonalMessage = useMutation({
+		mutationFn: async (body) => {
+			//id, from = body
+			return updateDoc(doc(projectFirestore, 'users', userId), {
+				personalMessage: body.personalMessage,
+			});
+		},
+		mutationKey: ['savePersonalMessage'],
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['userData'],
+			});
+		},
+		onError: (error) => {
+			console.log('savePersonalMessage Error:', error);
+		},
+	});
+
 	return {
 		saveRsvpDetails,
 		savePreviewDetails,
 		saveInviteId,
 		saveMetadataDetails,
+		savePersonalMessage,
 	};
 };
 

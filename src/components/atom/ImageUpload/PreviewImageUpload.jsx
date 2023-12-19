@@ -189,11 +189,11 @@ function PreviewImageUpload({ defaultImgUrl = null, setValue, aspectRatio = 1, d
 
 	return (
 		<>
-			<Button component='label' sx={{ p: 0 }} className='w-full bg-black'>
+			<Button component='label' sx={{ p: 0 }} className='w-[180px] bg-black'>
 				<div
 					className={`flex py-2 rounded-lg ${
 						croppedImageUrl ? '' : 'border border-gray-400 border-dashed'
-					} justify-start  items-center w-full h-auto`}
+					} justify-start text-center items-center w-full h-auto`}
 					style={{ backgroundColor: croppedImageUrl ? 'white' : '#FCFCFD' }}>
 					{croppedImageUrl ? (
 						<div className='border p-1 rounded-lg border-gray-400'>
