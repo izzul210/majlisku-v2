@@ -30,6 +30,7 @@ const CloseButton = () => (
 function ModalProvider({
 	isOpen = false,
 	handleClose = () => {},
+	loadingTitle = null,
 	title = 'Modal',
 	loading = false,
 	children,
@@ -52,7 +53,7 @@ function ModalProvider({
 				p: 4,
 			}}
 			{...props}>
-			<CardLoadingState loadingState={loading} />
+			<CardLoadingState loadingState={loading} loadingTitle={loadingTitle} />
 			<Box>
 				<DialogTitle id='dialog-title' sx={{ padding: 0, top: 0, backgroundColor: 'white' }}>
 					<div className='modal-top uppercase'>

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useUserData } from '../../hooks/useFetchAPI';
 import { useFormContext } from 'react-hook-form';
-import axios from 'axios';
 import { Route, Routes, Link, Navigate } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -21,7 +20,6 @@ import GuestWishes from './GuestWishes';
 import DigitalInviteTabs from '../../components/atom/TabsProvider/DigitalInviteTabs';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
-import ModalProvider from '../../components/atom/ModalProvider/ModalProvider2';
 import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/ModalProviderPreviewInvite';
 import WholePageLoading from '../../components/atom/loading/WholePageLoading';
 import './DigitalInvite.scss';
@@ -34,101 +32,6 @@ import { BackIcon, PreviewIcon } from '../../components/icons/actionIcons';
 import { useUserLogic } from '../../hooks/useUserLogic';
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
 import { usePostRsvp } from '../../hooks/usePostAPI';
-
-const cloudApi = import.meta.env.VITE_APP_API_KEY;
-
-const GenerateInviteLink = ({ isOpen, handleClose }) => {
-	const [inviteId, setInviteId] = useState('');
-	const [approved, setApproved] = useState(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
-	const { addInviteId, isPending } = useRsvp();
-
-	function hasSpecialChars(str) {
-		const specialChars = /[!@#$%^&*()+\=\[\]{};':"\\|,.<>\/?]/;
-		return specialChars.test(str);
-	}
-
-	function checkInviteIdAvailability() {
-		setLoading(true);
-		setError(null);
-
-		if (inviteId?.split(' ').length > 1) {
-			setLoading(false);
-			setError('✗ URL cannot have a space');
-		} else if (hasSpecialChars(inviteId)) {
-			setLoading(false);
-			setError('✗ URL cannot have special characters');
-		} else {
-			axios.get(`${cloudApi}/checkinviteid/${inviteId.toLowerCase()}`).then((response) => {
-				setLoading(false);
-				if (response.data === 0) {
-					setApproved(inviteId);
-				} else {
-					setApproved(false);
-					setError('✗ URL not available, please try a different one.');
-				}
-			});
-		}
-	}
-
-	function saveInviteId() {
-		addInviteId(inviteId, () => {
-			handleClose();
-		});
-	}
-
-	return (
-		<ModalProvider isOpen={isOpen} handleClose={handleClose} title='Generate Invite Link'>
-			<div className='p-4 sm:p-6'>
-				<TextProvider className='uppercase font-semibold'>Generate Unique Url*</TextProvider>
-				<div className='flex border border-gray-300 rounded-lg'>
-					<TextProvider className='text-gray-400 p-3 border-r'>invite.majlisku.app/</TextProvider>
-					<input
-						type='text'
-						value={inviteId}
-						onChange={(e) => setInviteId(e.target.value)}
-						placeholder='Enter url'
-						className=' rounded-lg w-full p-3 appearance-none'
-					/>
-				</div>
-				{error && (
-					<TextProvider colorStyle='#D83232' className='text-sm mt-1'>
-						{error}
-					</TextProvider>
-				)}
-				{approved === inviteId && (
-					<TextProvider colorStyle='#419E6A' className='text-sm mt-1'>
-						✓ URL available ! Click Save
-					</TextProvider>
-				)}
-				<TextProvider className='text-gray-400 py-2 text-sm'>
-					Create a distinctive and memorable URL. If not specified, random URL will be used as
-					default
-				</TextProvider>
-				{approved === inviteId ? (
-					<ButtonProvider
-						disabled={isPending}
-						className='uppercase mt-3'
-						width='86px'
-						type='primary'
-						onClick={() => saveInviteId()}>
-						{isPending ? 'Saving...' : 'Save'}
-					</ButtonProvider>
-				) : (
-					<ButtonProvider
-						disabled={loading}
-						className='uppercase mt-3'
-						width='136px'
-						type='primary'
-						onClick={() => checkInviteIdAvailability()}>
-						{loading ? 'Checking...' : 'Generate URL'}
-					</ButtonProvider>
-				)}
-			</div>
-		</ModalProvider>
-	);
-};
 
 const GeneratePreview = ({ iframeKey, isOpen, handleClose }) => {
 	const { data: userData } = useUserData();
@@ -178,12 +81,13 @@ const ThemeTopBar = () => {
 /******* TOP BUTTONS FOR DETAILS PAGE */
 const DetailsButtons = () => {
 	const { handleSubmit, inviteState } = useDigitalInviteContext();
-	const { savePreviewDetails } = usePostRsvp();
+	const { savePreviewDetails, saveRsvpDetails } = usePostRsvp();
 	const { dispatch } = useDigitalInviteDispatchContext();
 	const [previewModal, setPreviewModal] = useState(false);
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const [loading, setLoading] = useState(false);
 	const [iframeKey, setIframeKey] = useState(0);
+	let navigate = useNavigate();
 
 	const handlePreview = () => {
 		setPreviewModal(true);
@@ -207,8 +111,21 @@ const DetailsButtons = () => {
 		}
 	};
 
-	const onSubmit = (formValues) => {
-		console.log('formValues from onSubmit:', formValues);
+	const onSubmit = async (formValues) => {
+		setLoading(true);
+		try {
+			await saveRsvpDetails.mutateAsync({
+				...formValues,
+				...inviteState,
+			});
+			notifySuccess('Saved & Publish!');
+			navigate('share');
+			setLoading(false);
+		} catch (error) {
+			console.log('error:', error);
+			notifyError(error);
+			setLoading(false);
+		}
 	};
 
 	const onError = (error) => {
@@ -296,6 +213,7 @@ const DigitalInviteTopBar = () => {
 	} = useFormContext();
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const [modal, setModal] = useState(false);
+	const premium = false;
 
 	return (
 		<>
@@ -341,11 +259,10 @@ const DigitalInviteTopBar = () => {
 					<div className='flex justify-center w-full border-t border-gray-200'>
 						<DigitalInviteTabs />
 					</div>
-					{/* <PremiumThemeAlert /> */}
+					{premium && <PremiumThemeAlert />}
 				</div>
-
-				<GenerateInviteLink isOpen={modal} handleClose={() => setModal(false)} />
 			</AppBar>
+			{premium && <PremiumThemeAlert />}
 		</>
 	);
 };

@@ -1,5 +1,4 @@
 /** @format */
-
 import { useQuery } from '@tanstack/react-query';
 import { projectFirestore, projectAuth } from '../firebase/config';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
@@ -150,8 +149,6 @@ export const useGuestwishes = () => {
 
 	let results = [];
 
-	console.log('guestwishes updated');
-
 	if (guestlist) {
 		guestlist.forEach((guest) => {
 			if (guest.response && guest.response.wish !== '') {
@@ -192,62 +189,63 @@ export const useGuestwishes = () => {
 	};
 };
 
-// export const useGuestwishes = () => {
-// 	const { data: guestlist } = useGuestlist();
-// 	const { data: newguestlist } = useNewGuestlist();
+export const useInviteThemes = () => {
+	const { userId } = useUserContext();
 
-// 	const { isLoading, error, data } = useQuery({
-// 		queryKey: ['guestwishes'],
-// 		queryFn: () => {
-// 			let results = [];
+	const { isLoading, error, data } = useQuery({
+		queryKey: ['themes'],
+		queryFn: async () => {
+			const themesRef = collection(projectFirestore, 'themes');
+			const querySnapshot = await getDocs(themesRef);
 
-// 			if (guestlist) {
-// 				guestlist.forEach((guest) => {
-// 					if (guest.response && guest.response.wish !== '') {
-// 						results.push({
-// 							...guest.response,
-// 							name: guest.name,
-// 							id: guest.id,
-// 							hideWish: guest.hideWish ? true : false,
-// 							from: 'guestlist',
-// 						});
-// 					}
+			let results = [];
 
-// 					if (guest.hideWish) {
-// 						console.log(guest);
-// 					}
-// 				});
-// 			}
+			querySnapshot.forEach((doc) => {
+				results.push({ ...doc.data(), id: doc.id });
+			});
 
-// 			if (newguestlist) {
-// 				newguestlist.forEach((guest) => {
-// 					if (guest.wish && guest.wish !== '') {
-// 						results.push({
-// 							...guest,
-// 							name: guest.name,
-// 							id: guest.id,
-// 							hideWish: guest.hideWish ? true : false,
-// 							from: 'newguestlist',
-// 						});
-// 					}
-// 				});
-// 			}
+			results.sort((a, b) => {
+				return new Date(a.design_id) - new Date(b.design_id);
+			});
 
-// 			//re-organize based on date. latest first
-// 			results.sort((a, b) => {
-// 				return new Date(b.date) - new Date(a.date);
-// 			});
+			return results;
+		},
 
-// 			console.log('results', results);
+		enabled: !!userId,
+	});
 
-// 			return results;
-// 		},
-// 		enabled: !!guestlist || !!newguestlist,
-// 	});
+	return {
+		isLoading,
+		error,
+		data,
+	};
+};
 
-// 	return {
-// 		isLoading,
-// 		error,
-// 		data,
-// 	};
-// };
+export const useInviteThemePurchases = (themeId) => {
+	const { userId } = useUserContext();
+
+	const { isLoading, error, data } = useQuery({
+		queryKey: ['themePurchases', themeId],
+		queryFn: async () => {
+			const userRef = doc(collection(projectFirestore, 'themes'), themeId);
+			const themeRef = collection(userRef, 'purchases');
+			const querySnapshot = await getDocs(themeRef);
+
+			let results = [];
+
+			querySnapshot.forEach((doc) => {
+				results.push({ ...doc.data(), id: doc.id });
+			});
+
+			return results;
+		},
+
+		enabled: !!userId,
+	});
+
+	return {
+		isLoading,
+		error,
+		data,
+	};
+};

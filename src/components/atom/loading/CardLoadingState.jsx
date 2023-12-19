@@ -4,8 +4,9 @@ import React from 'react';
 //MUI Imports
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import TextProvider from '../TextProvider/TextProvider';
 
-function CardLoadingState({ loadingState, clear }) {
+function CardLoadingState({ loadingState, clear, loadingTitle }) {
 	return (
 		<Backdrop
 			sx={{
@@ -16,7 +17,10 @@ function CardLoadingState({ loadingState, clear }) {
 				position: 'absolute',
 			}}
 			open={loadingState}>
-			<CircularProgress color='inherit'></CircularProgress>
+			<div className='flex gap-3 items-center'>
+				<CircularProgress color='inherit'></CircularProgress>
+				{loadingTitle && <TextProvider className='font-semibold'>{loadingTitle}</TextProvider>}
+			</div>
 		</Backdrop>
 	);
 }

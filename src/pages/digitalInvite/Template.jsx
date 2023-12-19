@@ -7,128 +7,11 @@ import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider'
 import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/ModalProviderPreviewInvite';
 import WholePageLoading from '../../components/atom/loading/WholePageLoading';
 //Hook import
-import { useUserData } from '../../hooks/useFetchAPI';
+import { useUserData, useInviteThemes } from '../../hooks/useFetchAPI';
 import { useUserLogic } from '../../hooks/useUserLogic';
 import { useSelectTheme } from '../../hooks/usePostAPI';
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
-//Styling import
-import design_0 from '../../assets/images/design_0.png';
-import design_1 from '../../assets/images/design_1.png';
-import design_2 from '../../assets/images/design_2.png';
-import design_5 from '../../assets/images/design_5.png';
-import design_6 from '../../assets/images/design_6.png';
-import design_7 from '../../assets/images/design_7.png';
-import design_20 from '../../assets/images/design_20.png';
-import design_21 from '../../assets/images/design_21.png';
-import design_22 from '../../assets/images/design_22.png';
-import design_23 from '../../assets/images/design_23.png';
-import design_24 from '../../assets/images/design_24.png';
-import design_25 from '../../assets/images/design_25.png';
-import design_26 from '../../assets/images/design_26.png';
-import design_27 from '../../assets/images/design_27.png';
 import './DigitalInvite.scss';
-
-const designArrays = [
-	{
-		title: 'Classic',
-		category: 'free',
-		price: 0,
-		id: 2,
-		img: design_2,
-	},
-	{
-		title: 'Modern Simplicity',
-		category: 'free',
-		price: 0,
-		id: 1,
-		img: design_1,
-	},
-	{
-		title: 'Minimal Chic',
-		category: 'free',
-		price: 0,
-		id: 3,
-		img: design_0,
-	},
-
-	{
-		title: 'Sacred Symmetry',
-		category: 'premium',
-		price: 79,
-		id: 5,
-		img: design_5,
-	},
-	{
-		title: 'Majestic Mosaic',
-		category: 'premium',
-		price: 79,
-		id: 6,
-		img: design_6,
-	},
-	{
-		title: 'Ethnic Radiance',
-		category: 'premium',
-		price: 79,
-		id: 7,
-		img: design_7,
-	},
-	{
-		title: 'Celestial Elegance 01',
-		category: 'premium',
-		price: 79,
-		id: 20,
-		img: design_20,
-	},
-	{
-		title: 'Celestial Elegance 02',
-		category: 'premium',
-		price: 79,
-		id: 25,
-		img: design_25,
-	},
-	{
-		title: 'Celestial Elegance 03',
-		category: 'premium',
-		price: 79,
-		id: 27,
-		img: design_27,
-	},
-	{
-		title: 'Celestial Elegance 04',
-		category: 'premium',
-		price: 79,
-		id: 26,
-		img: design_26,
-	},
-	{
-		title: 'Celestial Elegance 05',
-		category: 'premium',
-		price: 79,
-		id: 21,
-		img: design_21,
-	},
-	{
-		title: 'Celestial Elegance 06',
-		category: 'premium',
-		price: 79,
-		id: 22,
-		img: design_22,
-	},
-	{
-		title: 'Celestial Elegance 07',
-		category: 'premium',
-		price: 79,
-		id: 23,
-		img: design_23,
-	},
-	{
-		title: 'Celestial Elegance 08',
-		category: 'premium',
-		price: 79,
-		id: 24,
-		img: design_24,
-	},
-];
 
 const GeneratePreview = ({ isOpen, handleClose, themeId = 1, themeName = 'Classic' }) => {
 	return (
@@ -293,6 +176,7 @@ function Template() {
 		img: '',
 	});
 	const [loading, setLoading] = useState(false);
+	const { data: themes } = useInviteThemes();
 
 	//Extract design template from user
 	const designNum = userInfo?.design_num
@@ -335,7 +219,7 @@ function Template() {
 			notifySuccess('Successfully saved!');
 		} catch (err) {
 			console.log(err);
-			notifyError(err);
+			notifyError(err.message);
 			setLoading(false);
 		}
 	};
@@ -353,15 +237,15 @@ function Template() {
 					</TextProvider>
 				</div>
 				<div className='mt-12 justify-center flex flex-row gap-8 flex-wrap'>
-					{designArrays.map((item) => (
+					{themes?.map((item) => (
 						<TemplateCard
 							key={item.id}
 							title={item.title}
-							id={item.id}
+							id={item.design_id}
 							img={item.img}
-							category={item.category}
+							category={item.premium ? 'Premium' : 'Free'}
 							price={item.price}
-							active={checkUserDesign(item.id)}
+							active={checkUserDesign(item.design_id)}
 							handleUseTemplate={handleUseTemplate}
 							handlePreview={handlePreview}
 							handleChooseTheme={handleChooseTheme}

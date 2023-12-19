@@ -131,11 +131,22 @@ function GuestWishes() {
 					Guest wishes
 				</TextProvider>
 			</div>
-			<div className='mt-8 justify-center flex flex-row gap-4 flex-wrap'>
-				{wishes?.map((guest) => (
-					<WishCard key={guest.id} item={guest} />
-				))}
-			</div>
+			{wishes && wishes?.length > 0 ? (
+				<div className='mt-8 justify-center flex flex-row gap-4 flex-wrap'>
+					{wishes?.map((guest) => (
+						<WishCard key={guest.id} item={guest} />
+					))}
+				</div>
+			) : (
+				<div className='mt-8 justify-center items-center flex'>
+					<TextProvider
+						fontFamily='lora'
+						className='text-[20px] font-semibold'
+						colorStyle='#98A2B3'>
+						Your guest wishes will appear here
+					</TextProvider>
+				</div>
+			)}
 		</div>
 	);
 }

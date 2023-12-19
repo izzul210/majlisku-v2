@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import imageCompression from 'browser-image-compression';
-
 import Button from '@mui/material/Button';
 import TextProvider from '../TextProvider/TextProvider';
 import { ImageUploadIcon } from '../../icons/actionIcons';
@@ -14,13 +13,7 @@ import ButtonProvider from '../ButtonProvider/ButtonProvider';
 import { useDebounceEffect } from './useDebounceEffect';
 import { canvasPreview } from './canvasPreview';
 
-function ImageUpload({
-	defaultImgUrl = null,
-	dispatch = () => {},
-	type = 'SET_IMAGE',
-	aspectRatio = 1,
-	disabled = false,
-}) {
+function PreviewImageUpload({ defaultImgUrl = null, setValue, aspectRatio = 1, disabled = false }) {
 	const [file, setFile] = useState(null);
 	const [originalImgUrl, setOriginalImgUrl] = useState(defaultImgUrl);
 	const [imageUrl, setImageUrl] = useState(null);
@@ -129,6 +122,7 @@ function ImageUpload({
 
 	function onCropSave() {
 		setLoading(true);
+
 		if (!previewCanvasRef.current) {
 			setLoading(false);
 			throw new Error('Crop canvas does not exist');
@@ -147,18 +141,19 @@ function ImageUpload({
 			setCroppedImageUrl(blobUrlRef.current);
 			setOriginalImgUrl(URL.createObjectURL(file));
 
+			//Image compression
 			const options = {
-				maxSizeMB: 1,
-				maxWidthOrHeight: 1200,
+				maxSizeMB: 0.1,
+				maxWidthOrHeight: 800,
 				useWebWorker: true,
-				initialQuality: 1,
+				initialQuality: 0.8,
 			};
 
 			try {
 				const compressedFile = await imageCompression(blob, options);
 				console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
 				console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
-				dispatch({ type: type, payload: compressedFile });
+				setValue(compressedFile);
 				setCropImageModal(false);
 				setLoading(false);
 			} catch (error) {
@@ -198,7 +193,7 @@ function ImageUpload({
 				<div
 					className={`flex py-2 rounded-lg ${
 						croppedImageUrl ? '' : 'border border-gray-400 border-dashed'
-					} justify-center  items-center w-full h-auto`}
+					} justify-start  items-center w-full h-auto`}
 					style={{ backgroundColor: croppedImageUrl ? 'white' : '#FCFCFD' }}>
 					{croppedImageUrl ? (
 						<div className='border p-1 rounded-lg border-gray-400'>
@@ -206,7 +201,7 @@ function ImageUpload({
 								ref={imgPreviewRef}
 								src={croppedImageUrl}
 								alt='Cropped Image'
-								style={{ maxWidth: '280px', borderRadius: 4 }}
+								style={{ maxWidth: '180px', borderRadius: 4 }}
 							/>
 						</div>
 					) : (
@@ -293,4 +288,4 @@ function ImageUpload({
 	);
 }
 
-export default ImageUpload;
+export default PreviewImageUpload;
