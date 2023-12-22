@@ -42,6 +42,12 @@ const initialState = {
 	guestlist: [],
 	newguestlist: [],
 	wishlist: [],
+	design_details: {
+		id: null,
+		title: '',
+		img: '',
+		price: 0,
+	},
 };
 
 export const userReducer = (state, action) => {
@@ -97,6 +103,19 @@ export const userReducer = (state, action) => {
 			return {
 				...state,
 				wishlist: [...state.wishlist, ...action.payload],
+			};
+		case 'SET_DESIGN_ID':
+			return {
+				...state,
+				design_details: {
+					...state.design_details,
+					id: action.payload,
+				},
+			};
+		case 'SET_DESIGN_THEME':
+			return {
+				...state,
+				design_details: action.payload,
 			};
 		case 'RESET_USER':
 			return initialState;

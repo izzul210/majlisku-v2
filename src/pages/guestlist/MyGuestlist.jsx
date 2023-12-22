@@ -151,7 +151,7 @@ const MyGuestlist = () => {
 		.filter(filterGroup);
 
 	const countFilteredGuest = () => {
-		return guestGroup?.length + guestRsvp?.length;
+		return guestGroup?.length + guestRsvp?.length + guestTimeSlots?.length;
 	};
 
 	const openGuestModal = (guestDetail) => {
@@ -389,7 +389,7 @@ const MyGuestlist = () => {
 						<TextProvider className=' font-semibold mt-1'>REMOVE GUEST</TextProvider>
 					</div>
 				}
-				loading={isPending}
+				loading={false}
 				isOpen={deleteGroupBulkModal}
 				handleConfirm={handleGuestBulkDelete}
 				handleClose={() => setDeleteGroupBulkModal(false)}>
@@ -553,16 +553,14 @@ const FilterGuestModalContent = ({
 
 			<div className='flex justify-between items-center gap-4 p-5 border-t border-gray-200'>
 				<div className='flex gap-2 items-center cursor-pointer' onClick={handleReset}>
-					<TextProvider className='text-base font-semibold text-sm'>RESET</TextProvider>
+					<TextProvider className='text-base font-semibold'>RESET</TextProvider>
 				</div>
 				<div className='flex gap-2 items-center'>
 					<ButtonProvider onClick={handleCancel} width='auto' type='secondary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+						<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 					</ButtonProvider>
 					<ButtonProvider onClick={handleApply} width='auto' type='primary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm text-white'>
-							APPLY
-						</TextProvider>
+						<TextProvider className='text-base font-semibold text-white'>APPLY</TextProvider>
 					</ButtonProvider>
 				</div>
 			</div>
@@ -614,12 +612,10 @@ export const CreateNewGroupModal = ({ handleCancel, isOpen }) => {
 							width='auto'
 							type='secondary'
 							padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+							<TextProvider className='text-base font-semibold '>CANCEL</TextProvider>
 						</ButtonProvider>
 						<ButtonProvider onClick={handleSave} width='auto' type='primary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm text-white'>
-								APPLY
-							</TextProvider>
+							<TextProvider className='text-base font-semibold  text-white'>APPLY</TextProvider>
 						</ButtonProvider>
 					</div>
 				</div>
@@ -646,9 +642,7 @@ const EditGroupModal = ({ handleCancel, isOpen, groupName, handleConfirmRemove }
 						className='flex gap-2 items-center cursor-pointer'
 						onClick={() => handleConfirmRemove()}>
 						<DeleteIcon />
-						<TextProvider className='text-base font-semibold text-sm text-red-600'>
-							REMOVE
-						</TextProvider>
+						<TextProvider className='text-base font-semibold  text-red-600'>REMOVE</TextProvider>
 					</div>
 				</div>
 			</div>
@@ -689,14 +683,14 @@ const RemoveGroupModal = ({ handleCancel, isOpen, groupName, handlePostRemoved }
 							width='auto'
 							type='secondary'
 							padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+							<TextProvider className='text-base font-semibold '>CANCEL</TextProvider>
 						</ButtonProvider>
 						<ButtonProvider
 							onClick={handleRemoveGroup}
 							width='auto'
 							type='delete'
 							padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>REMOVE</TextProvider>
+							<TextProvider className='text-base font-semibold '>REMOVE</TextProvider>
 						</ButtonProvider>
 					</div>
 				</div>
@@ -832,12 +826,10 @@ const ImportBulkGuestModal = ({
 						type='secondary'
 						padding='12px 20px'
 						onClick={handlePreviewBulkGuestlist}>
-						<TextProvider className='text-base font-semibold text-sm'>PREVIEW</TextProvider>
+						<TextProvider className='text-base font-semibold '>PREVIEW</TextProvider>
 					</ButtonProvider>
 					<ButtonProvider width='auto' type='primary' padding='12px 20px' onClick={submitBulkGuest}>
-						<TextProvider className='text-base font-semibold text-sm text-white'>
-							IMPORT
-						</TextProvider>
+						<TextProvider className='text-base font-semibold  text-white'>IMPORT</TextProvider>
 					</ButtonProvider>
 				</div>
 			</div>
@@ -942,9 +934,7 @@ const PreviewBulkGuestModal = ({ handleCancel, isOpen, previewBulkGuestlist }) =
 			</div>
 			<div className='flex justify-end items-center gap-4 p-5 border-t border-gray-200'>
 				<ButtonProvider width='auto' type='primary' padding='12px 20px' onClick={handleCancel}>
-					<TextProvider className='text-base font-semibold text-sm text-white'>
-						CLOSE PREVIEW
-					</TextProvider>
+					<TextProvider className='text-base font-semibold  text-white'>CLOSE PREVIEW</TextProvider>
 				</ButtonProvider>
 			</div>
 		</ModalProvider2>

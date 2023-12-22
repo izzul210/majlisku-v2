@@ -228,7 +228,7 @@ export const GuestDetailContent = ({
 	}, [guestDetails]);
 
 	return (
-		<div className='w-auto overflow-hidden text-left'>
+		<div className='w-auto sm:min-w-[400px] overflow-hidden text-left'>
 			{/**** RSVP Status */}
 			<RSVPStatus guestId={guestDetails?.id} rsvp={guestDetails?.rsvp} openInvite={openInvite} />
 			{/*** Guest Details */}

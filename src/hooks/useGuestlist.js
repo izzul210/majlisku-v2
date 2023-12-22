@@ -1,6 +1,7 @@
 /** @format */
 import React, { useState } from 'react';
 import moment from 'moment';
+import { notifySuccess, notifyError } from '../components/toast/toastprovider';
 import {
 	doc,
 	updateDoc,
@@ -33,10 +34,12 @@ export const useGuestlist = () => {
 		try {
 			// Update the "groupList" field of the user document with the new group list
 			await addDoc(collection(projectFirestore, 'users', userId, 'guestlist'), guestlistDetails);
+			notifySuccess('Guest added successfully');
 			postRequestFunc(); // Call the postRequestFunc after the group is removed
 			setIsPending(false); // Set the "isPending" state to false to indicate that the operation is completed
 		} catch (error) {
 			console.log(error); // Log the error to the console
+			notifyError('Failed to add guest');
 			setError(error); // Set the "error" state to the error object
 			setIsPending(false); // Set the "isPending" state to false to indicate that the operation is completed
 		}
@@ -72,11 +75,13 @@ export const useGuestlist = () => {
 				updatedGuestlistBody
 			).then(() => {
 				deleteOpenInviteGuest(updatedGuestlistBody.id, () => {});
+				notifySuccess('Guest added to My Guestlist successfully');
 				postRequestFunc(); // Call the postRequestFunc after the group is removed
 				setIsPending(false); // Set the "isPending" state to false to indicate that the operation is completed
 			});
 		} catch (error) {
 			console.log(error); // Log the error to the console
+			notifyError('Failed to add guest to My Guestlist');
 			setError(error); // Set the "error" state to the error object
 			setIsPending(false); // Set the "isPending" state to false to indicate that the operation is completed
 		}
@@ -116,6 +121,7 @@ export const useGuestlist = () => {
 
 		batch.commit();
 		deleteBulkOpenInviteGuest(guestlistIds, postRequestFunc);
+
 		setIsPending(false);
 	};
 
@@ -128,10 +134,12 @@ export const useGuestlist = () => {
 				updatedGuestDetails
 			);
 			postRequestFunc();
+			notifySuccess('Guest details updated successfully');
 			setIsPending(false);
 		} catch (error) {
 			console.log(error);
 			setError(error);
+			notifyError('Failed to update guest details');
 			setIsPending(false);
 		}
 	};
@@ -141,11 +149,13 @@ export const useGuestlist = () => {
 
 		try {
 			await deleteDoc(doc(projectFirestore, 'users', userId, 'guestlist', guestId));
+			notifySuccess('Guest deleted successfully');
 			postRequestFunc();
 			setIsPending(false);
 		} catch (error) {
 			console.log(error);
 			setError(error);
+			notifyError('Failed to delete guest');
 			setIsPending(false);
 		}
 	};
@@ -156,10 +166,12 @@ export const useGuestlist = () => {
 		try {
 			await deleteDoc(doc(projectFirestore, 'users', userId, 'newguestlist', guestId));
 			postRequestFunc();
+			notifySuccess('Guest deleted successfully');
 			setIsPending(false);
 		} catch (error) {
 			console.log(error);
 			setError(error);
+			notifyError('Failed to delete guest');
 			setIsPending(false);
 		}
 	};
@@ -187,6 +199,7 @@ export const useGuestlist = () => {
 		batch.commit();
 		setIsPending(false);
 		postRequestFunc();
+		notifySuccess('Guest added successfully');
 	};
 
 	const editBulkGuest = async (guestDetail, guestIds, postRequestFunc) => {
@@ -203,6 +216,7 @@ export const useGuestlist = () => {
 		batch.commit();
 		setIsPending(false);
 		postRequestFunc();
+		notifySuccess('Guest details updated successfully');
 	};
 
 	const deleteBulkGuest = async (guestIds, postRequestFunc) => {
@@ -218,6 +232,7 @@ export const useGuestlist = () => {
 
 		setIsPending(false);
 		postRequestFunc();
+		notifySuccess('Guest deleted successfully');
 	};
 
 	const deleteBulkOpenInviteGuest = async (guestIds, postRequestFunc) => {
@@ -233,6 +248,7 @@ export const useGuestlist = () => {
 
 		setIsPending(false);
 		postRequestFunc();
+		notifySuccess('Guest deleted successfully');
 	};
 
 	const generateGuestInviteId = async (guestInviteId, guestId, postRequestFunc) => {
@@ -266,10 +282,12 @@ export const useGuestlist = () => {
 				guestInviteId: guestInviteId,
 			});
 			postRequestFunc(`${userData.inviteId}/${guestInviteId}`);
+			notifySuccess('Guest invitation-link generated successfully!');
 			setIsPending(false);
 		} catch (error) {
 			console.log(error);
 			setError(error);
+			notifyError('Failed to generate guest invitation-link');
 			setIsPending(false);
 		}
 	};
@@ -290,11 +308,13 @@ export const useGuestlist = () => {
 		await updateDoc(userRef, { groupList: currentGroup })
 			.then(() => {
 				postRequestFunc();
+				notifySuccess('Group added successfully');
 				getUserData(userId);
 				setIsPending(false);
 			})
 			.catch((error) => {
 				console.log(error);
+				notifyError('Failed to add group');
 				setError(error);
 				setIsPending(false);
 			});
@@ -320,10 +340,12 @@ export const useGuestlist = () => {
 			// Update the "groupList" field of the user document with the new group list
 			await updateDoc(userRef, { groupList: currentGroup });
 			postRequestFunc(); // Call the postRequestFunc after the group is removed
+			notifySuccess('Group removed successfully');
 			getUserData(userId); // Refresh the user data
 			setIsPending(false); // Set the "isPending" state to false to indicate that the operation is completed
 		} catch (error) {
 			console.log(error); // Log the error to the console
+			notifyError('Failed to remove group');
 			setError(error); // Set the "error" state to the error object
 			setIsPending(false); // Set the "isPending" state to false to indicate that the operation is completed
 		}

@@ -1,6 +1,15 @@
 /** @format */
 //Firebase stuff
-import { doc, updateDoc, addDoc, deleteDoc, collection } from 'firebase/firestore';
+import {
+	doc,
+	updateDoc,
+	addDoc,
+	deleteDoc,
+	collection,
+	writeBatch,
+	setDoc,
+} from 'firebase/firestore';
+import moment from 'moment';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { projectFirestore, projectStorage } from '../firebase/config';
 
@@ -358,10 +367,10 @@ export const useSelectTheme = () => {
 	const { userId } = useUserContext();
 
 	const selectTheme = useMutation({
+		//body = {id: 1,2,3, design_id: 'classic','ethnic_radiance', name: user's name, email: user's email}
 		mutationFn: async (body) => {
-			//id, from = body
 			return updateDoc(doc(projectFirestore, 'users', userId), {
-				design_num: body.id,
+				design_temp_num: body.id,
 			});
 		},
 		mutationKey: ['selectTheme'],
@@ -377,5 +386,53 @@ export const useSelectTheme = () => {
 
 	return {
 		selectTheme,
+	};
+};
+
+export const usePurchaseTheme = () => {
+	const queryClient = useQueryClient();
+	const { data: userData } = useUserData();
+	const { userId } = useUserContext();
+
+	const purchaseTheme = useMutation({
+		//body = {id: 1,2,3,}
+		mutationFn: async (body) => {
+			const batch = writeBatch(projectFirestore);
+
+			const purchaseRef = doc(projectFirestore, 'themes', `${body.id}`, 'purchases', userId);
+			const userRef = doc(projectFirestore, 'users', userId);
+			const userThemeRef = doc(projectFirestore, 'users', userId, 'themes', `${body.id}`);
+
+			batch.set(purchaseRef, {
+				name: userData?.displayName,
+				email: userData?.email,
+				user_id: userId,
+				date: moment().format(),
+			});
+
+			batch.update(userRef, {
+				design_num: body.id,
+			});
+
+			batch.set(userThemeRef, {
+				date: moment().format(),
+			});
+
+			return batch.commit();
+		},
+		mutationKey: ['purchaseTheme'],
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['userData'],
+				queryKey: ['userThemePurchases'],
+			});
+		},
+		onError: (error) => {
+			console.log('usePurchaseTheme Error:', error);
+		},
+	});
+
+	return {
+		purchaseTheme,
 	};
 };

@@ -31,7 +31,7 @@ function GuestDetailPage() {
 	}
 
 	return (
-		<div className='bg-white overflow-x-hidden w-full h-screen'>
+		<div className='bg-white overflow-x-hidden w-full min-h-screen'>
 			<div style={topBarStyle}>
 				<div className='px-6 py-12 flex gap-5 items-center justify-between w-full'>
 					<div onClick={() => navigate(-1)} className='cursor-pointer'>

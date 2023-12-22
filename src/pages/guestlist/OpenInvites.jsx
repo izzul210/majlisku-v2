@@ -10,7 +10,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useGuestlistContext, useGuestlistDispatchContext } from '../../context/GuestlistContext';
 import { useUserContext } from '../../context/UserContext';
 //Components import
-import OpenInviteTable from '../../components/table/OpenInviteTable';
 import OpenInviteTableVirtuoso from '../../components/table/OpenInviteTableVirtuoso';
 import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import { SearchBarWithFilter } from '../../components/atom/SearchBar/SearchBar';
@@ -33,6 +32,7 @@ import {
 } from '../../components/icons/brandIcons';
 //Hooks import
 import { useGuestlist } from '../../hooks/useGuestlist';
+import { useFormatTimeSlot } from '../../hooks/useFormat';
 
 const OpenInvites = () => {
 	const { newguestlist, openInviteTotal, openInviteLoading } = useGuestlistContext();
@@ -60,6 +60,8 @@ const OpenInvites = () => {
 		console.log('dispatch');
 	};
 	const dispatchGuestlist = useGuestlistDispatchContext();
+
+	const { formatTimeSlot } = useFormatTimeSlot();
 
 	let navigate = useNavigate();
 
@@ -94,13 +96,11 @@ const OpenInvites = () => {
 		if (guestTimeSlots.length === 0) {
 			return 1;
 		} else {
-			const timeSlot = guest?.timeSlot
-				? moment(guest.timeSlot).format('h:mm A')
-				: guest?.response?.timeSlot
-				? moment(guest.response.timeSlot).format('h:mm A')
-				: null;
-
-			return guestTimeSlots.includes(timeSlot);
+			if (guest?.timeSlot) {
+				return guestTimeSlots.includes(formatTimeSlot(guest));
+			} else {
+				return 0;
+			}
 		}
 	};
 
@@ -183,7 +183,7 @@ const OpenInvites = () => {
 					setSearch={setSearchGuest}
 					search={searchGuest}
 					setFilter={setFilterModal}
-					filteredCount={guestRsvp?.length || 0}
+					filteredCount={guestRsvp?.length + guestTimeSlots?.length || 0}
 				/>
 				{!phoneSize ? (
 					<div>
@@ -351,12 +351,10 @@ const ImportBulkToMyGuestlist = ({ isOpen, handleClose, guestlistIds, resetGuest
 				<div className='flex justify-end items-center gap-4 p-5 border-t border-gray-200'>
 					<div className='flex gap-2 items-center'>
 						<ButtonProvider onClick={handleClose} width='auto' type='secondary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+							<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 						</ButtonProvider>
 						<ButtonProvider onClick={handleImport} width='auto' type='primary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm text-white'>
-								IMPORT
-							</TextProvider>
+							<TextProvider className='text-base font-semibold text-white'>IMPORT</TextProvider>
 						</ButtonProvider>
 					</div>
 				</div>
@@ -444,21 +442,21 @@ const FilterGuestModalContent = ({
 					<div className='flex gap-2 mt-2 flex-wrap'>
 						<RSVPTag
 							onClick={() =>
-								clickTimeSlot(moment(userData?.eventDetails?.event_time?.start).format('h:mm A'))
+								clickTimeSlot(moment(userData?.eventDetails?.event_time?.start).format('h:mma'))
 							}
 							active={timeFilterClicked(
-								moment(userData?.eventDetails?.event_time?.start).format('h:mm A')
+								moment(userData?.eventDetails?.event_time?.start).format('h:mma')
 							)}>
-							<div>{moment(userData?.eventDetails?.event_time?.start).format('h:mm A')}</div>
+							<div>{moment(userData?.eventDetails?.event_time?.start).format('h:mma')}</div>
 						</RSVPTag>
 						<RSVPTag
 							onClick={() =>
-								clickTimeSlot(moment(userData?.eventDetails?.event_time_slot_2).format('h:mm A'))
+								clickTimeSlot(moment(userData?.eventDetails?.event_time_slot_2).format('h:mma'))
 							}
 							active={timeFilterClicked(
-								moment(userData?.eventDetails?.event_time_slot_2).format('h:mm A')
+								moment(userData?.eventDetails?.event_time_slot_2).format('h:mma')
 							)}>
-							<div>{moment(userData?.eventDetails?.event_time_slot_2).format('h:mm A')}</div>
+							<div>{moment(userData?.eventDetails?.event_time_slot_2).format('h:mma')}</div>
 						</RSVPTag>
 					</div>
 				</div>
@@ -466,16 +464,14 @@ const FilterGuestModalContent = ({
 
 			<div className='flex justify-between items-center gap-4 p-5 border-t border-gray-200'>
 				<div className='flex gap-2 items-center cursor-pointer' onClick={handleReset}>
-					<TextProvider className='text-base font-semibold text-sm'>RESET</TextProvider>
+					<TextProvider className='text-base font-semibold'>RESET</TextProvider>
 				</div>
 				<div className='flex gap-2 items-center'>
 					<ButtonProvider onClick={handleCancel} width='auto' type='secondary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+						<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 					</ButtonProvider>
 					<ButtonProvider onClick={handleApply} width='auto' type='primary' padding='12px 20px'>
-						<TextProvider className='text-base font-semibold text-sm text-white'>
-							APPLY
-						</TextProvider>
+						<TextProvider className='text-base font-semibold text-white'>APPLY</TextProvider>
 					</ButtonProvider>
 				</div>
 			</div>

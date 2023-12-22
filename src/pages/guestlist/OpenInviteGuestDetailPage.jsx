@@ -27,7 +27,7 @@ function OpenInviteGuestDetailPage() {
 	};
 
 	return (
-		<div className='bg-white overflow-x-hidden h-screen w-full'>
+		<div className='bg-white overflow-x-hidden min-h-screen w-full'>
 			<div style={topBarStyle}>
 				<div className='px-6 py-12 flex gap-5 items-center justify-between  w-full'>
 					<div onClick={() => navigate(-1)} className='cursor-pointer'>

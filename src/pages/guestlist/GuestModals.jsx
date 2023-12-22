@@ -34,12 +34,10 @@ export const EditGroupBulkModal = ({ isOpen, handleClose, guestIds }) => {
 				<div className='flex justify-end items-center gap-4 p-5 border-t border-gray-200'>
 					<div className='flex gap-2 items-center'>
 						<ButtonProvider onClick={handleClose} width='auto' type='secondary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm'>CANCEL</TextProvider>
+							<TextProvider className='text-base font-semibold'>CANCEL</TextProvider>
 						</ButtonProvider>
 						<ButtonProvider onClick={handleApply} width='auto' type='primary' padding='12px 20px'>
-							<TextProvider className='text-base font-semibold text-sm text-white'>
-								APPLY
-							</TextProvider>
+							<TextProvider className='text-base font-semibold text-white'>APPLY</TextProvider>
 						</ButtonProvider>
 					</div>
 				</div>

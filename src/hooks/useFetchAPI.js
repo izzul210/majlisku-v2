@@ -1,11 +1,19 @@
 /** @format */
 import { useQuery } from '@tanstack/react-query';
 import { projectFirestore, projectAuth } from '../firebase/config';
-import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
-import { useUserContext } from '../context/UserContext';
+import { collection, getDocs, doc, getDoc, query, orderBy, where } from 'firebase/firestore';
+import { useUserContext, useUserDispatchContext } from '../context/UserContext';
+
+const sanitizeOldTheme = (design) => {
+	if (design === 'default') return 3;
+	else if (design === 'minimal1') return 2;
+	else if (design === 'minimal2') return 1;
+	else return design;
+};
 
 export const useUserData = () => {
 	const { userId } = useUserContext();
+	const dispatch = useUserDispatchContext();
 
 	const { isLoading, error, data } = useQuery({
 		queryKey: ['userData'],
@@ -14,6 +22,20 @@ export const useUserData = () => {
 			const docSnap = await getDoc(docRef);
 
 			if (docSnap.exists()) {
+				const userInfo = docSnap.data();
+				const designNum = userInfo?.design_temp_num
+					? userInfo?.design_temp_num
+					: userInfo?.design_num
+					? userInfo?.design_num
+					: userInfo?.type
+					? userInfo?.type
+					: null;
+				let design = sanitizeOldTheme(designNum);
+
+				if (design) {
+					dispatch({ type: 'SET_DESIGN_ID', payload: design });
+				}
+
 				return { userId: docSnap.id, ...docSnap.data() };
 			} else {
 				console.log('No such document!');
@@ -227,8 +249,37 @@ export const useInviteThemePurchases = (themeId) => {
 	const { isLoading, error, data } = useQuery({
 		queryKey: ['themePurchases', themeId],
 		queryFn: async () => {
-			const userRef = doc(collection(projectFirestore, 'themes'), themeId);
+			const userRef = doc(collection(projectFirestore, 'themes'), `${themeId}`);
 			const themeRef = collection(userRef, 'purchases');
+			const querySnapshot = await getDocs(query(themeRef, where('user_id', '==', userId)));
+
+			let results = [];
+
+			querySnapshot.forEach((doc) => {
+				results.push({ ...doc.data(), id: doc.id });
+			});
+
+			return results;
+		},
+
+		enabled: !!userId,
+	});
+
+	return {
+		isLoading,
+		error,
+		data,
+	};
+};
+
+export const useUserThemePurchases = () => {
+	const { userId } = useUserContext();
+
+	const { isLoading, error, data } = useQuery({
+		queryKey: ['userThemePurchases'],
+		queryFn: async () => {
+			const docRef = doc(collection(projectFirestore, 'users'), userId);
+			const themeRef = collection(docRef, 'themes');
 			const querySnapshot = await getDocs(themeRef);
 
 			let results = [];

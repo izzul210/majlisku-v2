@@ -6,10 +6,12 @@ import TextProvider from '../../components/atom/TextProvider/TextProvider';
 import ButtonProvider from '../../components/atom/ButtonProvider/ButtonProvider';
 import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/ModalProviderPreviewInvite';
 import WholePageLoading from '../../components/atom/loading/WholePageLoading';
-//Hook import
+//Hook & Context import
+import { useUserContext, useUserDispatchContext } from '../../context/UserContext';
 import { useUserData, useInviteThemes } from '../../hooks/useFetchAPI';
-import { useUserLogic } from '../../hooks/useUserLogic';
+import { useUserLogic, hasUserPurchaseThisTheme } from '../../hooks/useUserLogic';
 import { useSelectTheme } from '../../hooks/usePostAPI';
+
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
 import './DigitalInvite.scss';
 
@@ -51,11 +53,20 @@ const ConfirmTheme = ({
 			title={`Choose ${themeName}?`}>
 			<div className='h-full w-full flex gap-3 flex-col items-center p-4 justify-center'>
 				<img src={img} alt={themeName} className='w-[200px] rounded-md border-2 border-black' />
-				<TextProvider
-					colorStyle='#98A2B3'
-					className='text-start w-[200px] font-semibold uppercase text-[16px]'>
-					{price === 0 ? 'FREE' : `RM${price}`}
-				</TextProvider>
+				{hasUserPurchaseThisTheme(themeId) ? (
+					<TextProvider
+						colorStyle='#98A2B3'
+						className='text-start w-[200px] font-semibold uppercase text-[14px]'>
+						PURCHASED
+					</TextProvider>
+				) : (
+					<TextProvider
+						colorStyle='#98A2B3'
+						className='text-start w-[200px] font-semibold uppercase text-[16px]'>
+						{price === 0 ? 'FREE' : `RM${price}`}
+					</TextProvider>
+				)}
+
 				<div className='flex gap-4 items-center'>
 					<ButtonProvider
 						type='primary'
@@ -70,7 +81,7 @@ const ConfirmTheme = ({
 	);
 };
 
-const TemplateTitle = ({ title, category, price }) => {
+const TemplateTitle = ({ title, id, category, price }) => {
 	if (category === 'free')
 		return (
 			<div className='flex flex-col mt-2 gap-0'>
@@ -118,11 +129,19 @@ const TemplateTitle = ({ title, category, price }) => {
 				<TextProvider className='text-start font-semibold uppercase text-base'>
 					{title}
 				</TextProvider>
-				<TextProvider
-					colorStyle='#98A2B3'
-					className='text-start font-semibold uppercase text-[14px]'>
-					RM{price}
-				</TextProvider>
+				{hasUserPurchaseThisTheme(id) ? (
+					<TextProvider
+						colorStyle='#98A2B3'
+						className='text-start font-semibold uppercase text-[14px]'>
+						PURCHASED
+					</TextProvider>
+				) : (
+					<TextProvider
+						colorStyle='#98A2B3'
+						className='text-start font-semibold uppercase text-[14px]'>
+						RM{price}
+					</TextProvider>
+				)}
 			</div>
 		);
 };
@@ -166,7 +185,7 @@ const TemplateCard = ({
 					</div>
 				)}
 			</div>
-			<TemplateTitle title={title} category={category} price={price} />
+			<TemplateTitle title={title} id={id} category={category} price={price} />
 		</div>
 	);
 };
@@ -184,14 +203,10 @@ function Template() {
 	});
 	const [loading, setLoading] = useState(false);
 	const { data: themes } = useInviteThemes();
+	const { design_details } = useUserContext();
+	const userDispatch = useUserDispatchContext();
 
-	//Extract design template from user
-	const designNum = userInfo?.design_num
-		? userInfo?.design_num
-		: userInfo?.type
-		? userInfo?.type
-		: null;
-	let design = sanitizeOldTheme(designNum);
+	let design = design_details?.id;
 
 	const checkUserDesign = (id) => {
 		if (design === id) {

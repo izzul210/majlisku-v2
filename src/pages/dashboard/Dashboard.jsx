@@ -60,6 +60,7 @@ const MainDashboardCard = () => {
 
 	const { calculateEventCountDown } = useCalculation();
 
+	const currentDate = moment();
 	let navigate = useNavigate();
 
 	const handleNavigate = () => {
@@ -71,6 +72,9 @@ const MainDashboardCard = () => {
 	};
 
 	const eventCountDown = calculateEventCountDown(event_date);
+
+	const hadPassed = event_date ? moment(event_date).isBefore(currentDate) : false;
+
 	return (
 		<>
 			<div
@@ -87,7 +91,6 @@ const MainDashboardCard = () => {
 						<div className='uppercase'>
 							{event_date ? moment(event_date).format('D MMMM YYYY') : 'Date'}
 						</div>
-						<div className='uppercase'>{event_location ? event_location : 'Location'}</div>
 					</div>
 				) : (
 					<div className='flex items-center flex-1 px-4 py-5 text-start md:px-8 md:py-10'>
@@ -100,25 +103,31 @@ const MainDashboardCard = () => {
 					</div>
 				)}
 
-				<div className='dashboard-event-countdown flex items-center justify-center gap-4'>
-					{event_date ? (
-						<>
-							<div>
-								<b>{eventCountDown.weeks}</b> Weeks
+				{hadPassed ? (
+					<div className='dashboard-event-countdown flex items-center justify-center gap-4'>
+						<div className='flex gap-5 items-center font-semibold'>Event has ended</div>
+					</div>
+				) : (
+					<div className='dashboard-event-countdown flex items-center justify-center gap-4'>
+						{event_date ? (
+							<>
+								<div>
+									<b>{eventCountDown.weeks}</b> Weeks
+								</div>
+								<div>
+									<b>{eventCountDown.days}</b> Days
+								</div>
+								<div>
+									<b>{eventCountDown.hours}</b> Hours
+								</div>
+							</>
+						) : (
+							<div className='flex gap-5 items-center font-semibold'>
+								Create your invite <ViewAllIcon fill='white' />
 							</div>
-							<div>
-								<b>{eventCountDown.days}</b> Days
-							</div>
-							<div>
-								<b>{eventCountDown.hours}</b> Hours
-							</div>
-						</>
-					) : (
-						<div className='flex gap-5 items-center font-semibold'>
-							Create your invite <ViewAllIcon fill='white' />
-						</div>
-					)}
-				</div>
+						)}
+					</div>
+				)}
 			</div>
 
 			<ModalProvider
@@ -334,12 +343,15 @@ const OpenInvitesContainer = () => {
 const GiftRegistryContainer = () => {
 	const { giftReservedSummary } = useUserContext();
 	const { reserved, total } = giftReservedSummary;
+
+	let navigate = useNavigate();
+
 	return (
 		<div className='my-guestlist-container flex-1'>
 			<div className='container-header'>
 				<div className='container-title uppercase'>Gift Registry</div>
 			</div>
-			<div className='container-content'>
+			<div className='container-content' onClick={() => navigate('/digitalinvite/gift')}>
 				<StatusCard title='Gift Reserved' value={`${reserved}/${total}`} id='gift' />
 			</div>
 		</div>

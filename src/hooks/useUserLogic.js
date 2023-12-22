@@ -1,12 +1,15 @@
 /** @format */
 
 import { useUserData } from './useFetchAPI';
+import { useUserContext } from '../context/UserContext';
+import { useInviteThemePurchases, useUserThemePurchases } from './useFetchAPI';
 
 export const useUserLogic = () => {
+	const { design_details } = useUserContext() || {};
 	const { data: userInfo } = useUserData() || {};
 
 	const checkIfUserHasSelectedTheme = () => {
-		if (userInfo?.type || userInfo?.design_num) {
+		if (design_details?.id) {
 			return true;
 		} else {
 			return false;
@@ -33,4 +36,29 @@ export const useUserLogic = () => {
 		checkIfUserHasEventDetails,
 		sanitizeOldTheme,
 	};
+};
+
+export const hasUserPurchasedTheme = (id) => {
+	const { data: themePurchases } = useInviteThemePurchases(id);
+
+	if (id <= 3) {
+		return true;
+	}
+
+	return themePurchases?.length > 0;
+};
+
+export const hasUserPurchaseThisTheme = (id) => {
+	const { data: themePurchasedByUser } = useUserThemePurchases();
+
+	if (id <= 3) {
+		return true;
+	}
+
+	const exists = themePurchasedByUser?.some((object) => object.id === `${id}`);
+
+	if (exists) {
+		return true;
+	}
+	return false;
 };

@@ -1,15 +1,9 @@
 /** @format */
 
 import React, { useState } from 'react';
-import { useUserData } from '../../hooks/useFetchAPI';
 import { useFormContext } from 'react-hook-form';
 import { Route, Routes, Link, Navigate } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-	useDigitalInviteContext,
-	useDigitalInviteDispatchContext,
-} from '../../context/DigitalInviteContext';
-import { useRsvp } from '../../hooks/useRsvp';
 //Page import
 import Setting from './Setting';
 import Template from './Template';
@@ -28,12 +22,19 @@ import AppBar from '@mui/material/AppBar';
 import useMediaQuery from '@mui/material/useMediaQuery';
 //Icons import
 import { BackIcon, PreviewIcon } from '../../components/icons/actionIcons';
-//Hooks Logic
-import { useUserLogic } from '../../hooks/useUserLogic';
+//Hooks & Context Logic
+import {
+	useDigitalInviteContext,
+	useDigitalInviteDispatchContext,
+} from '../../context/DigitalInviteContext';
+import { useUserContext } from '../../context/UserContext';
+import { useUserData } from '../../hooks/useFetchAPI';
+import { useUserLogic, hasUserPurchaseThisTheme } from '../../hooks/useUserLogic';
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
-import { usePostRsvp } from '../../hooks/usePostAPI';
+import { usePostRsvp, usePurchaseTheme } from '../../hooks/usePostAPI';
 
 const GeneratePreview = ({ iframeKey, isOpen, handleClose }) => {
+	const { design_details } = useUserContext() || { id: 0 };
 	const { data: userData } = useUserData();
 
 	return (
@@ -45,7 +46,7 @@ const GeneratePreview = ({ iframeKey, isOpen, handleClose }) => {
 				<div className='w-full max-w-[400px]'>
 					<iframe
 						key={iframeKey}
-						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${userData?.design_num}/${userData?.userId}`}
+						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${design_details?.id}/${userData?.userId}`}
 						width='100%'
 						height='670'></iframe>
 				</div>
@@ -81,7 +82,9 @@ const ThemeTopBar = () => {
 /******* TOP BUTTONS FOR DETAILS PAGE */
 const DetailsButtons = () => {
 	const { handleSubmit, inviteState } = useDigitalInviteContext();
+	const { design_details } = useUserContext();
 	const { savePreviewDetails, saveRsvpDetails } = usePostRsvp();
+	const { purchaseTheme } = usePurchaseTheme();
 	const { dispatch } = useDigitalInviteDispatchContext();
 	const [previewModal, setPreviewModal] = useState(false);
 	const phoneSize = useMediaQuery('(max-width:600px)');
@@ -92,6 +95,8 @@ const DetailsButtons = () => {
 	const handlePreview = () => {
 		setPreviewModal(true);
 	};
+
+	const themePurchased = hasUserPurchaseThisTheme(design_details.id);
 
 	const onSaveAsPreview = async (formValues) => {
 		setLoading(true);
@@ -111,6 +116,17 @@ const DetailsButtons = () => {
 		}
 	};
 
+	const handlePostPurchaseTheme = async () => {
+		try {
+			await purchaseTheme.mutateAsync({ id: design_details.id });
+			notifySuccess('Successfully purchased the theme!');
+			navigate('share');
+		} catch (error) {
+			console.log('error:', error);
+			notifyError(error);
+		}
+	};
+
 	const onSubmit = async (formValues) => {
 		setLoading(true);
 		try {
@@ -118,8 +134,13 @@ const DetailsButtons = () => {
 				...formValues,
 				...inviteState,
 			});
-			notifySuccess('Saved & Publish!');
-			navigate('share');
+			if (themePurchased) {
+				notifySuccess('Saved & Publish!');
+				navigate('share');
+			} else {
+				handlePostPurchaseTheme();
+			}
+
 			setLoading(false);
 		} catch (error) {
 			console.log('error:', error);
@@ -173,9 +194,15 @@ const RenderTopButtons = () => {
 };
 
 const PremiumThemeAlert = () => {
+	const { design_details } = useUserContext();
+
+	if (hasUserPurchaseThisTheme(design_details.id)) {
+		return null;
+	}
+
 	return (
 		<div
-			className='w-full p-2 flex items-start gap-2 justify-center'
+			className='w-full py-3 px-4 flex items-start gap-2 justify-center'
 			style={{
 				background:
 					'var(--Yellow-Tint-25, linear-gradient(0deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.25) 100%), #FFDE81)',
@@ -197,7 +224,7 @@ const PremiumThemeAlert = () => {
 				</svg>
 			</div>
 
-			<TextProvider className='text-start font-semibold text-[12px]'>
+			<TextProvider className='text-start font-semibold text-[14px]'>
 				You're customizing a Premium theme. After clicking 'Save and Publish,' you'll proceed to
 				payment
 			</TextProvider>
@@ -213,7 +240,6 @@ const DigitalInviteTopBar = () => {
 	} = useFormContext();
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const [modal, setModal] = useState(false);
-	const premium = false;
 
 	return (
 		<>
@@ -259,10 +285,10 @@ const DigitalInviteTopBar = () => {
 					<div className='flex justify-center w-full border-t border-gray-200'>
 						<DigitalInviteTabs />
 					</div>
-					{premium && <PremiumThemeAlert />}
+					<PremiumThemeAlert />
 				</div>
 			</AppBar>
-			{premium && <PremiumThemeAlert />}
+			<PremiumThemeAlert />
 		</>
 	);
 };
