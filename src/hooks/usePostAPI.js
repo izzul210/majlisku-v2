@@ -12,11 +12,14 @@ import {
 import moment from 'moment';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { projectFirestore, projectStorage } from '../firebase/config';
-
+import { useNavigate } from 'react-router-dom';
 //user context
 import { useUserContext } from '../context/UserContext';
 import { useUserData } from './useFetchAPI';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+// const cloudApi = import.meta.env.VITE_TEST_API_KEY;
+const cloudApi = import.meta.env.VITE_API_KEY;
 
 export const usePostGuestWishes = () => {
 	const queryClient = useQueryClient();
@@ -393,29 +396,48 @@ export const usePurchaseTheme = () => {
 	const queryClient = useQueryClient();
 	const { data: userData } = useUserData();
 	const { userId } = useUserContext();
+	let navigate = useNavigate();
+
+	const purchaseTheme = useMutation({
+		//body = {id: 1,2,3,}
+		mutationFn: async (body) => {
+			/* create_purchase/:userId/:themeId/:email/:themeName/:price */
+			console.log('userId', userId);
+			console.log('themeId', body.themeId);
+			console.log('email', userData?.email);
+			console.log('themeName', body.themeName);
+			console.log('price', body.price);
+
+			window.location.href = `${cloudApi}/create_purchase/${userId}/${body.themeId}/${userData?.email}/${body.themeName}/${body.price}`;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['userData'],
+				queryKey: ['userThemePurchases'],
+			});
+		},
+		onError: (error) => {
+			console.log('usePurchaseTheme Error:', error);
+		},
+	});
+
+	return {
+		purchaseTheme,
+	};
+};
+
+export const usePurchasedTheme = () => {
+	const queryClient = useQueryClient();
+	const { data: userData } = useUserData();
+	const { userId } = useUserContext();
 
 	const purchaseTheme = useMutation({
 		//body = {id: 1,2,3,}
 		mutationFn: async (body) => {
 			const batch = writeBatch(projectFirestore);
-
-			const purchaseRef = doc(projectFirestore, 'themes', `${body.id}`, 'purchases', userId);
 			const userRef = doc(projectFirestore, 'users', userId);
-			const userThemeRef = doc(projectFirestore, 'users', userId, 'themes', `${body.id}`);
-
-			batch.set(purchaseRef, {
-				name: userData?.displayName,
-				email: userData?.email,
-				user_id: userId,
-				date: moment().format(),
-			});
-
 			batch.update(userRef, {
 				design_num: body.id,
-			});
-
-			batch.set(userThemeRef, {
-				date: moment().format(),
 			});
 
 			return batch.commit();

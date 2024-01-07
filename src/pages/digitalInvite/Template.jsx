@@ -8,7 +8,7 @@ import ModalProviderPreviewInvite from '../../components/atom/ModalProvider/Moda
 import WholePageLoading from '../../components/atom/loading/WholePageLoading';
 //Hook & Context import
 import { useUserContext, useUserDispatchContext } from '../../context/UserContext';
-import { useUserData, useInviteThemes } from '../../hooks/useFetchAPI';
+import { useInviteThemes } from '../../hooks/useFetchAPI';
 import { useUserLogic, hasUserPurchaseThisTheme } from '../../hooks/useUserLogic';
 import { useSelectTheme } from '../../hooks/usePostAPI';
 
@@ -191,8 +191,6 @@ const TemplateCard = ({
 };
 
 function Template() {
-	const { data: userInfo } = useUserData();
-	const { sanitizeOldTheme } = useUserLogic();
 	const { selectTheme } = useSelectTheme();
 	const [previewModal, setPreviewModal] = useState(false);
 	const [confirmModal, setConfirmModal] = useState(false);
@@ -230,11 +228,13 @@ function Template() {
 			img,
 			price,
 		});
+
 		setConfirmModal(true);
 	};
 
 	const handleUseTemplate = async (id) => {
 		setLoading(true);
+
 		try {
 			await selectTheme.mutateAsync({ id: id });
 			setConfirmModal(false);

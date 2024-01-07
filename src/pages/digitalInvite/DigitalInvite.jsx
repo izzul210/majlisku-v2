@@ -28,10 +28,13 @@ import {
 	useDigitalInviteDispatchContext,
 } from '../../context/DigitalInviteContext';
 import { useUserContext } from '../../context/UserContext';
-import { useUserData } from '../../hooks/useFetchAPI';
+import { useUserData, useInviteThemes } from '../../hooks/useFetchAPI';
 import { useUserLogic, hasUserPurchaseThisTheme } from '../../hooks/useUserLogic';
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
-import { usePostRsvp, usePurchaseTheme } from '../../hooks/usePostAPI';
+import { usePostRsvp, usePurchasedTheme } from '../../hooks/usePostAPI';
+
+const inviteApi = import.meta.env.VITE_INVITE_STAGING_APP;
+// const inviteApi = import.meta.env.VITE_INVITE_APP;
 
 const GeneratePreview = ({ iframeKey, isOpen, handleClose }) => {
 	const { design_details } = useUserContext() || { id: 0 };
@@ -46,7 +49,7 @@ const GeneratePreview = ({ iframeKey, isOpen, handleClose }) => {
 				<div className='w-full max-w-[400px]'>
 					<iframe
 						key={iframeKey}
-						src={`https://invite-majlisku-git-invite-react-query-izzul210-s-team.vercel.app/preview/${design_details?.id}/${userData?.userId}`}
+						src={`${inviteApi}/preview/${design_details?.id}/${userData?.userId}`}
 						width='100%'
 						height='670'></iframe>
 				</div>
@@ -84,8 +87,10 @@ const DetailsButtons = () => {
 	const { handleSubmit, inviteState } = useDigitalInviteContext();
 	const { design_details } = useUserContext();
 	const { savePreviewDetails, saveRsvpDetails } = usePostRsvp();
-	const { purchaseTheme } = usePurchaseTheme();
 	const { dispatch } = useDigitalInviteDispatchContext();
+
+	const { purchaseTheme } = usePurchasedTheme();
+
 	const [previewModal, setPreviewModal] = useState(false);
 	const phoneSize = useMediaQuery('(max-width:600px)');
 	const [loading, setLoading] = useState(false);
@@ -117,9 +122,12 @@ const DetailsButtons = () => {
 	};
 
 	const handlePostPurchaseTheme = async () => {
+		navigate('/confirm-purchase');
+	};
+
+	const handleAlreadyPurchasedTheme = async () => {
 		try {
 			await purchaseTheme.mutateAsync({ id: design_details.id });
-			notifySuccess('Successfully purchased the theme!');
 			navigate('share');
 		} catch (error) {
 			console.log('error:', error);
@@ -136,7 +144,7 @@ const DetailsButtons = () => {
 			});
 			if (themePurchased) {
 				notifySuccess('Saved & Publish!');
-				navigate('share');
+				handleAlreadyPurchasedTheme();
 			} else {
 				handlePostPurchaseTheme();
 			}
@@ -185,7 +193,7 @@ const DetailsButtons = () => {
 const RenderTopButtons = () => {
 	const location = useLocation();
 
-	if (location.pathname === '/digitalinvite') {
+	if (location.pathname === '/digitalinvite' || location.pathname === '/digitalinvite/share') {
 		return <DetailsButtons />;
 	} else if (location.pathname === '/digitalinvite/template') {
 		return <ThemeTopBar />;
@@ -233,13 +241,7 @@ const PremiumThemeAlert = () => {
 };
 
 const DigitalInviteTopBar = () => {
-	const {
-		register,
-		watch,
-		formState: { errors },
-	} = useFormContext();
 	const phoneSize = useMediaQuery('(max-width:600px)');
-	const [modal, setModal] = useState(false);
 
 	return (
 		<>
@@ -309,3 +311,31 @@ function DigitalInvite() {
 }
 
 export default DigitalInvite;
+
+/*
+Mock Input:
+
+Event Type:
+Walimatulurus
+
+Event Title:
+Muhamad Arif Asyraf
+&
+Nurin Qistina Abdullah
+
+Venue Address:
+Changkat Telang,
+49, B52, Pekan Batu Lapan Belas,
+43100 Hulu Langat, Selangor
+
+
+Host:
+Ir. Ts Mohd Rizal bin Johari
+&
+Zubaidah binti Mohd Isa
+
+
+
+
+
+*/

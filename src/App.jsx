@@ -35,6 +35,8 @@ const OpenInviteGuestDetailPage = lazy(() => import('./pages/guestlist/OpenInvit
 const InvitePreview = lazy(() => import('./pages/digitalInvite/InvitePreview'));
 const AddGiftPage = lazy(() => import('./pages/digitalInvite/giftRegistry/AddGiftPage'));
 const EditGiftPage = lazy(() => import('./pages/digitalInvite/giftRegistry/EditGiftPage'));
+const ConfirmPurchase = lazy(() => import('./pages/digitalInvite/ConfirmPurchase'));
+const SuccessfulPurchase = lazy(() => import('./pages/digitalInvite/SuccessfulPurchase'));
 
 function App() {
 	const { userId, authIsReady } = useUserContext();
@@ -64,7 +66,8 @@ function App() {
 									<Route exact path='/digitalinvite/gift/add' element={<AddGiftPage />} />
 									<Route exact path='/digitalinvite/gift/edit/:id' element={<EditGiftPage />} />
 								</Route>
-
+								<Route exact path='/confirm-purchase' element={<ConfirmPurchase />} />
+								<Route exact path='/successful-purchase' element={<SuccessfulPurchase />} />
 								<Route element={<GuestlistProvider />}>
 									<Route
 										exact

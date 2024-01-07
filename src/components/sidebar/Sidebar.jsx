@@ -7,7 +7,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import useMediaQuery from '@mui/material/useMediaQuery';
 //Swiper import
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -18,6 +17,8 @@ import TextProvider from '../atom/TextProvider/TextProvider';
 import ButtonProvider from '../atom/ButtonProvider/ButtonProvider';
 import NotificationBox from './NotificationBox';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
+//Hooks import
+import { useUserLogic } from '../../hooks/useUserLogic';
 //Auth import
 import { useLogout } from '../../hooks/useAuth';
 //Context import
@@ -94,6 +95,11 @@ function ElevationScroll(props) {
 
 const WebSideBar = ({ activeTab = '', handleLogout }) => {
 	const { userInfo, userPhotoURL } = useUserContext();
+	const { checkIfUserHasSelectedTheme } = useUserLogic();
+
+	let digitalInviteNavigation = checkIfUserHasSelectedTheme()
+		? '/digitalinvite'
+		: '/digitalinvite/template';
 
 	return (
 		<>
@@ -120,7 +126,9 @@ const WebSideBar = ({ activeTab = '', handleLogout }) => {
 							)}
 							<div className={checkForActiveTabText('guestlist', activeTab)}>Guestlist</div>
 						</Link>
-						<Link to='/digitalinvite' className={checkForActiveTabIcon('digitalinvite', activeTab)}>
+						<Link
+							to={digitalInviteNavigation}
+							className={checkForActiveTabIcon('digitalinvite', activeTab)}>
 							{activeTab === 'digitalinvite' ? (
 								<RsvpActive width={ICON_WIDTH_WEB} height={ICON_HEIGHT_WEB} />
 							) : (
@@ -183,6 +191,11 @@ const WebSideBar = ({ activeTab = '', handleLogout }) => {
 
 const TabletSideBar = ({ activeTab = '', handleLogout }) => {
 	const { userPhotoURL } = useUserContext();
+	const { checkIfUserHasSelectedTheme } = useUserLogic();
+
+	let digitalInviteNavigation = checkIfUserHasSelectedTheme()
+		? '/digitalinvite'
+		: '/digitalinvite/template';
 
 	return (
 		<div className='sidebar-container'>
@@ -205,7 +218,9 @@ const TabletSideBar = ({ activeTab = '', handleLogout }) => {
 							<GuestDefault width={ICON_WIDTH_WEB} height={ICON_HEIGHT_WEB} />
 						)}
 					</Link>
-					<Link to='/digitalinvite' className={checkForActiveTabIcon('digitalinvite', activeTab)}>
+					<Link
+						to={digitalInviteNavigation}
+						className={checkForActiveTabIcon('digitalinvite', activeTab)}>
 						{activeTab === 'digitalinvite' ? (
 							<RsvpActive width={ICON_WIDTH_WEB} height={ICON_HEIGHT_WEB} />
 						) : (
@@ -441,8 +456,6 @@ function Sidebar(props) {
 
 	const { logout } = useLogout();
 
-	//Detecting mobile use
-
 	let navigate = useNavigate();
 
 	useEffect(() => {
@@ -474,6 +487,8 @@ function Sidebar(props) {
 				'openinvite',
 				'digitalinvite',
 				'invite-preview',
+				'confirm-purchase',
+				'successful-purchase',
 			].includes(activeTab) &&
 			!['add', 'detail', 'addvendor', 'edit', 'editvendor', 'vendordetail', 'openinvite'].includes(
 				subTab

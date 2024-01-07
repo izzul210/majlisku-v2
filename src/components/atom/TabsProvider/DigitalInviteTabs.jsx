@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import './TabsProvider.scss';
 //Hooks import
 import { useUserLogic } from '../../../hooks/useUserLogic';
-import { notifySuccess, notifyError, notifyReminder } from '../../toast/toastprovider';
+import { notifyReminder } from '../../toast/toastprovider';
 
 const GrayScaleWarmBlack = '#1D4648';
 const NeutralGrey400 = '#98A2B3';

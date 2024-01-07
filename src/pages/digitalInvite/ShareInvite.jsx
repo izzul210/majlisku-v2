@@ -29,7 +29,11 @@ import { usePostRsvp } from '../../hooks/usePostAPI';
 import { notifySuccess, notifyError } from '../../components/toast/toastprovider';
 import { useUserData } from '../../hooks/useFetchAPI';
 
-const cloudApi = import.meta.env.VITE_APP_API_KEY;
+// const cloudApi = import.meta.env.VITE_TEST_API_KEY;
+const cloudApi = import.meta.env.VITE_API_KEY;
+
+const inviteApi = import.meta.env.VITE_INVITE_STAGING_APP;
+// const inviteApi = import.meta.env.VITE_INVITE_APP;
 
 // Import Swiper styles
 import 'swiper/css';
@@ -148,7 +152,7 @@ const CustomizeLinkPreview = () => {
 		if (personalMessage !== '') {
 			handleSavePersonalMessage();
 			navigator.clipboard
-				.writeText(personalMessage + `\n\nhttps://invite.majlisku.app/${userData?.inviteId}`)
+				.writeText(personalMessage + `\n\n${inviteApi}/${userData?.inviteId}`)
 				.then(() => {
 					alert(`Personal Message is copied!`);
 				});
@@ -275,7 +279,7 @@ Sekian, terima kasih.'
 							<a
 								className='w-full'
 								href={`whatsapp://send?text=${
-									personalMessage + `\n\nhttps://invite.majlisku.app/${userData?.inviteId}`
+									personalMessage + `\n\n${inviteApi}/${userData?.inviteId}`
 								}`}
 								data-action='share/whatsapp/share'>
 								<ButtonProvider
@@ -310,6 +314,13 @@ const WhatsappIcon = () => (
 /********* Public Link */
 const SharePublicInviteLink = () => {
 	const { data: userData } = useUserData();
+
+	function copyLinkToClipboard() {
+		navigator.clipboard.writeText(`${inviteApi}/${userData?.inviteId}`).then(() => {
+			alert(`Link is copied!`);
+		});
+	}
+
 	return (
 		<SettingCard cardTitle='Share Public Invite Link'>
 			<div className='px-6 sm:p-6 text-start flex flex-col gap-3'>
@@ -328,7 +339,11 @@ const SharePublicInviteLink = () => {
 					Copy and paste to WhatsApp or any other messenger along with the link
 				</SubDescriptionText>
 				<div className='flex gap-2'>
-					<ButtonProvider type='primary' width='150px' className='uppercase'>
+					<ButtonProvider
+						onClick={() => copyLinkToClipboard()}
+						type='primary'
+						width='150px'
+						className='uppercase'>
 						<CopyIcon fill='white' />
 						Copy Link
 					</ButtonProvider>
@@ -589,7 +604,7 @@ function ShareInvite() {
 					isOpen={urlModal}
 					handleClose={() => {
 						setUrlModal(false);
-						navigate(-1);
+						navigate('/digitalinvite');
 					}}
 					handlePost={() => setUrlModal(false)}
 				/>

@@ -89,7 +89,7 @@ const SubTitleText = ({ children }) => (
 );
 
 const SubDescriptionText = ({ children }) => (
-	<TextProvider className='font-medium text-xs' color='text-gray-600'>
+	<TextProvider className='font-medium text-[14px]' color='text-gray-600'>
 		{children}
 	</TextProvider>
 );
@@ -386,7 +386,7 @@ const DateTime = () => {
 						<TextProvider className='uppercase text-sm font-semibold' color='text-gray-500'>
 							{enable_bahasa ? 'Slot Masa' : 'Multiple Time Slot'}
 						</TextProvider>
-						<TextProvider className='font-medium text-xs' color='text-gray-500'>
+						<TextProvider className='font-medium text-[14px]' color='text-gray-500'>
 							{enable_bahasa
 								? 'Tetapkan slot masa majlis untuk bersama keluarga, kawan, dan rakan sekerja'
 								: 'Set up time slots for your event to connect with family, friends and coworkers.'}
@@ -442,7 +442,7 @@ const DateTime = () => {
 								<TextProvider className='uppercase text-sm font-semibold' color='text-gray-500'>
 									{enable_bahasa ? 'Tarikh Akhir Rsvp' : 'Rsvp Deadline'}
 								</TextProvider>
-								<TextProvider className='font-medium text-xs' color='text-gray-500'>
+								<TextProvider className='font-medium text-[14px]' color='text-gray-500'>
 									{enable_bahasa
 										? 'Hentikan penerimaan RSVP selepas tarikh yang ditetapkan'
 										: 'Stop accepting RSVPs after the specified date.'}
@@ -671,7 +671,7 @@ const GuestPax = () => {
 						<TextProvider className='uppercase text-sm font-semibold' color='text-gray-600'>
 							{enable_bahasa ? 'Tiada had' : 'No limit'}
 						</TextProvider>
-						<TextProvider className='font-medium text-xs' color='text-gray-600'>
+						<TextProvider className='font-medium text-[14px]' color='text-gray-600'>
 							{enable_bahasa
 								? 'Tetamu boleh bawa seramai mungkin'
 								: 'Guest can bring as many plus ones as they want'}
